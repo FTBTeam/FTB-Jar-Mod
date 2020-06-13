@@ -1,0 +1,5 @@
+{
+	"type": "jarmod:temperature_modifier",
+	"efficiency": 3200,
+	"block": "minecraft:lava"
+}

@@ -1,0 +1,6 @@
+{
+	"type": "jarmod:temperature_modifier",
+	"temperature": 100,
+	"efficiency": 1.0,
+	"block": "minecraft:magma_block"
+}

@@ -1,0 +1,9 @@
+{
+	"type": "minecraft:smelting",
+	"ingredient": {
+		"tag": "forge:nuggets/iron"
+	},
+	"result": {
+		"item": "jarmod:cast_iron_nugget"
+	}
+}

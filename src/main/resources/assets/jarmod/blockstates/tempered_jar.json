@@ -1,0 +1,7 @@
+{
+	"variants": {
+		"temperature=normal": {"model": "jarmod:block/tempered_jar"},
+		"temperature=hot": {"model": "jarmod:block/tempered_jar_hot"},
+		"temperature=cold": {"model": "jarmod:block/tempered_jar_cold"}
+	}
+}

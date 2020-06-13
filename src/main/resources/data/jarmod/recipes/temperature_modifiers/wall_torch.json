@@ -1,0 +1,5 @@
+{
+	"type": "jarmod:temperature_modifier",
+	"efficiency": 15,
+	"block": "minecraft:wall_torch"
+}

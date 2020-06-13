@@ -1,0 +1,6 @@
+{
+	"type": "jarmod:temperature_modifier",
+	"temperature": -10,
+	"efficiency": 0.3,
+	"block": "minecraft:snow_block"
+}

@@ -1,0 +1,18 @@
+{
+	"type": "jarmod:jar",
+	"temperature": -10,
+	"inputItems": [
+		{
+			"ingredient": [
+				{"item": "minecraft:brown_mushroom"},
+				{"item": "minecraft:red_mushroom"}
+			]
+		}
+	],
+	"inputFluids": [
+		{"ingredient": {"tag": "forge:steam"}, "amount": 100}
+	],
+	"outputItems": [
+		{"item": "minecraft:slime_ball"}
+	]
+}

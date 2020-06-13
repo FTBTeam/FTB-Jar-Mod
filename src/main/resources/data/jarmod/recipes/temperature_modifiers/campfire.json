@@ -1,0 +1,6 @@
+{
+	"type": "jarmod:temperature_modifier",
+	"temperature": 300,
+	"efficiency": 1.25,
+	"block": "minecraft:campfire[lit=true]"
+}

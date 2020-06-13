@@ -1,0 +1,10 @@
+{
+	"type": "jarmod:jar",
+	"inputFluids": [
+		{"ingredient": {"tag": "minecraft:water"}, "amount": 125},
+		{"ingredient": {"tag": "minecraft:lava"}, "amount": 125}
+	],
+	"outputItems": [
+		{"item": "minecraft:cobblestone"}
+	]
+}

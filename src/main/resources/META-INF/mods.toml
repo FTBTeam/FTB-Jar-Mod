@@ -1,0 +1,26 @@
+modLoader="javafml"
+loaderVersion="[30,)"
+issueTrackerURL="https://github.com/LatvianModder/Jar-Mod/issues"
+
+[[mods]]
+modId="jarmod"
+version="${file.jarVersion}"
+displayName="Jar Mod"
+authors="LatvianModder"
+description='''
+Adds Jars and other things
+'''
+
+[[dependencies.jarmod]]
+    modId="forge"
+    mandatory=true
+    versionRange="[30,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.jarmod]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.15,)"
+    ordering="NONE"
+    side="BOTH"

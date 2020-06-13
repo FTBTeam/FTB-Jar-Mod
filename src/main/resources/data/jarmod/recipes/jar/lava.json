@@ -1,0 +1,10 @@
+{
+	"type": "jarmod:jar",
+	"temperature": 1000,
+	"inputItems": [
+		{"ingredient": {"tag": "forge:cobblestone"}}
+	],
+	"outputFluids": [
+		{"fluid": "minecraft:lava", "amount": 125}
+	]
+}

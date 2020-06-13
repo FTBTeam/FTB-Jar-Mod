@@ -1,0 +1,12 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+		{
+			"tag": "forge:storage_blocks/cast_iron"
+		}
+	],
+	"result": {
+		"item": "jarmod:cast_iron_ingot",
+		"count": 9
+	}
+}

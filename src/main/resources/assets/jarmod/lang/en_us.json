@@ -1,0 +1,15 @@
+{
+	"itemGroup.jarmod": "Jar Mod",
+	"item.jarmod.cast_iron_ingot": "Cast Iron Ingot",
+	"item.jarmod.cast_iron_nugget": "Cast Iron Nugget",
+	"item.jarmod.cast_iron_gear": "Cast Iron Gear",
+	"item.jarmod.tempered_glass": "Tempered Glass",
+	"block.jarmod.cast_iron_block": "Cast Iron Block",
+	"block.jarmod.steam": "Steam",
+	"block.jarmod.jar": "Glass Jar",
+	"block.jarmod.jar.empty": "Empty",
+	"block.jarmod.jar.mb": "%d mB of %s",
+	"block.jarmod.tempered_jar": "Tempered Glass Jar",
+	"block.jarmod.tempered_jar.recipe_changed": "Recipe changed to: %s",
+	"block.jarmod.tube": "Cast Iron Tube"
+}

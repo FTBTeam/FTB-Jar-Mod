@@ -1,0 +1,8 @@
+{
+	"type": "minecraft:campfire_cooking",
+	"ingredient": {
+		"tag": "forge:sand"
+	},
+	"result": "minecraft:glass_pane",
+	"cookingtime": 600
+}
