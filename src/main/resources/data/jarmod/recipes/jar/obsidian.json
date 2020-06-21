@@ -5,6 +5,6 @@
 		{"ingredient": {"tag": "minecraft:lava"}, "amount": 1000}
 	],
 	"outputItems": [
-		{"item": "minecraft:cobblestone"}
+		{"item": "minecraft:obsidian"}
 	]
 }

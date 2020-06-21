@@ -1,0 +1,14 @@
+{
+	"type": "jarmod:heat_source",
+	"temperature": 600,
+	"burnTime": 6000,
+	"block": "minecraft:fire",
+	"item": {
+		"item": "minecraft:flint_and_steel",
+		"nbt": {
+			"display": {
+				"Name": "{\"translate\": \"block.minecraft.fire\"}"
+			}
+		}
+	}
+}

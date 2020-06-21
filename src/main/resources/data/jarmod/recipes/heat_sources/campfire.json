@@ -1,0 +1,6 @@
+{
+	"type": "jarmod:heat_source",
+	"temperature": 300,
+	"block": "minecraft:campfire[lit=true]",
+	"resultBlock": "minecraft:campfire[lit=false]"
+}

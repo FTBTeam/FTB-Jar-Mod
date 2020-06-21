@@ -1,0 +1,20 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"WGW",
+		"G G",
+		"WGW"
+	],
+	"key": {
+		"W": {
+			"item": "jarmod:tank_wall"
+		},
+		"G": {
+			"item": "jarmod:tempered_glass"
+		}
+	},
+	"result": {
+		"item": "jarmod:tank_glass",
+		"count": 4
+	}
+}

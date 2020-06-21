@@ -1,0 +1,13 @@
+{
+	"type": "jarmod:jar",
+	"temperature": 50,
+	"inputItems": [
+		{"ingredient": {"tag": "minecraft:flowers"}}
+	],
+	"inputFluids": [
+		{"ingredient": {"tag": "minecraft:water"}, "amount": 100}
+	],
+	"outputFluids": [
+		{"fluid": "jarmod:biomass", "amount": 200}
+	]
+}

@@ -1,6 +1,6 @@
 {
 	"type": "jarmod:jar",
-	"temperature": -10,
+	"temperature": 50,
 	"inputItems": [
 		{
 			"ingredient": [

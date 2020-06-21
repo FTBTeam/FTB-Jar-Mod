@@ -1,0 +1,9 @@
+{
+	"type": "jarmod:jar",
+	"inputFluids": [
+		{"ingredient": {"fluid": "jarmod:biomass"}, "amount": 250}
+	],
+	"outputItems": [
+		{"item": "jarmod:biomass"}
+	]
+}

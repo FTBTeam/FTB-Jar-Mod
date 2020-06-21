@@ -1,0 +1,6 @@
+{
+	"variants": {
+		"hot=false": {"model": "jarmod:block/heat_sink"},
+		"hot=true": {"model": "jarmod:block/heat_sink_hot"}
+	}
+}

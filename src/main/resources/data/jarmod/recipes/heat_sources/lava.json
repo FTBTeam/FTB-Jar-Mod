@@ -1,0 +1,8 @@
+{
+	"type": "jarmod:heat_source",
+	"temperature": 1800,
+	"burnTime": 72000,
+	"block": "minecraft:lava",
+	"item": "minecraft:lava_bucket",
+	"resultBlock": "minecraft:magma_block"
+}

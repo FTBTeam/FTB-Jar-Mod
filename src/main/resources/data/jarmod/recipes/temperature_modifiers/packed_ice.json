@@ -1,6 +1,0 @@
-{
-	"type": "jarmod:temperature_modifier",
-	"temperature": -30,
-	"efficiency": 2.0,
-	"block": "minecraft:packed_ice"
-}

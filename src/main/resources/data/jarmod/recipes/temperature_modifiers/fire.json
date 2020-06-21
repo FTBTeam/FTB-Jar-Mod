@@ -1,6 +1,0 @@
-{
-	"type": "jarmod:temperature_modifier",
-	"temperature": 600,
-	"efficiency": 1.0,
-	"block": "minecraft:fire"
-}
