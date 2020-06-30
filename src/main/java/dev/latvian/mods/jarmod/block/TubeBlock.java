@@ -5,8 +5,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.IWaterLoggable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.pathfinding.PathType;
 import net.minecraft.state.BooleanProperty;
@@ -85,7 +85,7 @@ public class TubeBlock extends Block implements IWaterLoggable, TubeConnection
 
 		for (Direction direction : Direction.values())
 		{
-			TUBE[direction.getIndex()] = BooleanProperty.create(direction.getName().substring(0, 1));
+			TUBE[direction.getIndex()] = BooleanProperty.create(direction.func_176610_l().substring(0, 1));
 		}
 	}
 
@@ -128,7 +128,7 @@ public class TubeBlock extends Block implements IWaterLoggable, TubeConnection
 
 	@Override
 	@Deprecated
-	public IFluidState getFluidState(BlockState state)
+	public FluidState getFluidState(BlockState state)
 	{
 		return state.get(BlockStateProperties.WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
 	}

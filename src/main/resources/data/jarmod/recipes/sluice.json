@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"SSS",
+		"S S",
+		"III"
+	],
+	"key": {
+		"S": {
+			"tag": "forge:rods/wooden"
+		},
+		"I": {
+			"tag": "forge:nuggets/cast_iron"
+		}
+	},
+	"result": {
+		"item": "jarmod:sluice"
+	}
+}

@@ -3,8 +3,10 @@ package dev.latvian.mods.jarmod;
 import dev.latvian.mods.jarmod.block.JarModBlocks;
 import dev.latvian.mods.jarmod.block.entity.JarModBlockEntities;
 import dev.latvian.mods.jarmod.client.JarModClient;
+import dev.latvian.mods.jarmod.client.gui.JarModContainers;
 import dev.latvian.mods.jarmod.fluid.JarModFluids;
 import dev.latvian.mods.jarmod.item.JarModItems;
+import dev.latvian.mods.jarmod.net.JarModNet;
 import dev.latvian.mods.jarmod.recipe.JarModRecipeSerializers;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -49,6 +51,9 @@ public class JarMod
 		JarModBlockEntities.REGISTRY.register(FMLJavaModLoadingContext.get().getModEventBus());
 		JarModRecipeSerializers.REGISTRY.register(FMLJavaModLoadingContext.get().getModEventBus());
 		JarModFluids.REGISTRY.register(FMLJavaModLoadingContext.get().getModEventBus());
+		JarModContainers.REGISTRY.register(FMLJavaModLoadingContext.get().getModEventBus());
+
+		JarModNet.init();
 		proxy.init();
 	}
 }

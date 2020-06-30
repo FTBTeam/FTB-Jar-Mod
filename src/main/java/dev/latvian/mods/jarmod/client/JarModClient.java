@@ -4,8 +4,11 @@ import dev.latvian.mods.jarmod.JarMod;
 import dev.latvian.mods.jarmod.JarModCommon;
 import dev.latvian.mods.jarmod.block.JarModBlocks;
 import dev.latvian.mods.jarmod.block.entity.JarModBlockEntities;
+import dev.latvian.mods.jarmod.block.entity.TemperedJarBlockEntity;
 import dev.latvian.mods.jarmod.block.entity.render.JarBlockEntityRenderer;
 import dev.latvian.mods.jarmod.block.entity.render.TemperedJarBlockEntityRenderer;
+import dev.latvian.mods.jarmod.client.gui.TemperedJarScreen;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraftforge.api.distmarker.Dist;
@@ -32,8 +35,15 @@ public class JarModClient extends JarModCommon
 		RenderTypeLookup.setRenderLayer(JarModBlocks.TEMPERED_JAR.get(), RenderType.getTranslucent());
 		RenderTypeLookup.setRenderLayer(JarModBlocks.TANK_GLASS.get(), RenderType.getTranslucent());
 		RenderTypeLookup.setRenderLayer(JarModBlocks.HEAT_SINK.get(), RenderType.getCutout());
+		RenderTypeLookup.setRenderLayer(JarModBlocks.SLUICE.get(), RenderType.getTranslucent());
 
 		ClientRegistry.bindTileEntityRenderer(JarModBlockEntities.JAR.get(), JarBlockEntityRenderer::new);
 		ClientRegistry.bindTileEntityRenderer(JarModBlockEntities.TEMPERED_JAR.get(), TemperedJarBlockEntityRenderer::new);
+	}
+
+	@Override
+	public void openTemperedJarScreen(TemperedJarBlockEntity entity)
+	{
+		Minecraft.getInstance().displayGuiScreen(new TemperedJarScreen(entity));
 	}
 }

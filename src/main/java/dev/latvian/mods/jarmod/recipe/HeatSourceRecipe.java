@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.state.IProperty;
+import net.minecraft.state.Property;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
@@ -29,7 +29,7 @@ public class HeatSourceRecipe implements IRecipe<NoInventory>
 	private final String group;
 	private String blockString;
 	private Block block;
-	private Map<IProperty<?>, Comparable<?>> blockProperties;
+	private Map<Property<?>, Comparable<?>> blockProperties;
 	public String resultBlockString;
 	public BlockState resultBlock;
 	public int temperature;
@@ -111,7 +111,7 @@ public class HeatSourceRecipe implements IRecipe<NoInventory>
 			return false;
 		}
 
-		for (Map.Entry<IProperty<?>, Comparable<?>> entry : blockProperties.entrySet())
+		for (Map.Entry<Property<?>, Comparable<?>> entry : blockProperties.entrySet())
 		{
 			if (!state.get(entry.getKey()).equals(entry.getValue()))
 			{

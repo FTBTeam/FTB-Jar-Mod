@@ -2,19 +2,16 @@
 	"type": "minecraft:crafting_shaped",
 	"pattern": [
 		"III",
-		" S ",
+		"   ",
 		"III"
 	],
 	"key": {
 		"I": {
 			"tag": "forge:ingots/cast_iron"
-		},
-		"S": {
-			"tag": "forge:slimeballs"
 		}
 	},
 	"result": {
 		"item": "jarmod:tube",
-		"count": 6
+		"count": 12
 	}
 }

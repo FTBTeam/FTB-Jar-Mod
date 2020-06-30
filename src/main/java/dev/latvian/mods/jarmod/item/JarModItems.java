@@ -2,6 +2,7 @@ package dev.latvian.mods.jarmod.item;
 
 import dev.latvian.mods.jarmod.JarMod;
 import dev.latvian.mods.jarmod.block.JarModBlocks;
+import dev.latvian.mods.jarmod.block.SluiceBlock;
 import dev.latvian.mods.jarmod.fluid.JarModFluids;
 import net.minecraft.block.Block;
 import net.minecraft.fluid.Fluid;
@@ -19,7 +20,7 @@ import java.util.function.Supplier;
  */
 public class JarModItems
 {
-	public static final DeferredRegister<Item> REGISTRY = new DeferredRegister<>(ForgeRegistries.ITEMS, JarMod.MOD_ID);
+	public static final DeferredRegister<Item> REGISTRY = DeferredRegister.create(ForgeRegistries.ITEMS, JarMod.MOD_ID);
 
 	public static RegistryObject<Item> basicItem(String id)
 	{
@@ -42,6 +43,10 @@ public class JarModItems
 	public static final RegistryObject<Item> TEMPERED_GLASS = basicItem("tempered_glass");
 	public static final RegistryObject<Item> BIOMASS = basicItem("biomass");
 	public static final RegistryObject<Item> BIOPLASTIC = basicItem("bioplastic");
+	public static final RegistryObject<Item> CLOTH_MESH = REGISTRY.register("cloth_mesh", () -> new MeshItem(SluiceBlock.Mesh.CLOTH));
+	public static final RegistryObject<Item> IRON_MESH = REGISTRY.register("iron_mesh", () -> new MeshItem(SluiceBlock.Mesh.IRON));
+	public static final RegistryObject<Item> GOLD_MESH = REGISTRY.register("gold_mesh", () -> new MeshItem(SluiceBlock.Mesh.GOLD));
+	public static final RegistryObject<Item> DIAMOND_MESH = REGISTRY.register("diamond_mesh", () -> new MeshItem(SluiceBlock.Mesh.DIAMOND));
 
 	public static final RegistryObject<BlockItem> CAST_IRON_BLOCK = blockItem("cast_iron_block", JarModBlocks.CAST_IRON_BLOCK);
 	public static final RegistryObject<BlockItem> JAR = blockItem("jar", JarModBlocks.JAR);
@@ -51,6 +56,8 @@ public class JarModItems
 	public static final RegistryObject<BlockItem> TANK_WALL = blockItem("tank_wall", JarModBlocks.TANK_WALL);
 	public static final RegistryObject<BlockItem> TANK_GLASS = blockItem("tank_glass", JarModBlocks.TANK_GLASS);
 	public static final RegistryObject<BlockItem> HEAT_SINK = blockItem("heat_sink", JarModBlocks.HEAT_SINK);
+	public static final RegistryObject<BlockItem> SLUICE = blockItem("sluice", JarModBlocks.SLUICE);
+	public static final RegistryObject<BlockItem> BOILER = blockItem("boiler", JarModBlocks.BOILER);
 
 	public static final RegistryObject<BucketItem> STEAM_BUCKET = bucketItem("steam_bucket", JarModFluids.STEAM);
 	public static final RegistryObject<BucketItem> BIOMASS_BUCKET = bucketItem("biomass_bucket", JarModFluids.BIOMASS);

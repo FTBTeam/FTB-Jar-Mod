@@ -6,15 +6,15 @@ import dev.latvian.mods.jarmod.block.JarBlock;
 import dev.latvian.mods.jarmod.block.entity.JarBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Matrix3f;
-import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Matrix3f;
+import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -34,7 +34,7 @@ public class JarBlockEntityRenderer extends TileEntityRenderer<JarBlockEntity>
 		{
 			jarLines = new ArrayList<>();
 
-			JarBlock.SHAPE.forEachEdge((lx1, ly1, lz1, lx2, ly2, lz2) -> jarLines.add(Pair.of(new Vector3f(new Vec3d(lx1, ly1, lz1)), new Vector3f(new Vec3d(lx2, ly2, lz2)))));
+			JarBlock.SHAPE.forEachEdge((lx1, ly1, lz1, lx2, ly2, lz2) -> jarLines.add(Pair.of(new Vector3f(new Vector3d(lx1, ly1, lz1)), new Vector3f(new Vector3d(lx2, ly2, lz2)))));
 		}
 
 		return jarLines;

@@ -20,15 +20,28 @@ public final class Heat
 	public static final ResourceLocation TEXTURE_NO_HEAT = new ResourceLocation(JarMod.MOD_ID, "textures/gui/no_heat.png");
 
 	private final int temperature;
+	private int burnTime;
 
 	private Heat(int t)
 	{
 		temperature = t;
+		burnTime = 0;
 	}
 
 	public int getTemperature()
 	{
 		return temperature;
+	}
+
+	public Heat setBurnTime(int b)
+	{
+		burnTime = b;
+		return this;
+	}
+
+	public int getBurnTime()
+	{
+		return burnTime;
 	}
 
 	public ResourceLocation getTexture()

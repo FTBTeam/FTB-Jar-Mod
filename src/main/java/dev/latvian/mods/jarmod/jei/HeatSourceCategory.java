@@ -15,9 +15,6 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 
-import java.util.Collections;
-import java.util.List;
-
 /**
  * @author LatvianModder
  */
@@ -67,7 +64,7 @@ public class HeatSourceCategory implements IRecipeCategory<HeatSourceRecipe>
 	@Override
 	public void setIngredients(HeatSourceRecipe recipe, IIngredients ingredients)
 	{
-		ingredients.setOutput(JarModIngredients.HEAT, Heat.of(recipe.temperature));
+		ingredients.setOutput(JarModIngredients.HEAT, Heat.of(recipe.temperature).setBurnTime(recipe.burnTime));
 
 		if (!recipe.item.isEmpty())
 		{
@@ -100,16 +97,5 @@ public class HeatSourceCategory implements IRecipeCategory<HeatSourceRecipe>
 
 		heatStacks.set(ingredients);
 		itemStacks.set(ingredients);
-	}
-
-	@Override
-	public List<String> getTooltipStrings(HeatSourceRecipe recipe, double mouseX, double mouseY)
-	{
-		if (mouseX >= 23D && mouseY >= 8D && mouseX < 39D && mouseY < 22D)
-		{
-			return Collections.singletonList(I18n.format("jarmod.burn_time", recipe.burnTime / 1200));
-		}
-
-		return Collections.emptyList();
 	}
 }

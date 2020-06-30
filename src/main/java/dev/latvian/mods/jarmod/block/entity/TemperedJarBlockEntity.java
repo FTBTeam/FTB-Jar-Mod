@@ -1,8 +1,11 @@
 package dev.latvian.mods.jarmod.block.entity;
 
+import dev.latvian.mods.jarmod.JarMod;
+import dev.latvian.mods.jarmod.block.JarModBlocks;
 import dev.latvian.mods.jarmod.recipe.JarModRecipeSerializers;
 import dev.latvian.mods.jarmod.recipe.JarRecipe;
 import dev.latvian.mods.jarmod.recipe.NoInventory;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -173,6 +176,16 @@ public class TemperedJarBlockEntity extends TileEntity implements ITickableTileE
 
 	public void rightClick(PlayerEntity player, Hand hand, ItemStack item)
 	{
+		if (player.isSneaking())
+		{
+			if (world.isRemote())
+			{
+				JarMod.proxy.openTemperedJarScreen(this);
+			}
+
+			return;
+		}
+
 		if (world.isRemote())
 		{
 			return;
@@ -342,8 +355,9 @@ public class TemperedJarBlockEntity extends TileEntity implements ITickableTileE
 	}
 
 	@Override
-	public void read(CompoundNBT compound)
+	public void func_230337_a_(BlockState state, CompoundNBT compound)
 	{
+		super.func_230337_a_(state, compound);
 		stage = compound.getByte("Stage");
 		tick = compound.getLong("Tick");
 		recipeTime = compound.getDouble("RecipeTime");
@@ -364,8 +378,6 @@ public class TemperedJarBlockEntity extends TileEntity implements ITickableTileE
 		{
 			fluidHandler.fluids[i] = fluidList.getCompound(i).isEmpty() ? FluidStack.EMPTY : FluidStack.loadFluidStackFromNBT(fluidList.getCompound(i));
 		}
-
-		super.read(compound);
 	}
 
 	@Override
@@ -375,9 +387,9 @@ public class TemperedJarBlockEntity extends TileEntity implements ITickableTileE
 	}
 
 	@Override
-	public void handleUpdateTag(CompoundNBT tag)
+	public void handleUpdateTag(BlockState state, CompoundNBT tag)
 	{
-		read(tag);
+		func_230337_a_(state, tag);
 	}
 
 	@Nullable
@@ -390,6 +402,6 @@ public class TemperedJarBlockEntity extends TileEntity implements ITickableTileE
 	@Override
 	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt)
 	{
-		handleUpdateTag(pkt.getNbtCompound());
+		handleUpdateTag(JarModBlocks.TEMPERED_JAR.get().getDefaultState(), pkt.getNbtCompound());
 	}
 }

@@ -1,0 +1,6 @@
+{
+	"parent": "jarmod:block/sluice/mesh",
+	"textures": {
+		"mesh": "jarmod:item/iron_mesh"
+	}
+}

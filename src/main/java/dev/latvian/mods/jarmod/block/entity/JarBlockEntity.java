@@ -1,5 +1,6 @@
 package dev.latvian.mods.jarmod.block.entity;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -61,22 +62,22 @@ public class JarBlockEntity extends TileEntity
 	}
 
 	@Override
-	public void handleUpdateTag(CompoundNBT tag)
+	public void handleUpdateTag(BlockState state, CompoundNBT tag)
 	{
-		read(tag);
+		func_230337_a_(state, tag);
 	}
 
 	@Nullable
 	@Override
 	public SUpdateTileEntityPacket getUpdatePacket()
 	{
-		return new SUpdateTileEntityPacket(pos, 0, getUpdateTag());
+		return new SUpdateTileEntityPacket(pos, 0, tank.writeToNBT(new CompoundNBT()));
 	}
 
 	@Override
 	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt)
 	{
-		handleUpdateTag(pkt.getNbtCompound());
+		tank.readFromNBT(pkt.getNbtCompound());
 	}
 
 	@Nonnull
@@ -94,9 +95,9 @@ public class JarBlockEntity extends TileEntity
 	}
 
 	@Override
-	public void read(CompoundNBT compound)
+	public void func_230337_a_(BlockState state, CompoundNBT compound)
 	{
+		super.func_230337_a_(state, compound);
 		tank.readFromNBT(compound.getCompound("Tank"));
-		super.read(compound);
 	}
 }

@@ -12,9 +12,11 @@ import net.minecraftforge.registries.ForgeRegistries;
  */
 public class JarModBlockEntities
 {
-	public static final DeferredRegister<TileEntityType<?>> REGISTRY = new DeferredRegister<>(ForgeRegistries.TILE_ENTITIES, JarMod.MOD_ID);
+	public static final DeferredRegister<TileEntityType<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, JarMod.MOD_ID);
 
 	public static final RegistryObject<TileEntityType<JarBlockEntity>> JAR = REGISTRY.register("jar", () -> TileEntityType.Builder.create(JarBlockEntity::new, JarModBlocks.JAR.get()).build(null));
 	public static final RegistryObject<TileEntityType<TemperedJarBlockEntity>> TEMPERED_JAR = REGISTRY.register("tempered_jar", () -> TileEntityType.Builder.create(TemperedJarBlockEntity::new, JarModBlocks.TEMPERED_JAR.get()).build(null));
 	public static final RegistryObject<TileEntityType<HeatSinkBlockEntity>> HEAT_SINK = REGISTRY.register("heat_sink", () -> TileEntityType.Builder.create(HeatSinkBlockEntity::new, JarModBlocks.HEAT_SINK.get()).build(null));
+	public static final RegistryObject<TileEntityType<SluiceBlockEntity>> SLUICE = REGISTRY.register("sluice", () -> TileEntityType.Builder.create(SluiceBlockEntity::new, JarModBlocks.SLUICE.get()).build(null));
+	public static final RegistryObject<TileEntityType<BoilerBlockEntity>> BOILER = REGISTRY.register("boiler", () -> TileEntityType.Builder.create(BoilerBlockEntity::new, JarModBlocks.BOILER.get()).build(null));
 }

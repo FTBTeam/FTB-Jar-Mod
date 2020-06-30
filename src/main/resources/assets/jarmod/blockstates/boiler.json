@@ -1,0 +1,7 @@
+{
+	"multipart": [
+		{"apply": {"model": "jarmod:block/boiler"}},
+		{"when": {"top": true}, "apply": {"model": "jarmod:block/boiler_top"}},
+		{"when": {"bottom": true}, "apply": {"model": "jarmod:block/boiler_bottom"}}
+	]
+}

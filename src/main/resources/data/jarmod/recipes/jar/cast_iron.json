@@ -1,6 +1,7 @@
 {
 	"type": "jarmod:jar",
 	"temperature": 300,
+	"time": 600,
 	"inputItems": [
 		{"ingredient": {"tag": "forge:ingots/iron"}, "count": 16},
 		{"ingredient": {"tag": "minecraft:coals"}}

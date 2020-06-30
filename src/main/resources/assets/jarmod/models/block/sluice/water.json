@@ -1,0 +1,21 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "block/block",
+	"textures": {
+		"particle": "jarmod:fluid/sluice_water",
+		"water": "jarmod:fluid/sluice_water"
+	},
+	"elements": [
+		{
+			"name": "water",
+			"from": [3, 0, 3],
+			"to": [13, 16, 13],
+			"faces": {
+				"north": {"uv": [3, 0, 13, 16], "texture": "#water"},
+				"east": {"uv": [3, 0, 13, 16], "texture": "#water"},
+				"south": {"uv": [3, 0, 13, 16], "texture": "#water"},
+				"west": {"uv": [3, 0, 13, 16], "texture": "#water"}
+			}
+		}
+	]
+}

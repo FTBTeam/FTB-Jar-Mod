@@ -1,0 +1,18 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "block/block",
+	"textures": {
+		"particle": "#mesh"
+	},
+	"elements": [
+		{
+			"name": "mesh",
+			"from": [1, 7, 1],
+			"to": [15, 7, 15],
+			"faces": {
+				"up": {"uv": [1, 1, 15, 15], "texture": "#mesh"},
+				"down": {"uv": [1, 1, 15, 15], "texture": "#mesh"}
+			}
+		}
+	]
+}

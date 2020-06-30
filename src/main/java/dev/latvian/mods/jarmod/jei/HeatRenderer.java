@@ -51,6 +51,10 @@ public class HeatRenderer implements IIngredientRenderer<Heat>
 			return Collections.singletonList(I18n.format("jarmod.no_heat"));
 		}
 
-		return Arrays.asList(I18n.format("jarmod.heat"), TextFormatting.GRAY + I18n.format("jarmod.temperature", stack.getTemperature()));
+		return Arrays.asList(
+				I18n.format("jarmod.heat"),
+				TextFormatting.GRAY + I18n.format("jarmod.temperature", stack.getTemperature()),
+				TextFormatting.GRAY + I18n.format("jarmod.burn_time", stack.getBurnTime() / 1200)
+		);
 	}
 }

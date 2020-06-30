@@ -45,7 +45,8 @@ public class JarRecipeSerializer extends ForgeRegistryEntry<IRecipeSerializer<?>
 				JsonObject o = e.getAsJsonObject();
 				Ingredient ingredient = Ingredient.deserialize(o.get("ingredient"));
 				int count = o.has("count") ? o.get("count").getAsInt() : 1;
-				r.inputItems.add(new IngredientPair<>(ingredient, count));
+				boolean consume = !o.has("consume") || o.get("consume").getAsBoolean();
+				r.inputItems.add(new IngredientPair<>(ingredient, count, consume));
 			}
 		}
 
@@ -56,7 +57,8 @@ public class JarRecipeSerializer extends ForgeRegistryEntry<IRecipeSerializer<?>
 				JsonObject o = e.getAsJsonObject();
 				FluidIngredient ingredient = FluidIngredient.deserialize(o.get("ingredient"));
 				int amount = o.has("amount") ? o.get("amount").getAsInt() : FluidAttributes.BUCKET_VOLUME;
-				r.inputFluids.add(new IngredientPair<>(ingredient, amount));
+				boolean consume = !o.has("consume") || o.get("consume").getAsBoolean();
+				r.inputFluids.add(new IngredientPair<>(ingredient, amount, consume));
 			}
 		}
 
@@ -132,12 +134,12 @@ public class JarRecipeSerializer extends ForgeRegistryEntry<IRecipeSerializer<?>
 
 		for (int i = 0; i < iin; i++)
 		{
-			r.inputItems.add(new IngredientPair<>(Ingredient.read(buffer), buffer.readVarInt()));
+			r.inputItems.add(new IngredientPair<>(Ingredient.read(buffer), buffer.readVarInt(), buffer.readBoolean()));
 		}
 
 		for (int i = 0; i < fin; i++)
 		{
-			r.inputFluids.add(new IngredientPair<>(FluidIngredient.read(buffer), buffer.readVarInt()));
+			r.inputFluids.add(new IngredientPair<>(FluidIngredient.read(buffer), buffer.readVarInt(), buffer.readBoolean()));
 		}
 
 		for (int i = 0; i < iout; i++)
@@ -168,12 +170,14 @@ public class JarRecipeSerializer extends ForgeRegistryEntry<IRecipeSerializer<?>
 		{
 			p.ingredient.write(buffer);
 			buffer.writeVarInt(p.amount);
+			buffer.writeBoolean(p.consume);
 		}
 
 		for (IngredientPair<FluidIngredient> p : r.inputFluids)
 		{
 			p.ingredient.write(buffer);
 			buffer.writeVarInt(p.amount);
+			buffer.writeBoolean(p.consume);
 		}
 
 		for (ItemStack s : r.outputItems)

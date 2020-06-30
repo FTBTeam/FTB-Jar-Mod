@@ -1,5 +1,6 @@
 package dev.latvian.mods.jarmod.recipe;
 
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -84,5 +85,10 @@ public class JarRecipe implements IRecipe<NoInventory>
 	public IRecipeType<?> getType()
 	{
 		return JarModRecipeSerializers.JAR_TYPE;
+	}
+
+	public boolean isAvailableFor(PlayerEntity player)
+	{
+		return true;
 	}
 }

@@ -12,7 +12,7 @@ import net.minecraftforge.registries.ForgeRegistries;
  */
 public class JarModRecipeSerializers
 {
-	public static final DeferredRegister<IRecipeSerializer<?>> REGISTRY = new DeferredRegister<>(ForgeRegistries.RECIPE_SERIALIZERS, JarMod.MOD_ID);
+	public static final DeferredRegister<IRecipeSerializer<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, JarMod.MOD_ID);
 
 	public static final RegistryObject<IRecipeSerializer<?>> JAR = REGISTRY.register("jar", JarRecipeSerializer::new);
 	public static final IRecipeType<JarRecipe> JAR_TYPE = IRecipeType.register(JarMod.MOD_ID + ":jar");

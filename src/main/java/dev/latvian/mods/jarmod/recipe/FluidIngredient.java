@@ -8,7 +8,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.ITag;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
@@ -61,24 +61,26 @@ public abstract class FluidIngredient implements Predicate<FluidStack>
 	{
 		public static final int ID = 2;
 
-		public final Tag<Fluid> tag;
+		public final ResourceLocation id;
+		public final ITag<Fluid> tag;
 
-		public FromTag(Tag<Fluid> t)
+		public FromTag(ResourceLocation i, ITag<Fluid> t)
 		{
+			id = i;
 			tag = t;
 		}
 
 		@Override
 		public boolean test(FluidStack fluidStack)
 		{
-			return tag.contains(fluidStack.getFluid());
+			return tag.func_230235_a_(fluidStack.getFluid());
 		}
 
 		@Override
 		public void write(PacketBuffer buffer)
 		{
 			buffer.writeByte(ID);
-			buffer.writeResourceLocation(tag.getId());
+			buffer.writeResourceLocation(id);
 		}
 
 		@Override
@@ -86,7 +88,7 @@ public abstract class FluidIngredient implements Predicate<FluidStack>
 		{
 			List<FluidStack> list = new ArrayList<>();
 
-			for (Fluid fluid : tag.getAllElements())
+			for (Fluid fluid : tag.func_230236_b_())
 			{
 				list.add(new FluidStack(fluid, FluidAttributes.BUCKET_VOLUME));
 			}
@@ -160,11 +162,12 @@ public abstract class FluidIngredient implements Predicate<FluidStack>
 
 			if (o.has("tag"))
 			{
-				Tag<Fluid> tag = FluidTags.getCollection().get(new ResourceLocation(o.get("tag").getAsString()));
+				ResourceLocation id = new ResourceLocation(o.get("tag").getAsString());
+				ITag<Fluid> tag = FluidTags.getCollection().get(id);
 
 				if (tag != null)
 				{
-					return new FromTag(tag);
+					return new FromTag(id, tag);
 				}
 			}
 			else if (o.has("fluid"))
@@ -205,11 +208,12 @@ public abstract class FluidIngredient implements Predicate<FluidStack>
 			}
 			case FromTag.ID:
 			{
-				Tag<Fluid> tag = FluidTags.getCollection().get(buffer.readResourceLocation());
+				ResourceLocation id = buffer.readResourceLocation();
+				ITag<Fluid> tag = FluidTags.getCollection().get(id);
 
 				if (tag != null)
 				{
-					return new FromTag(tag);
+					return new FromTag(id, tag);
 				}
 			}
 			case FromList.ID:

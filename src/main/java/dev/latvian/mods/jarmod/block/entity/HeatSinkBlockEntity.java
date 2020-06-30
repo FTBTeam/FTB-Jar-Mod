@@ -93,10 +93,10 @@ public class HeatSinkBlockEntity extends TileEntity implements ITickableTileEnti
 	}
 
 	@Override
-	public void read(CompoundNBT compound)
+	public void func_230337_a_(BlockState state, CompoundNBT compound)
 	{
+		super.func_230337_a_(state, compound);
 		temperature = compound.getInt("Temperature");
 		heatSourceTick = compound.getInt("HeatSourceTick");
-		super.read(compound);
 	}
 }

@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 @SuppressWarnings("Convert2MethodRef")
 public class JarModFluids
 {
-	public static final DeferredRegister<Fluid> REGISTRY = new DeferredRegister<>(ForgeRegistries.FLUIDS, JarMod.MOD_ID);
+	public static final DeferredRegister<Fluid> REGISTRY = DeferredRegister.create(ForgeRegistries.FLUIDS, JarMod.MOD_ID);
 
 	private static RegistryObject<Fluid> createFluid(String name, Supplier<Item> bucket, Consumer<FluidAttributes.Builder> b)
 	{
