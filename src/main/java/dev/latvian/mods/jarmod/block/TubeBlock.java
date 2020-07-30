@@ -85,7 +85,7 @@ public class TubeBlock extends Block implements IWaterLoggable, TubeConnection
 
 		for (Direction direction : Direction.values())
 		{
-			TUBE[direction.getIndex()] = BooleanProperty.create(direction.func_176610_l().substring(0, 1));
+			TUBE[direction.getIndex()] = BooleanProperty.create(direction.getString().substring(0, 1));
 		}
 	}
 

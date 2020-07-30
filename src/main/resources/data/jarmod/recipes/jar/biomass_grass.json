@@ -11,7 +11,12 @@
 		}
 	],
 	"inputFluids": [
-		{"ingredient": {"tag": "minecraft:water"}, "amount": 50}
+		{
+			"ingredient": {
+				"fluid": "minecraft:water"
+			},
+			"amount": 50
+		}
 	],
 	"outputFluids": [
 		{"fluid": "jarmod:biomass", "amount": 75}

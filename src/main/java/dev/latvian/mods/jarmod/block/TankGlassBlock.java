@@ -20,12 +20,12 @@ public class TankGlassBlock extends Block
 {
 	public TankGlassBlock()
 	{
-		super(Properties.create(Material.IRON).hardnessAndResistance(5F, 6F).sound(SoundType.GLASS).notSolid());
+		super(Properties.create(Material.IRON).hardnessAndResistance(5F, 6F).sound(SoundType.GLASS).notSolid().setAllowsSpawn((state, world, pos, entityType) -> false));
 	}
 
 	@Override
 	@Deprecated
-	public VoxelShape func_230322_a_(BlockState p_230322_1_, IBlockReader p_230322_2_, BlockPos p_230322_3_, ISelectionContext p_230322_4_)
+	public VoxelShape getRayTraceShape(BlockState p_230322_1_, IBlockReader p_230322_2_, BlockPos p_230322_3_, ISelectionContext p_230322_4_)
 	{
 		return VoxelShapes.empty();
 	}

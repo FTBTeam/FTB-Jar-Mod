@@ -5,7 +5,12 @@
 		{"ingredient": {"item": "minecraft:kelp"}}
 	],
 	"inputFluids": [
-		{"ingredient": {"tag": "minecraft:water"}, "amount": 100}
+		{
+			"ingredient": {
+				"fluid": "minecraft:water"
+			},
+			"amount": 100
+		}
 	],
 	"outputFluids": [
 		{"fluid": "jarmod:biomass", "amount": 150}

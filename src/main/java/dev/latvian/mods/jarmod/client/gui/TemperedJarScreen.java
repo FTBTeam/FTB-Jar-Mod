@@ -40,20 +40,20 @@ public class TemperedJarScreen extends Screen
 	}
 
 	@Override
-	protected void func_231160_c_()
+	protected void init()
 	{
 		availableRecipes.clear();
 
-		for (JarRecipe recipe : field_230706_i_.world.getRecipeManager().getRecipes(JarModRecipeSerializers.JAR_TYPE, NoInventory.INSTANCE, field_230706_i_.world))
+		for (JarRecipe recipe : minecraft.world.getRecipeManager().getRecipes(JarModRecipeSerializers.JAR_TYPE, NoInventory.INSTANCE, minecraft.world))
 		{
-			if (recipe.isAvailableFor(field_230706_i_.player))
+			if (recipe.isAvailableFor(minecraft.player))
 			{
 				availableRecipes.add(recipe);
 			}
 		}
 
-		int x = (field_230708_k_ - xSize) / 2;
-		int y = (field_230709_l_ - ySize) / 2;
+		int x = (width - xSize) / 2;
+		int y = (height - ySize) / 2;
 
 		for (int i = 0; i < availableRecipes.size(); i++)
 		{
@@ -73,7 +73,7 @@ public class TemperedJarScreen extends Screen
 			ExtendedButton button = new ExtendedButton(x + 8, y + 21 + i * 12, 128, 12, new StringTextComponent(s), p_onPress_1_ -> {
 				System.out.println(recipe);
 				JarModNet.MAIN.sendToServer(new SelectTemperedJarRecipePacket(jar.getPos(), recipe.getId()));
-				field_230706_i_.displayGuiScreen(null);
+				minecraft.displayGuiScreen(null);
 			});
 
 			if (recipe.getId().equals(jar.recipe))
@@ -81,43 +81,43 @@ public class TemperedJarScreen extends Screen
 				setFocusedDefault(button);
 			}
 
-			func_230480_a_(button);
+			addButton(button);
 		}
 
-		super.func_231160_c_();
+		super.init();
 	}
 
 	@Override
-	public void func_230430_a_(MatrixStack matrixStack, int mouseX, int mouseY, float pt)
+	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float pt)
 	{
-		int x = (field_230708_k_ - xSize) / 2;
-		int y = (field_230709_l_ - ySize) / 2;
+		int x = (width - xSize) / 2;
+		int y = (height - ySize) / 2;
 
-		func_230446_a_(matrixStack); //render background
-		field_230706_i_.getTextureManager().bindTexture(TEXTURE);
+		renderBackground(matrixStack);
+		minecraft.getTextureManager().bindTexture(TEXTURE);
 		GuiUtils.drawTexturedModalRect(x, y, 0, 0, xSize, ySize, 0F);
-		super.func_230430_a_(matrixStack, mouseX, mouseY, pt);
+		super.render(matrixStack, mouseX, mouseY, pt);
 	}
 
 	@Override
-	public boolean func_231177_au__() // pause
+	public boolean isPauseScreen()
 	{
 		return false;
 	}
 
 	@Override
-	public boolean func_231046_a_(int key, int scanCode, int state)
+	public boolean keyPressed(int key, int scanCode, int state)
 	{
-		if (super.func_231046_a_(key, scanCode, state))
+		if (super.keyPressed(key, scanCode, state))
 		{
 			return true;
 		}
 
 		InputMappings.Input mouseKey = InputMappings.getInputByCode(key, scanCode);
 
-		if (key == 256 || field_230706_i_.gameSettings.keyBindInventory.isActiveAndMatches(mouseKey))
+		if (key == 256 || minecraft.gameSettings.keyBindInventory.isActiveAndMatches(mouseKey))
 		{
-			field_230706_i_.player.closeScreen();
+			minecraft.player.closeScreen();
 			return true;
 		}
 

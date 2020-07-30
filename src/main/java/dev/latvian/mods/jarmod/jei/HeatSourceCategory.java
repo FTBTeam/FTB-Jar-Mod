@@ -2,8 +2,8 @@ package dev.latvian.mods.jarmod.jei;
 
 
 import dev.latvian.mods.jarmod.JarMod;
+import dev.latvian.mods.jarmod.heat.Heat;
 import dev.latvian.mods.jarmod.recipe.HeatSourceRecipe;
-import dev.latvian.mods.jarmod.util.Heat;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;

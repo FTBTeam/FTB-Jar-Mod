@@ -5,7 +5,12 @@
 		{"ingredient": {"tag": "minecraft:saplings"}}
 	],
 	"inputFluids": [
-		{"ingredient": {"tag": "minecraft:water"}, "amount": 150}
+		{
+			"ingredient": {
+				"fluid": "minecraft:water"
+			},
+			"amount": 150
+		}
 	],
 	"outputFluids": [
 		{"fluid": "jarmod:biomass", "amount": 200}

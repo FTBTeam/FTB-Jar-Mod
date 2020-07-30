@@ -36,6 +36,7 @@ public class JarModClient extends JarModCommon
 		RenderTypeLookup.setRenderLayer(JarModBlocks.TANK_GLASS.get(), RenderType.getTranslucent());
 		RenderTypeLookup.setRenderLayer(JarModBlocks.HEAT_SINK.get(), RenderType.getCutout());
 		RenderTypeLookup.setRenderLayer(JarModBlocks.SLUICE.get(), RenderType.getTranslucent());
+		RenderTypeLookup.setRenderLayer(JarModBlocks.ELECTRIC_HEAT_SINK.get(), RenderType.getCutout());
 
 		ClientRegistry.bindTileEntityRenderer(JarModBlockEntities.JAR.get(), JarBlockEntityRenderer::new);
 		ClientRegistry.bindTileEntityRenderer(JarModBlockEntities.TEMPERED_JAR.get(), TemperedJarBlockEntityRenderer::new);

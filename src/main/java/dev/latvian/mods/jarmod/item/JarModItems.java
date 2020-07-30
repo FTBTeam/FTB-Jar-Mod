@@ -58,8 +58,13 @@ public class JarModItems
 	public static final RegistryObject<BlockItem> HEAT_SINK = blockItem("heat_sink", JarModBlocks.HEAT_SINK);
 	public static final RegistryObject<BlockItem> SLUICE = blockItem("sluice", JarModBlocks.SLUICE);
 	public static final RegistryObject<BlockItem> BOILER = blockItem("boiler", JarModBlocks.BOILER);
+	public static final RegistryObject<BlockItem> BRICK_FURNACE = blockItem("brick_furnace", JarModBlocks.BRICK_FURNACE);
+	public static final RegistryObject<BlockItem> ELECTRIC_HEAT_SINK = blockItem("electric_heat_sink", JarModBlocks.ELECTRIC_HEAT_SINK);
+	public static final RegistryObject<BlockItem> STONE_FACTORY = blockItem("stone_factory", JarModBlocks.STONE_FACTORY);
+	public static final RegistryObject<BlockItem> CREATIVE_FE = blockItem("creative_fe", JarModBlocks.CREATIVE_FE);
 
 	public static final RegistryObject<BucketItem> STEAM_BUCKET = bucketItem("steam_bucket", JarModFluids.STEAM);
 	public static final RegistryObject<BucketItem> BIOMASS_BUCKET = bucketItem("biomass_bucket", JarModFluids.BIOMASS);
 	public static final RegistryObject<BucketItem> BIOFUEL_BUCKET = bucketItem("biofuel_bucket", JarModFluids.BIOFUEL);
+	public static final RegistryObject<BucketItem> SULPHURIC_ACID_BUCKET = bucketItem("sulphuric_acid_bucket", JarModFluids.SULPHURIC_ACID);
 }

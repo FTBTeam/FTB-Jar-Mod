@@ -1,0 +1,6 @@
+{
+	"parent": "jarmod:block/stone_factory/base",
+	"textures": {
+		"mode": "minecraft:block/cobblestone"
+	}
+}

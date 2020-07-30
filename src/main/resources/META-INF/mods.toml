@@ -7,9 +7,10 @@ modId="jarmod"
 version="${file.jarVersion}"
 displayName="Jar Mod"
 authors="LatvianModder"
-description='''
+description = '''
 Adds Jars and other things
 '''
+license = "GNU LGPLv3"
 
 [[dependencies.jarmod]]
     modId="forge"

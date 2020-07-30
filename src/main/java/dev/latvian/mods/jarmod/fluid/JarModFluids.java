@@ -38,4 +38,5 @@ public class JarModFluids
 	public static final RegistryObject<Fluid> STEAM = createFluid("steam", () -> JarModItems.STEAM_BUCKET.get(), builder -> builder.density(590).viscosity(100).temperature(100));
 	public static final RegistryObject<Fluid> BIOMASS = createFluid("biomass", () -> JarModItems.BIOMASS_BUCKET.get(), builder -> builder.density(3000).viscosity(6000));
 	public static final RegistryObject<Fluid> BIOFUEL = createFluid("biofuel", () -> JarModItems.BIOFUEL_BUCKET.get(), builder -> builder.density(3000).viscosity(6000));
+	public static final RegistryObject<Fluid> SULPHURIC_ACID = createFluid("sulphuric_acid", () -> JarModItems.SULPHURIC_ACID_BUCKET.get(), builder -> builder.density(3000).viscosity(6000));
 }

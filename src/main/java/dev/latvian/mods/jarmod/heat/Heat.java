@@ -1,4 +1,4 @@
-package dev.latvian.mods.jarmod.util;
+package dev.latvian.mods.jarmod.heat;
 
 import dev.latvian.mods.jarmod.JarMod;
 import net.minecraft.util.ResourceLocation;
@@ -11,26 +11,36 @@ public final class Heat
 	public static final Heat NONE = new Heat(0);
 	public static final Heat ANY = new Heat(1);
 
-	public static Heat of(int temperature)
+	public static Heat of(int value)
 	{
-		return temperature <= 0 ? NONE : temperature == 1 ? ANY : new Heat(temperature);
+		return value <= 0 ? NONE : value == 1 ? ANY : new Heat(value);
 	}
 
 	public static final ResourceLocation TEXTURE_HEAT = new ResourceLocation(JarMod.MOD_ID, "textures/gui/heat.png");
 	public static final ResourceLocation TEXTURE_NO_HEAT = new ResourceLocation(JarMod.MOD_ID, "textures/gui/no_heat.png");
 
-	private final int temperature;
+	private final int value;
 	private int burnTime;
 
-	private Heat(int t)
+	private Heat(int v)
 	{
-		temperature = t;
+		value = v;
 		burnTime = 0;
 	}
 
-	public int getTemperature()
+	public Heat add(int h)
 	{
-		return temperature;
+		return of(value + h);
+	}
+
+	public Heat add(Heat h)
+	{
+		return add(h.value);
+	}
+
+	public int getValue()
+	{
+		return value;
 	}
 
 	public Heat setBurnTime(int b)
@@ -46,11 +56,11 @@ public final class Heat
 
 	public ResourceLocation getTexture()
 	{
-		return getTemperature() <= 0 ? TEXTURE_NO_HEAT : TEXTURE_HEAT;
+		return getValue() <= 0 ? TEXTURE_NO_HEAT : TEXTURE_HEAT;
 	}
 
 	public boolean isNone()
 	{
-		return getTemperature() <= 0;
+		return getValue() <= 0;
 	}
 }

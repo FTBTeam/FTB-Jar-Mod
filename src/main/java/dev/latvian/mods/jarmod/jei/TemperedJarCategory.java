@@ -2,11 +2,11 @@ package dev.latvian.mods.jarmod.jei;
 
 
 import dev.latvian.mods.jarmod.JarMod;
+import dev.latvian.mods.jarmod.heat.Heat;
 import dev.latvian.mods.jarmod.item.JarModItems;
 import dev.latvian.mods.jarmod.recipe.FluidIngredient;
 import dev.latvian.mods.jarmod.recipe.IngredientPair;
 import dev.latvian.mods.jarmod.recipe.JarRecipe;
-import dev.latvian.mods.jarmod.util.Heat;
 import dev.latvian.mods.jarmod.util.SortedFluids;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -21,6 +21,8 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
@@ -152,11 +154,11 @@ public class TemperedJarCategory implements IRecipeCategory<JarRecipe>
 	}
 
 	@Override
-	public List<String> getTooltipStrings(JarRecipe recipe, double mouseX, double mouseY)
+	public List<ITextComponent> getTooltipStrings(JarRecipe recipe, double mouseX, double mouseY)
 	{
 		if (mouseX >= 55D && mouseY >= 3D && mouseX < 73D && mouseY < 30D)
 		{
-			return Collections.singletonList(I18n.format("jarmod.processing_time", recipe.time / 20));
+			return Collections.singletonList(new TranslationTextComponent("jarmod.processing_time", recipe.time / 20));
 		}
 
 		return Collections.emptyList();

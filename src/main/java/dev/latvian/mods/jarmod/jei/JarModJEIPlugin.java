@@ -1,10 +1,10 @@
 package dev.latvian.mods.jarmod.jei;
 
 import dev.latvian.mods.jarmod.JarMod;
+import dev.latvian.mods.jarmod.heat.Heat;
 import dev.latvian.mods.jarmod.item.JarModItems;
 import dev.latvian.mods.jarmod.recipe.JarModRecipeSerializers;
 import dev.latvian.mods.jarmod.recipe.NoInventory;
-import dev.latvian.mods.jarmod.util.Heat;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IModIngredientRegistration;

@@ -3,7 +3,12 @@
 	"temperature": 100,
 	"time": 60,
 	"inputFluids": [
-		{"ingredient": {"tag": "minecraft:water"}, "amount": 250}
+		{
+			"ingredient": {
+				"fluid": "minecraft:water"
+			},
+			"amount": 250
+		}
 	],
 	"outputFluids": [
 		{"fluid": "jarmod:steam", "amount": 250}

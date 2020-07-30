@@ -40,7 +40,7 @@ public class JarBlock extends Block implements TubeConnection
 
 	public JarBlock()
 	{
-		super(Properties.create(Material.GLASS).sound(SoundType.GLASS).hardnessAndResistance(0.6F).notSolid());
+		super(Properties.create(Material.GLASS).sound(SoundType.BONE).hardnessAndResistance(0.6F).notSolid());
 	}
 
 	@Override

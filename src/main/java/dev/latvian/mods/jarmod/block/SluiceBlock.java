@@ -26,6 +26,8 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
@@ -56,7 +58,7 @@ public class SluiceBlock extends Block
 		}
 
 		@Override
-		public String func_176610_l()
+		public String getString()
 		{
 			return name;
 		}
@@ -91,6 +93,20 @@ public class SluiceBlock extends Block
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context)
 	{
 		return SHAPE;
+	}
+
+	@Override
+	@Deprecated
+	@OnlyIn(Dist.CLIENT)
+	public float getAmbientOcclusionLightValue(BlockState state, IBlockReader worldIn, BlockPos pos)
+	{
+		return 1.0F;
+	}
+
+	@Override
+	public boolean propagatesSkylightDown(BlockState state, IBlockReader reader, BlockPos pos)
+	{
+		return true;
 	}
 
 	@Override
@@ -145,7 +161,7 @@ public class SluiceBlock extends Block
 	public BlockState getStateForPlacement(BlockItemUseContext context)
 	{
 		BlockState facingState = context.getWorld().getBlockState(context.getPos().up());
-		return getDefaultState().with(BlockStateProperties.HORIZONTAL_FACING, context.getPlacementHorizontalFacing().getOpposite()).with(WATER, facingState.getBlock() == Blocks.WATER || facingState.getBlock() == this && facingState.get(WATER));
+		return getDefaultState().with(BlockStateProperties.HORIZONTAL_FACING, context.getPlacementHorizontalFacing()).with(WATER, facingState.getBlock() == Blocks.WATER || facingState.getBlock() == this && facingState.get(WATER));
 	}
 
 	@Override

@@ -2,7 +2,7 @@ package dev.latvian.mods.jarmod.jei;
 
 import com.google.common.base.MoreObjects;
 import dev.latvian.mods.jarmod.JarMod;
-import dev.latvian.mods.jarmod.util.Heat;
+import dev.latvian.mods.jarmod.heat.Heat;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import net.minecraft.client.resources.I18n;
 
@@ -23,7 +23,7 @@ public class HeatHelper implements IIngredientHelper<Heat>
 	@Override
 	public String getDisplayName(Heat v)
 	{
-		return I18n.format("jarmod.heat");
+		return I18n.format("jarmod.heat_value", v.getValue());
 	}
 
 	@Override
@@ -70,6 +70,6 @@ public class HeatHelper implements IIngredientHelper<Heat>
 			return "null";
 		}
 
-		return MoreObjects.toStringHelper(Heat.class).add("Temperature", v.getTemperature()).toString();
+		return MoreObjects.toStringHelper(Heat.class).add("Temperature", v.getValue()).toString();
 	}
 }

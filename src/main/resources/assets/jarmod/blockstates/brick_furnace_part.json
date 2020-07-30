@@ -1,0 +1,7 @@
+{
+	"variants": {
+		"": {
+			"model": "jarmod:block/brick_furnace"
+		}
+	}
+}

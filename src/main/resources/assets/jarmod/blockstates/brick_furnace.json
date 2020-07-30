@@ -1,0 +1,10 @@
+{
+	"variants": {
+		"constructed=false": {
+			"model": "jarmod:block/brick_furnace"
+		},
+		"constructed=true": {
+			"model": "jarmod:block/brick_furnace_constructed"
+		}
+	}
+}

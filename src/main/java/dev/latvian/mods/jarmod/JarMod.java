@@ -33,8 +33,7 @@ public class JarMod
 	public JarMod()
 	{
 		instance = this;
-		//noinspection Convert2MethodRef
-		proxy = DistExecutor.runForDist(() -> () -> new JarModClient(), () -> () -> new JarModCommon());
+		proxy = DistExecutor.safeRunForDist(() -> JarModClient::new, () -> JarModCommon::new);
 
 		group = new ItemGroup(MOD_ID)
 		{

@@ -73,7 +73,7 @@ public abstract class FluidIngredient implements Predicate<FluidStack>
 		@Override
 		public boolean test(FluidStack fluidStack)
 		{
-			return tag.func_230235_a_(fluidStack.getFluid());
+			return tag.contains(fluidStack.getFluid());
 		}
 
 		@Override
@@ -88,7 +88,7 @@ public abstract class FluidIngredient implements Predicate<FluidStack>
 		{
 			List<FluidStack> list = new ArrayList<>();
 
-			for (Fluid fluid : tag.func_230236_b_())
+			for (Fluid fluid : tag.getAllElements())
 			{
 				list.add(new FluidStack(fluid, FluidAttributes.BUCKET_VOLUME));
 			}

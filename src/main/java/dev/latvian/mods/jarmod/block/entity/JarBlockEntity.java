@@ -64,7 +64,7 @@ public class JarBlockEntity extends TileEntity
 	@Override
 	public void handleUpdateTag(BlockState state, CompoundNBT tag)
 	{
-		func_230337_a_(state, tag);
+		read(state, tag);
 	}
 
 	@Nullable
@@ -95,9 +95,9 @@ public class JarBlockEntity extends TileEntity
 	}
 
 	@Override
-	public void func_230337_a_(BlockState state, CompoundNBT compound)
+	public void read(BlockState state, CompoundNBT compound)
 	{
-		super.func_230337_a_(state, compound);
+		super.read(state, compound);
 		tank.readFromNBT(compound.getCompound("Tank"));
 	}
 }

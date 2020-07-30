@@ -25,4 +25,9 @@ public class JarModBlocks
 	public static final RegistryObject<Block> HEAT_SINK = REGISTRY.register("heat_sink", HeatSinkBlock::new);
 	public static final RegistryObject<Block> SLUICE = REGISTRY.register("sluice", SluiceBlock::new);
 	public static final RegistryObject<Block> BOILER = REGISTRY.register("boiler", BoilerBlock::new);
+	public static final RegistryObject<Block> BRICK_FURNACE = REGISTRY.register("brick_furnace", BrickFurnaceBlock::new);
+	public static final RegistryObject<Block> BRICK_FURNACE_PART = REGISTRY.register("brick_furnace_part", BrickFurnacePartBlock::new);
+	public static final RegistryObject<Block> ELECTRIC_HEAT_SINK = REGISTRY.register("electric_heat_sink", ElectricHeatSinkBlock::new);
+	public static final RegistryObject<Block> STONE_FACTORY = REGISTRY.register("stone_factory", StoneFactoryBlock::new);
+	public static final RegistryObject<Block> CREATIVE_FE = REGISTRY.register("creative_fe", CreativeFEBlock::new);
 }

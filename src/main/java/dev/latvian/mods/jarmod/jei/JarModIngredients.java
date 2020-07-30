@@ -1,6 +1,6 @@
 package dev.latvian.mods.jarmod.jei;
 
-import dev.latvian.mods.jarmod.util.Heat;
+import dev.latvian.mods.jarmod.heat.Heat;
 import mezz.jei.api.ingredients.IIngredientType;
 
 /**
