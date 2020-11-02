@@ -1,0 +1,24 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"group": "jarmod:tank",
+	"pattern": [
+		"CGC",
+		"GTG",
+		"CGC"
+	],
+	"key": {
+		"C": {
+			"tag": "forge:storage_blocks/cast_iron"
+		},
+		"G": {
+			"item": "jarmod:tempered_glass"
+		},
+		"T": {
+			"item": "jarmod:tube"
+		}
+	},
+	"result": {
+		"item": "jarmod:tank_wall",
+		"count": 12
+	}
+}

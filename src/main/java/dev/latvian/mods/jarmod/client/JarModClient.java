@@ -31,11 +31,10 @@ public class JarModClient extends JarModCommon
 	@SubscribeEvent
 	public static void setup(FMLClientSetupEvent event)
 	{
-		RenderTypeLookup.setRenderLayer(JarModBlocks.JAR.get(), RenderType.getTranslucent());
-		RenderTypeLookup.setRenderLayer(JarModBlocks.TEMPERED_JAR.get(), RenderType.getTranslucent());
+		RenderTypeLookup.setRenderLayer(JarModBlocks.JAR.get(), RenderType.getCutout());
+		RenderTypeLookup.setRenderLayer(JarModBlocks.TEMPERED_JAR.get(), RenderType.getCutout());
 		RenderTypeLookup.setRenderLayer(JarModBlocks.TANK_GLASS.get(), RenderType.getTranslucent());
 		RenderTypeLookup.setRenderLayer(JarModBlocks.HEAT_SINK.get(), RenderType.getCutout());
-		RenderTypeLookup.setRenderLayer(JarModBlocks.SLUICE.get(), RenderType.getTranslucent());
 		RenderTypeLookup.setRenderLayer(JarModBlocks.ELECTRIC_HEAT_SINK.get(), RenderType.getCutout());
 
 		ClientRegistry.bindTileEntityRenderer(JarModBlockEntities.JAR.get(), JarBlockEntityRenderer::new);

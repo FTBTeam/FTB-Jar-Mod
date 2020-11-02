@@ -1,5 +1,0 @@
-{
-	"type": "jarmod:sluice",
-	"ingredient": {"tag": "minecraft:sand"},
-	"result": {"item": "minecraft:diamond", "change": 0.05}
-}

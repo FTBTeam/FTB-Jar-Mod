@@ -1,12 +1,10 @@
 package dev.latvian.mods.jarmod.block.entity.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
 import dev.latvian.mods.jarmod.block.entity.TemperedJarBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -15,7 +13,6 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3f;
-import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * @author LatvianModder
@@ -31,18 +28,8 @@ public class TemperedJarBlockEntityRenderer extends TileEntityRenderer<TemperedJ
 	@SuppressWarnings("deprecation")
 	public void render(TemperedJarBlockEntity entity, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay)
 	{
+		Minecraft mc = Minecraft.getInstance();
 		Matrix4f m = matrixStack.getLast().getMatrix();
-
-		IVertexBuilder lineBuilder = buffer.getBuffer(RenderType.getLines()).getVertexBuilder();
-
-		for (Pair<Vector3f, Vector3f> line : JarBlockEntityRenderer.getJarLines())
-		{
-			Vector3f l = line.getLeft();
-			Vector3f r = line.getRight();
-
-			lineBuilder.pos(m, l.getX(), l.getY(), l.getZ()).color(30, 30, 30, 80).endVertex();
-			lineBuilder.pos(m, r.getX(), r.getY(), r.getZ()).color(30, 30, 30, 80).endVertex();
-		}
 
 		if (entity.itemHandler.getSlots() <= 0)
 		{

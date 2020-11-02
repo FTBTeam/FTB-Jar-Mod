@@ -1,0 +1,13 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"group": "jarmod:cast_iron",
+	"ingredients": [
+		{
+			"tag": "forge:ingots/cast_iron"
+		}
+	],
+	"result": {
+		"item": "jarmod:cast_iron_nugget",
+		"count": 9
+	}
+}

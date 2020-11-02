@@ -1,9 +1,0 @@
-{
-	"type": "minecraft:smelting",
-	"ingredient": {
-		"item": "jarmod:biomass"
-	},
-	"result": {
-		"item": "jarmod:bioplastic"
-	}
-}

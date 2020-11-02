@@ -1,0 +1,23 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"group": "jarmod:mesh",
+	"pattern": [
+		"SIS",
+		"ICI",
+		"SIS"
+	],
+	"key": {
+		"S": {
+			"tag": "forge:rods/wooden"
+		},
+		"C": {
+			"tag": "forge:string"
+		},
+		"I": {
+			"tag": "forge:ingots/gold"
+		}
+	},
+	"result": {
+		"item": "jarmod:gold_mesh"
+	}
+}

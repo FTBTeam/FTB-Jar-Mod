@@ -31,9 +31,7 @@ import javax.annotation.Nullable;
 public class JarBlock extends Block implements TubeConnection
 {
 	public static final VoxelShape SHAPE = VoxelShapes.or(
-			makeCuboidShape(3, 0, 3, 13, 11, 13),
-			makeCuboidShape(4, 11, 4, 12, 12, 12),
-			makeCuboidShape(5, 12, 5, 11, 13, 11),
+			makeCuboidShape(3, 0, 3, 13, 13, 13),
 			makeCuboidShape(6, 13, 6, 10, 14, 10),
 			makeCuboidShape(5, 14, 5, 11, 16, 11)
 	);

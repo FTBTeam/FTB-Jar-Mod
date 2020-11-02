@@ -1,0 +1,23 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"group": "jarmod:tank",
+	"pattern": [
+		"WTW",
+		"TGT",
+		"WTW"
+	],
+	"key": {
+		"W": {
+			"item": "jarmod:tank_wall"
+		},
+		"T": {
+			"item": "jarmod:tube"
+		},
+		"G": {
+			"tag": "forge:gears/cast_iron"
+		}
+	},
+	"result": {
+		"item": "jarmod:tank_controller"
+	}
+}

@@ -1,7 +1,0 @@
-{
-	"type": "minecraft:smelting",
-	"ingredient": {
-		"tag": "forge:glass_panes"
-	},
-	"result": "jarmod:tempered_glass"
-}

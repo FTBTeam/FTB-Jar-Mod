@@ -91,7 +91,7 @@ public class TubeBlock extends Block implements IWaterLoggable, TubeConnection
 
 	public TubeBlock()
 	{
-		super(Properties.create(Material.IRON).sound(SoundType.LANTERN));
+		super(Properties.create(Material.IRON).sound(SoundType.NETHERITE));
 		setDefaultState(getStateContainer().getBaseState()
 				.with(BlockStateProperties.WATERLOGGED, false)
 				.with(TUBE[0], false)
