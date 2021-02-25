@@ -8,6 +8,5 @@ import net.minecraftforge.fml.common.Mod;
  * @author LatvianModder
  */
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = JarMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class JarModClientEventHandler
-{
+public class JarModClientEventHandler {
 }

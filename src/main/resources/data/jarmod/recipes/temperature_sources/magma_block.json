@@ -1,0 +1,6 @@
+{
+  "type": "jarmod:temperature_source",
+  "temperature": "high",
+  "block": "minecraft:magma_block",
+  "resultBlock": "minecraft:netherrack"
+}

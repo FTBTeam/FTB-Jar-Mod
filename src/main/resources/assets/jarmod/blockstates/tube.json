@@ -1,11 +1,66 @@
 {
-	"multipart": [
-		{"apply": {"model": "jarmod:block/tube_center"}},
-		{"when": {"d": true}, "apply": {"model": "jarmod:block/tube"}},
-		{"when": {"u": true}, "apply": {"model": "jarmod:block/tube", "x": 180}},
-		{"when": {"n": true}, "apply": {"model": "jarmod:block/tube", "x": 90, "y": 180}},
-		{"when": {"s": true}, "apply": {"model": "jarmod:block/tube", "x": 90, "y": 0}},
-		{"when": {"w": true}, "apply": {"model": "jarmod:block/tube", "x": 90, "y": 90}},
-		{"when": {"e": true}, "apply": {"model": "jarmod:block/tube", "x": 90, "y": 270}}
-	]
+  "multipart": [
+	{
+	  "apply": {
+		"model": "jarmod:block/tube_center"
+	  }
+	},
+	{
+	  "when": {
+		"d": "connected"
+	  },
+	  "apply": {
+		"model": "jarmod:block/tube"
+	  }
+	},
+	{
+	  "when": {
+		"u": "connected"
+	  },
+	  "apply": {
+		"model": "jarmod:block/tube",
+		"x": 180
+	  }
+	},
+	{
+	  "when": {
+		"n": "connected"
+	  },
+	  "apply": {
+		"model": "jarmod:block/tube",
+		"x": 90,
+		"y": 180
+	  }
+	},
+	{
+	  "when": {
+		"s": "connected"
+	  },
+	  "apply": {
+		"model": "jarmod:block/tube",
+		"x": 90,
+		"y": 0
+	  }
+	},
+	{
+	  "when": {
+		"w": "connected"
+	  },
+	  "apply": {
+		"model": "jarmod:block/tube",
+		"x": 90,
+		"y": 90
+	  }
+	},
+	{
+	  "when": {
+		"e": "connected"
+	  },
+	  "apply": {
+		"model": "jarmod:block/tube",
+		"x": 90,
+		"y": 270
+	  }
+	}
+  ]
 }

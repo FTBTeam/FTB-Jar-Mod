@@ -9,8 +9,8 @@ import dev.latvian.mods.jarmod.block.entity.render.JarBlockEntityRenderer;
 import dev.latvian.mods.jarmod.block.entity.render.TemperedJarBlockEntityRenderer;
 import dev.latvian.mods.jarmod.client.gui.TemperedJarScreen;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -21,29 +21,25 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
  * @author LatvianModder
  */
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = JarMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class JarModClient extends JarModCommon
-{
+public class JarModClient extends JarModCommon {
 	@Override
-	public void init()
-	{
+	public void init() {
 	}
 
 	@SubscribeEvent
-	public static void setup(FMLClientSetupEvent event)
-	{
-		RenderTypeLookup.setRenderLayer(JarModBlocks.JAR.get(), RenderType.getCutout());
-		RenderTypeLookup.setRenderLayer(JarModBlocks.TEMPERED_JAR.get(), RenderType.getCutout());
-		RenderTypeLookup.setRenderLayer(JarModBlocks.TANK_GLASS.get(), RenderType.getTranslucent());
-		RenderTypeLookup.setRenderLayer(JarModBlocks.HEAT_SINK.get(), RenderType.getCutout());
-		RenderTypeLookup.setRenderLayer(JarModBlocks.ELECTRIC_HEAT_SINK.get(), RenderType.getCutout());
+	public static void setup(FMLClientSetupEvent event) {
+		ItemBlockRenderTypes.setRenderLayer(JarModBlocks.JAR.get(), RenderType.cutout());
+		ItemBlockRenderTypes.setRenderLayer(JarModBlocks.TEMPERED_JAR.get(), RenderType.cutout());
+		ItemBlockRenderTypes.setRenderLayer(JarModBlocks.HEAT_SINK.get(), RenderType.cutout());
+		ItemBlockRenderTypes.setRenderLayer(JarModBlocks.ELECTRIC_HEAT_SINK.get(), RenderType.cutout());
+		ItemBlockRenderTypes.setRenderLayer(JarModBlocks.CREATIVE_HEAT_SINK.get(), RenderType.cutout());
 
 		ClientRegistry.bindTileEntityRenderer(JarModBlockEntities.JAR.get(), JarBlockEntityRenderer::new);
 		ClientRegistry.bindTileEntityRenderer(JarModBlockEntities.TEMPERED_JAR.get(), TemperedJarBlockEntityRenderer::new);
 	}
 
 	@Override
-	public void openTemperedJarScreen(TemperedJarBlockEntity entity)
-	{
-		Minecraft.getInstance().displayGuiScreen(new TemperedJarScreen(entity));
+	public void openTemperedJarScreen(TemperedJarBlockEntity entity) {
+		Minecraft.getInstance().setScreen(new TemperedJarScreen(entity));
 	}
 }

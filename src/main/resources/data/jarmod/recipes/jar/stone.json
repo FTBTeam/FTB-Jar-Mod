@@ -1,20 +1,22 @@
 {
-	"type": "jarmod:jar",
-	"inputFluids": [
-		{
-			"ingredient": {
-				"fluid": "minecraft:water"
-			},
-			"amount": 1000
-		},
-		{
-			"ingredient": {
-				"fluid": "minecraft:lava"
-			},
-			"amount": 125
-		}
-	],
-	"outputItems": [
-		{"item": "minecraft:stone"}
-	]
+  "type": "jarmod:jar",
+  "inputFluids": [
+	{
+	  "ingredient": {
+		"fluid": "minecraft:water"
+	  },
+	  "amount": 1000
+	},
+	{
+	  "ingredient": {
+		"fluid": "minecraft:lava"
+	  },
+	  "amount": 125
+	}
+  ],
+  "outputItems": [
+	{
+	  "item": "minecraft:stone"
+	}
+  ]
 }

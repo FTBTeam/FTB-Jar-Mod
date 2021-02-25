@@ -1,20 +1,18 @@
 package dev.latvian.mods.jarmod.net;
 
 import dev.latvian.mods.jarmod.JarMod;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 /**
  * @author LatvianModder
  */
-public class JarModNet
-{
+public class JarModNet {
 	public static SimpleChannel MAIN;
 	private static final String MAIN_VERSION = "1";
 
-	public static void init()
-	{
+	public static void init() {
 		MAIN = NetworkRegistry.ChannelBuilder
 				.named(new ResourceLocation(JarMod.MOD_ID + ":main"))
 				.clientAcceptedVersions(MAIN_VERSION::equals)

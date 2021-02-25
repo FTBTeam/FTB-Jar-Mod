@@ -5,21 +5,21 @@ import dev.latvian.mods.jarmod.block.JarModBlocks;
 import dev.latvian.mods.jarmod.recipe.JarModRecipeSerializers;
 import dev.latvian.mods.jarmod.recipe.JarRecipe;
 import dev.latvian.mods.jarmod.recipe.NoInventory;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.TickableBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
@@ -36,8 +36,7 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-public class TemperedJarBlockEntity extends TileEntity implements ITickableTileEntity
-{
+public class TemperedJarBlockEntity extends BlockEntity implements TickableBlockEntity {
 	public static final int STAGE_INPUT = 0;
 	public static final int STAGE_PROCESS = 1;
 	public static final int STAGE_OUTPUT = 2;
@@ -53,30 +52,23 @@ public class TemperedJarBlockEntity extends TileEntity implements ITickableTileE
 	private LazyOptional<IItemHandler> itemOptional;
 	private LazyOptional<IFluidHandler> fluidOptional;
 
-	public TemperedJarBlockEntity()
-	{
+	public TemperedJarBlockEntity() {
 		super(JarModBlockEntities.TEMPERED_JAR.get());
 		tick = 0L;
 		recipeTime = 0D;
 		setStageAndHandlers(STAGE_INPUT, 0, 0);
 	}
 
-	private void setStageAndHandlers(int s, int is, int fs)
-	{
+	private void setStageAndHandlers(int s, int is, int fs) {
 		stage = s;
 
-		if (stage == STAGE_INPUT)
-		{
+		if (stage == STAGE_INPUT) {
 			itemHandler = new JarItemHandlerInput(this, is);
 			fluidHandler = new JarFluidHandlerInput(this, fs);
-		}
-		else if (stage == STAGE_OUTPUT)
-		{
+		} else if (stage == STAGE_OUTPUT) {
 			itemHandler = new JarItemHandlerOutput(this, is);
 			fluidHandler = new JarFluidHandlerOutput(this, fs);
-		}
-		else
-		{
+		} else {
 			itemHandler = new JarItemHandlerProcess(this, is);
 			fluidHandler = new JarFluidHandlerProcess(this, fs);
 		}
@@ -86,39 +78,32 @@ public class TemperedJarBlockEntity extends TileEntity implements ITickableTileE
 	}
 
 	@Override
-	public void tick()
-	{
+	public void tick() {
 		tick++;
 
 		JarRecipe r = getRecipe();
 
-		if (r == null)
-		{
+		if (r == null) {
 			return;
 		}
 
-		if (stage == STAGE_INPUT)
-		{
+		if (stage == STAGE_INPUT) {
 			ItemStack[] prevItems = new ItemStack[itemHandler.getSlots()];
 			FluidStack[] prevFluids = new FluidStack[fluidHandler.fluids.length];
 
-			for (int i = 0; i < itemHandler.items.length; i++)
-			{
+			for (int i = 0; i < itemHandler.items.length; i++) {
 				prevItems[i] = itemHandler.items[i];
 
-				if (r.inputItems.get(i).amount != prevItems[i].getCount())
-				{
+				if (r.inputItems.get(i).amount != prevItems[i].getCount()) {
 					return;
 				}
 
-				if (!r.inputItems.get(i).ingredient.test(prevItems[i]))
-				{
+				if (!r.inputItems.get(i).ingredient.test(prevItems[i])) {
 					return;
 				}
 			}
 
-			for (int i = 0; i < fluidHandler.fluids.length; i++)
-			{
+			for (int i = 0; i < fluidHandler.fluids.length; i++) {
 				prevFluids[i] = fluidHandler.fluids[i];
 
 				// TODO: Test fluids
@@ -128,170 +113,135 @@ public class TemperedJarBlockEntity extends TileEntity implements ITickableTileE
 
 			System.arraycopy(prevItems, 0, itemHandler.items, 0, itemHandler.items.length);
 			System.arraycopy(prevFluids, 0, fluidHandler.fluids, 0, fluidHandler.fluids.length);
-			markDirty();
+			setChanged();
 		}
 
-		if (stage == STAGE_PROCESS)
-		{
-			TileEntity bottomEntity = world.getTileEntity(pos.down());
+		if (stage == STAGE_PROCESS) {
+			BlockEntity bottomEntity = level.getBlockEntity(worldPosition.below());
 
-			if (bottomEntity instanceof HeatSinkBlockEntity && ((HeatSinkBlockEntity) bottomEntity).temperature >= r.temperature)
-			{
+			if (bottomEntity instanceof HeatSinkBlockEntity && ((HeatSinkBlockEntity) bottomEntity).temperature.getValue() >= r.temperature.getValue()) {
 				recipeTime++;
 			}
 
-			if (recipeTime >= r.time)
-			{
+			if (recipeTime >= r.time) {
 				recipeTime = 0D;
 				setStageAndHandlers(STAGE_OUTPUT, r.outputItems.size(), r.outputFluids.size());
 
-				for (int i = 0; i < r.outputItems.size(); i++)
-				{
+				for (int i = 0; i < r.outputItems.size(); i++) {
 					itemHandler.items[i] = r.outputItems.get(i).copy();
 				}
 
-				for (int i = 0; i < r.outputFluids.size(); i++)
-				{
+				for (int i = 0; i < r.outputFluids.size(); i++) {
 					fluidHandler.fluids[i] = r.outputFluids.get(i).copy();
 				}
 
-				markDirtyAndSend();
+				setChangedAndSend();
 			}
 		}
 
-		if (stage == STAGE_OUTPUT)
-		{
-			for (ItemStack stack : itemHandler.items)
-			{
-				if (!stack.isEmpty())
-				{
+		if (stage == STAGE_OUTPUT) {
+			for (ItemStack stack : itemHandler.items) {
+				if (!stack.isEmpty()) {
 					return;
 				}
 			}
 
 			setStageAndHandlers(STAGE_INPUT, r.inputItems.size(), r.inputFluids.size());
-			markDirty();
+			setChanged();
 		}
 	}
 
-	public void rightClick(PlayerEntity player, Hand hand, ItemStack item)
-	{
-		if (player.isSneaking())
-		{
-			if (world.isRemote())
-			{
+	public void rightClick(Player player, InteractionHand hand, ItemStack item) {
+		if (player.isCrouching()) {
+			if (level.isClientSide()) {
 				JarMod.proxy.openTemperedJarScreen(this);
 			}
 
 			return;
 		}
 
-		if (world.isRemote())
-		{
+		if (level.isClientSide()) {
 			return;
 		}
 
-		if (player.isSneaking())
-		{
+		if (player.isCrouching()) {
 			JarRecipe r = getRecipe();
-			List<JarRecipe> jarRecipes = world.getRecipeManager().getRecipes(JarModRecipeSerializers.JAR_TYPE, NoInventory.INSTANCE, world);
+			List<JarRecipe> jarRecipes = level.getRecipeManager().getRecipesFor(JarModRecipeSerializers.JAR_TYPE, NoInventory.INSTANCE, level);
 			setRecipe(player, jarRecipes.isEmpty() ? null : jarRecipes.get(((r == null ? -1 : jarRecipes.indexOf(r)) + 1) % jarRecipes.size()));
-			player.sendStatusMessage(new TranslationTextComponent("block.jarmod.tempered_jar.recipe_changed", cachedRecipe == null ? "null" : cachedRecipe.getId()), true);
+			player.displayClientMessage(new TranslatableComponent("block.jarmod.tempered_jar.recipe_changed", cachedRecipe == null ? "null" : cachedRecipe.getId()), true);
 			return;
 		}
 
-		if (stage == STAGE_INPUT)
-		{
+		if (stage == STAGE_INPUT) {
 			ItemStack ins;
 
-			if ((ins = ItemHandlerHelper.insertItem(itemHandler, item, false)) != item)
-			{
-				player.setHeldItem(hand, ins);
-				markDirtyAndSend();
+			if ((ins = ItemHandlerHelper.insertItem(itemHandler, item, false)) != item) {
+				player.setItemInHand(hand, ins);
+				setChangedAndSend();
 			}
-		}
-		else if (stage == STAGE_OUTPUT)
-		{
+		} else if (stage == STAGE_OUTPUT) {
 			boolean hadOutputItems = false;
 
-			for (int i = 0; i < itemHandler.items.length; i++)
-			{
+			for (int i = 0; i < itemHandler.items.length; i++) {
 				ItemStack stack = itemHandler.items[i];
 
-				if (!stack.isEmpty())
-				{
+				if (!stack.isEmpty()) {
 					hadOutputItems = true;
 					ItemHandlerHelper.giveItemToPlayer(player, stack);
 					itemHandler.items[i] = ItemStack.EMPTY;
 				}
 			}
 
-			if (hadOutputItems)
-			{
-				markDirtyAndSend();
+			if (hadOutputItems) {
+				setChangedAndSend();
 			}
-		}
-		else if (stage == STAGE_PROCESS)
-		{
+		} else if (stage == STAGE_PROCESS) {
 			JarRecipe r = getRecipe();
 
-			if (r != null)
-			{
-				player.sendStatusMessage(new StringTextComponent((int) (recipeTime * 100D / (double) r.time) + "%"), true);
+			if (r != null) {
+				player.displayClientMessage(new TextComponent((int) (recipeTime * 100D / (double) r.time) + "%"), true);
 			}
 		}
 	}
 
-	public void setRecipe(PlayerEntity player, @Nullable JarRecipe r)
-	{
-		if (world.isRemote())
-		{
+	public void setRecipe(Player player, @Nullable JarRecipe r) {
+		if (level.isClientSide()) {
 			return;
 		}
 
 		JarRecipe prev = getRecipe();
 
-		if (prev == r)
-		{
+		if (prev == r) {
 			return;
 		}
 
 		cachedRecipe = r;
 		recipe = r == null ? null : r.getId();
 
-		for (ItemStack stack : itemHandler.items)
-		{
+		for (ItemStack stack : itemHandler.items) {
 			ItemHandlerHelper.giveItemToPlayer(player, stack);
 		}
 
-		if (r != null)
-		{
+		if (r != null) {
 			setStageAndHandlers(STAGE_INPUT, r.inputItems.size(), r.inputFluids.size());
-		}
-		else
-		{
+		} else {
 			setStageAndHandlers(STAGE_INPUT, 0, 0);
 		}
 
 		recipeTime = 0;
-		markDirtyAndSend();
+		setChangedAndSend();
 	}
 
-	public void markDirtyAndSend()
-	{
-		markDirty();
-		world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.DEFAULT_AND_RERENDER);
+	public void setChangedAndSend() {
+		setChanged();
+		level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.DEFAULT_AND_RERENDER);
 	}
 
 	@Override
-	public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side)
-	{
-		if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
-		{
+	public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
+		if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			return itemOptional.cast();
-		}
-		else if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
-		{
+		} else if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
 			return fluidOptional.cast();
 		}
 
@@ -299,27 +249,21 @@ public class TemperedJarBlockEntity extends TileEntity implements ITickableTileE
 	}
 
 	@Override
-	public void updateContainingBlockInfo()
-	{
-		super.updateContainingBlockInfo();
+	public void clearCache() {
+		super.clearCache();
 		cachedRecipe = null;
 	}
 
 	@Nullable
-	public JarRecipe getRecipe()
-	{
-		if (cachedRecipe == null && recipe != null)
-		{
-			IRecipe<?> r = world.getRecipeManager().getRecipe(recipe).orElse(null);
+	public JarRecipe getRecipe() {
+		if (cachedRecipe == null && recipe != null) {
+			Recipe<?> r = level.getRecipeManager().byKey(recipe).orElse(null);
 
-			if (r instanceof JarRecipe)
-			{
+			if (r instanceof JarRecipe) {
 				cachedRecipe = (JarRecipe) r;
-			}
-			else
-			{
+			} else {
 				recipe = null;
-				markDirty();
+				setChanged();
 			}
 		}
 
@@ -327,8 +271,7 @@ public class TemperedJarBlockEntity extends TileEntity implements ITickableTileE
 	}
 
 	@Override
-	public CompoundNBT write(CompoundNBT compound)
-	{
+	public CompoundTag save(CompoundTag compound) {
 		compound.putByte("Stage", (byte) stage);
 		compound.putLong("Tick", tick);
 		compound.putDouble("RecipeTime", recipeTime);
@@ -336,28 +279,25 @@ public class TemperedJarBlockEntity extends TileEntity implements ITickableTileE
 		compound.putByte("ItemCount", (byte) itemHandler.items.length);
 		compound.putByte("FluidCount", (byte) fluidHandler.fluids.length);
 
-		ListNBT itemList = new ListNBT();
-		ListNBT fluidList = new ListNBT();
+		ListTag itemList = new ListTag();
+		ListTag fluidList = new ListTag();
 
-		for (ItemStack stack : itemHandler.items)
-		{
-			itemList.add(stack.isEmpty() ? new CompoundNBT() : stack.serializeNBT());
+		for (ItemStack stack : itemHandler.items) {
+			itemList.add(stack.isEmpty() ? new CompoundTag() : stack.serializeNBT());
 		}
 
-		for (FluidStack stack : fluidHandler.fluids)
-		{
-			fluidList.add(stack.isEmpty() ? new CompoundNBT() : stack.writeToNBT(new CompoundNBT()));
+		for (FluidStack stack : fluidHandler.fluids) {
+			fluidList.add(stack.isEmpty() ? new CompoundTag() : stack.writeToNBT(new CompoundTag()));
 		}
 
 		compound.put("Items", itemList);
 		compound.put("Fluids", fluidList);
-		return super.write(compound);
+		return super.save(compound);
 	}
 
 	@Override
-	public void read(BlockState state, CompoundNBT compound)
-	{
-		super.read(state, compound);
+	public void load(BlockState state, CompoundTag compound) {
+		super.load(state, compound);
 		stage = compound.getByte("Stage");
 		tick = compound.getLong("Tick");
 		recipeTime = compound.getDouble("RecipeTime");
@@ -366,42 +306,36 @@ public class TemperedJarBlockEntity extends TileEntity implements ITickableTileE
 		cachedRecipe = null;
 
 		setStageAndHandlers(stage, compound.getInt("ItemCount"), compound.getInt("FluidCount"));
-		ListNBT itemList = compound.getList("Items", Constants.NBT.TAG_COMPOUND);
-		ListNBT fluidList = compound.getList("Fluids", Constants.NBT.TAG_COMPOUND);
+		ListTag itemList = compound.getList("Items", Constants.NBT.TAG_COMPOUND);
+		ListTag fluidList = compound.getList("Fluids", Constants.NBT.TAG_COMPOUND);
 
-		for (int i = 0; i < itemList.size(); i++)
-		{
-			itemHandler.items[i] = itemList.getCompound(i).isEmpty() ? ItemStack.EMPTY : ItemStack.read(itemList.getCompound(i));
+		for (int i = 0; i < itemList.size(); i++) {
+			itemHandler.items[i] = itemList.getCompound(i).isEmpty() ? ItemStack.EMPTY : ItemStack.of(itemList.getCompound(i));
 		}
 
-		for (int i = 0; i < fluidList.size(); i++)
-		{
+		for (int i = 0; i < fluidList.size(); i++) {
 			fluidHandler.fluids[i] = fluidList.getCompound(i).isEmpty() ? FluidStack.EMPTY : FluidStack.loadFluidStackFromNBT(fluidList.getCompound(i));
 		}
 	}
 
 	@Override
-	public CompoundNBT getUpdateTag()
-	{
-		return write(new CompoundNBT());
+	public CompoundTag getUpdateTag() {
+		return save(new CompoundTag());
 	}
 
 	@Override
-	public void handleUpdateTag(BlockState state, CompoundNBT tag)
-	{
-		read(state, tag);
+	public void handleUpdateTag(BlockState state, CompoundTag tag) {
+		load(state, tag);
 	}
 
 	@Nullable
 	@Override
-	public SUpdateTileEntityPacket getUpdatePacket()
-	{
-		return new SUpdateTileEntityPacket(pos, 0, getUpdateTag());
+	public ClientboundBlockEntityDataPacket getUpdatePacket() {
+		return new ClientboundBlockEntityDataPacket(worldPosition, 0, getUpdateTag());
 	}
 
 	@Override
-	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt)
-	{
-		handleUpdateTag(JarModBlocks.TEMPERED_JAR.get().getDefaultState(), pkt.getNbtCompound());
+	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+		handleUpdateTag(JarModBlocks.TEMPERED_JAR.get().defaultBlockState(), pkt.getTag());
 	}
 }

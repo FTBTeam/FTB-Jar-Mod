@@ -1,30 +1,30 @@
 {
-	"variants": {
-		"facing=down": {
-			"model": "jarmod:block/electric_heat_sink",
-			"x": 180
-		},
-		"facing=east": {
-			"model": "jarmod:block/electric_heat_sink",
-			"x": 90,
-			"y": 90
-		},
-		"facing=north": {
-			"model": "jarmod:block/electric_heat_sink",
-			"x": 90
-		},
-		"facing=south": {
-			"model": "jarmod:block/electric_heat_sink",
-			"x": 90,
-			"y": 180
-		},
-		"facing=up": {
-			"model": "jarmod:block/electric_heat_sink"
-		},
-		"facing=west": {
-			"model": "jarmod:block/electric_heat_sink",
-			"x": 90,
-			"y": 270
-		}
+  "variants": {
+	"facing=down": {
+	  "model": "jarmod:block/electric_heat_sink",
+	  "x": 180
+	},
+	"facing=east": {
+	  "model": "jarmod:block/electric_heat_sink",
+	  "x": 90,
+	  "y": 90
+	},
+	"facing=north": {
+	  "model": "jarmod:block/electric_heat_sink",
+	  "x": 90
+	},
+	"facing=south": {
+	  "model": "jarmod:block/electric_heat_sink",
+	  "x": 90,
+	  "y": 180
+	},
+	"facing=up": {
+	  "model": "jarmod:block/electric_heat_sink"
+	},
+	"facing=west": {
+	  "model": "jarmod:block/electric_heat_sink",
+	  "x": 90,
+	  "y": 270
 	}
+  }
 }

@@ -1,38 +1,33 @@
 package dev.latvian.mods.jarmod.block.entity;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.TickableBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * @author LatvianModder
  */
-public class ElectricHeatSinkBlockEntity extends TileEntity implements ITickableTileEntity
-{
+public class ElectricHeatSinkBlockEntity extends BlockEntity implements TickableBlockEntity {
 	public int heat;
 
-	public ElectricHeatSinkBlockEntity()
-	{
+	public ElectricHeatSinkBlockEntity() {
 		super(JarModBlockEntities.ELECTRIC_HEAT_SINK.get());
 	}
 
 	@Override
-	public void tick()
-	{
+	public void tick() {
 	}
 
 	@Override
-	public CompoundNBT write(CompoundNBT compound)
-	{
+	public CompoundTag save(CompoundTag compound) {
 		compound.putInt("Heat", heat);
-		return super.write(compound);
+		return super.save(compound);
 	}
 
 	@Override
-	public void read(BlockState state, CompoundNBT compound)
-	{
+	public void load(BlockState state, CompoundTag compound) {
 		heat = compound.getInt("Heat");
-		super.read(state, compound);
+		super.load(state, compound);
 	}
 }

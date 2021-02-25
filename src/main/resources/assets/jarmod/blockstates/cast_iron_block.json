@@ -1,5 +1,7 @@
 {
-	"variants": {
-		"": {"model": "jarmod:block/cast_iron_block"}
+  "variants": {
+	"": {
+	  "model": "jarmod:block/cast_iron_block"
 	}
+  }
 }

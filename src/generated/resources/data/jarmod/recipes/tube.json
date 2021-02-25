@@ -1,18 +1,19 @@
 {
-	"type": "minecraft:crafting_shaped",
-	"group": "jarmod:jar",
-	"pattern": [
-		"III",
-		"   ",
-		"III"
-	],
-	"key": {
-		"I": {
-			"tag": "forge:ingots/cast_iron"
-		}
+  "type": "minecraft:crafting_shaped",
+  "group": "jarmod:jar",
+  "pattern": [
+	"IGI"
+  ],
+  "key": {
+	"I": {
+	  "tag": "forge:ingots/cast_iron"
 	},
-	"result": {
-		"item": "jarmod:tube",
-		"count": 12
+	"G": {
+	  "tag": "forge:gears/cast_iron"
 	}
+  },
+  "result": {
+	"item": "jarmod:tube",
+	"count": 12
+  }
 }

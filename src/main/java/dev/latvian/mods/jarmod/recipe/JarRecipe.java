@@ -1,13 +1,14 @@
 package dev.latvian.mods.jarmod.recipe;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import dev.latvian.mods.jarmod.heat.Temperature;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
@@ -16,22 +17,20 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-public class JarRecipe implements IRecipe<NoInventory>
-{
+public class JarRecipe implements Recipe<NoInventory> {
 	private final ResourceLocation id;
 	private final String group;
-	public int temperature;
+	public Temperature temperature;
 	public int time;
 	public final List<IngredientPair<Ingredient>> inputItems;
 	public final List<IngredientPair<FluidIngredient>> inputFluids;
 	public final List<ItemStack> outputItems;
 	public final List<FluidStack> outputFluids;
 
-	public JarRecipe(ResourceLocation i, String g)
-	{
+	public JarRecipe(ResourceLocation i, String g) {
 		id = i;
 		group = g;
-		temperature = 0;
+		temperature = Temperature.NONE;
 		time = 200;
 		inputItems = new ArrayList<>();
 		inputFluids = new ArrayList<>();
@@ -40,55 +39,46 @@ public class JarRecipe implements IRecipe<NoInventory>
 	}
 
 	@Override
-	public boolean matches(NoInventory inv, World world)
-	{
+	public boolean matches(NoInventory inv, Level world) {
 		return true;
 	}
 
 	@Override
-	public ItemStack getCraftingResult(NoInventory inv)
-	{
+	public ItemStack assemble(NoInventory inv) {
 		return ItemStack.EMPTY;
 	}
 
 	@Override
-	public boolean canFit(int width, int height)
-	{
+	public boolean canCraftInDimensions(int width, int height) {
 		return true;
 	}
 
 	@Override
-	public ItemStack getRecipeOutput()
-	{
+	public ItemStack getResultItem() {
 		return ItemStack.EMPTY;
 	}
 
 	@Override
-	public ResourceLocation getId()
-	{
+	public ResourceLocation getId() {
 		return id;
 	}
 
 	@Override
-	public String getGroup()
-	{
+	public String getGroup() {
 		return group;
 	}
 
 	@Override
-	public IRecipeSerializer<?> getSerializer()
-	{
+	public RecipeSerializer<?> getSerializer() {
 		return JarModRecipeSerializers.JAR.get();
 	}
 
 	@Override
-	public IRecipeType<?> getType()
-	{
+	public RecipeType<?> getType() {
 		return JarModRecipeSerializers.JAR_TYPE;
 	}
 
-	public boolean isAvailableFor(PlayerEntity player)
-	{
+	public boolean isAvailableFor(Player player) {
 		return true;
 	}
 }

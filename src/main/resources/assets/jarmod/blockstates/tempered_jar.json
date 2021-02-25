@@ -1,5 +1,7 @@
 {
-	"variants": {
-		"": {"model": "jarmod:block/tempered_jar"}
+  "variants": {
+	"": {
+	  "model": "jarmod:block/tempered_jar"
 	}
+  }
 }

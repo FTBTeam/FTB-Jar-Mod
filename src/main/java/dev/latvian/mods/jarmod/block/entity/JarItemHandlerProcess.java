@@ -1,32 +1,28 @@
 package dev.latvian.mods.jarmod.block.entity;
 
-import net.minecraft.item.ItemStack;
+
+import net.minecraft.world.item.ItemStack;
 
 /**
  * @author LatvianModder
  */
-public class JarItemHandlerProcess extends JarItemHandler
-{
-	public JarItemHandlerProcess(TemperedJarBlockEntity e, int s)
-	{
+public class JarItemHandlerProcess extends JarItemHandler {
+	public JarItemHandlerProcess(TemperedJarBlockEntity e, int s) {
 		super(e, s);
 	}
 
 	@Override
-	public boolean isItemValid(int slot, ItemStack stack)
-	{
+	public boolean isItemValid(int slot, ItemStack stack) {
 		return false;
 	}
 
 	@Override
-	public ItemStack insertItem(int slot, ItemStack stack, boolean simulate)
-	{
+	public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
 		return stack;
 	}
 
 	@Override
-	public ItemStack extractItem(int slot, int amount, boolean simulate)
-	{
+	public ItemStack extractItem(int slot, int amount, boolean simulate) {
 		return ItemStack.EMPTY;
 	}
 }

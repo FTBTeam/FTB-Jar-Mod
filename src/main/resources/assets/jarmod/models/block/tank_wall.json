@@ -1,6 +1,6 @@
 {
-	"parent": "block/cube_all",
-	"textures": {
-		"all": "jarmod:block/tank_wall"
-	}
+  "parent": "block/cube_all",
+  "textures": {
+	"all": "jarmod:block/tank_wall"
+  }
 }

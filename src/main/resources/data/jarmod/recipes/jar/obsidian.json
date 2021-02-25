@@ -1,20 +1,22 @@
 {
-	"type": "jarmod:jar",
-	"inputFluids": [
-		{
-			"ingredient": {
-				"fluid": "minecraft:water"
-			},
-			"amount": 1000
-		},
-		{
-			"ingredient": {
-				"fluid": "minecraft:lava"
-			},
-			"amount": 1000
-		}
-	],
-	"outputItems": [
-		{"item": "minecraft:obsidian"}
-	]
+  "type": "jarmod:jar",
+  "inputFluids": [
+	{
+	  "ingredient": {
+		"fluid": "minecraft:water"
+	  },
+	  "amount": 1000
+	},
+	{
+	  "ingredient": {
+		"fluid": "minecraft:lava"
+	  },
+	  "amount": 1000
+	}
+  ],
+  "outputItems": [
+	{
+	  "item": "minecraft:obsidian"
+	}
+  ]
 }

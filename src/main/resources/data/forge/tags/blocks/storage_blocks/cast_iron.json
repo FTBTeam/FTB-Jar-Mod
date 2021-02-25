@@ -1,6 +1,6 @@
 {
-	"replace": false,
-	"values": [
-		"jarmod:cast_iron_block"
-	]
+  "replace": false,
+  "values": [
+	"jarmod:cast_iron_block"
+  ]
 }

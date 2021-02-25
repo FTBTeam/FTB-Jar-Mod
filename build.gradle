@@ -1,105 +1,73 @@
-buildscript {
-	repositories {
-		jcenter()
-		maven { url = 'https://files.minecraftforge.net/maven' }
-		maven { url "https://plugins.gradle.org/m2/" }
-		mavenCentral()
-	}
-	dependencies {
-		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
-		classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.+'
-		classpath 'com.wynprice.cursemaven:CurseMaven:2.+'
-	}
+plugins {
+	id 'forgified-fabric-loom' version '0.6.70'
+	id 'maven-publish'
 }
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'eclipse'
-apply plugin: 'com.matthewprenger.cursegradle'
-apply plugin: 'maven'
-apply plugin: 'com.wynprice.cursemaven'
 
 apply from: 'https://raw.githubusercontent.com/MinecraftModDevelopment/Gradle-Collection/master/generic/markdown-git-changelog.gradle'
 
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
 def ENV = System.getenv()
 version = ENV.BUILD_NUMBER ? "${mod_version}.${ENV.BUILD_NUMBER}" : "${mod_version}.custom"
-group = project.mod_package
-archivesBaseName = project.mod_name
+archivesBaseName = project.archives_base_name
+group = project.maven_group
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+loom {
+	silentMojangMappingsLicense()
 
-sourceSets {
-	main {
-		resources {
-			srcDir 'src/generated/resources'
-		}
+	mixinConfigs = [
+	]
+
+	useFabricMixin = true
+
+	dataGen {
+		mod project.mod_id
 	}
-}
 
-minecraft {
-	mappings channel: 'snapshot', version: project.mapping_version
-	// accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-	runs {
-		client {
-			workingDirectory project.file('run')
-			//property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-			property 'forge.logging.console.level', 'debug'
-
-			if (project.hasProperty('mc_dev_uuid')) args '--uuid', project.mc_dev_uuid
-			if (project.hasProperty('mc_dev_username')) args '--username', project.mc_dev_username
-			if (project.hasProperty('mc_dev_width')) args '--width', project.mc_dev_width
-			if (project.hasProperty('mc_dev_height')) args '--height', project.mc_dev_height
-
-			mods {
-				jarmod {
-					source sourceSets.main
-				}
-			}
-		}
-
-		server {
-			workingDirectory project.file('run')
-			//property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-			property 'forge.logging.console.level', 'debug'
-
-			args 'nogui'
-
-			mods {
-				jarmod {
-					source sourceSets.main
-				}
-			}
-		}
-
+	launches {
 		data {
-			workingDirectory project.file('run')
-			//property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-			property 'forge.logging.markers', 'REGISTRIES,REGISTRYDUMP'
-			property 'forge.logging.console.level', 'debug'
-
-			args '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', sourceSets.main.resources.srcDirs[0]
-
-			mods {
-				jarmod {
-					source sourceSets.main
-				}
-			}
+			arg "--existing", file("src/main/resources").absolutePath
 		}
 	}
-}
-
-configurations.all {
-	resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
 
 repositories {
-	mavenLocal()
+	maven { url "https://www.cursemaven.com" }
 }
 
 dependencies {
-	minecraft "net.minecraftforge:forge:${forge_version}"
-	compile fg.deobf("curse.maven:jei:${jei_file}")
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings minecraft.officialMojangMappings()
+	forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+	modCompile "curse.maven:jei-238222:${jei_file}"
+}
+
+processResources {
+	inputs.property "version", project.version
+
+	filesMatching("META-INF/mods.toml") {
+		expand "version": project.version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.encoding = "UTF-8"
+	def targetVersion = 8
+	if (JavaVersion.current().isJava9Compatible()) {
+		it.options.release = targetVersion
+	}
+}
+
+java {
+	withSourcesJar()
 }
 
 jar {
+	from("LICENSE") {
+		rename { "${it}_${project.archivesBaseName}" }
+	}
+
 	manifest {
 		attributes([
 				"Specification-Title"     : project.mod_id,
@@ -111,21 +79,30 @@ jar {
 				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
 		])
 	}
+
+	classifier "dev"
 }
 
-def reobfFile = file("$buildDir/reobfJar/output.jar")
-def reobfArtifact = artifacts.add('default', reobfFile) {
-	type 'jar'
-	builtBy 'reobfJar'
-}
-
-if (ENV.LOCAL_MAVEN) {
-	uploadArchives {
-		repositories {
-			mavenDeployer {
-				repository(url: "file://${ENV.LOCAL_MAVEN}")
+// configure the maven publication
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			// add all the jars that should be included when publishing to maven
+			artifact(remapJar) {
+				builtBy remapJar
+			}
+			artifact(sourcesJar) {
+				builtBy remapSourcesJar
 			}
 		}
+	}
+
+	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+	repositories {
+		// Add repositories to publish to here.
+		// Notice: This block does NOT have the same function as the block in the top level.
+		// The repositories here will be used for publishing your artifact, not for
+		// retrieving dependencies.
 	}
 }
 
@@ -135,8 +112,7 @@ if (ENV.CURSEFORGE_KEY) {
 		project {
 			id = project.curseforge_id
 			releaseType = "release"
-			addGameVersion "1.16.2"
-			addGameVersion "1.16.3"
+			addGameVersion "1.16.5"
 			changelog = getGitChangelog
 			changelogType = 'markdown'
 		}

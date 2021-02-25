@@ -1,119 +1,105 @@
 package dev.latvian.mods.jarmod.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.IWaterLoggable;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.pathfinding.PathType;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author LatvianModder
  */
-public class TubeBlock extends Block implements IWaterLoggable, TubeConnection
-{
-	public static final VoxelShape SHAPE_CENTER = makeCuboidShape(6, 6, 6, 10, 10, 10);
-	public static final VoxelShape SHAPE_D = makeCuboidShape(6, 0, 6, 10, 6, 10);
-	public static final VoxelShape SHAPE_U = makeCuboidShape(6, 10, 6, 10, 16, 10);
-	public static final VoxelShape SHAPE_N = makeCuboidShape(6, 6, 0, 10, 10, 6);
-	public static final VoxelShape SHAPE_S = makeCuboidShape(6, 6, 10, 10, 10, 16);
-	public static final VoxelShape SHAPE_W = makeCuboidShape(0, 6, 6, 6, 10, 10);
-	public static final VoxelShape SHAPE_E = makeCuboidShape(10, 6, 6, 16, 10, 10);
+public class TubeBlock extends Block implements SimpleWaterloggedBlock, TubeConnection {
+	public static final VoxelShape SHAPE_CENTER = box(6, 6, 6, 10, 10, 10);
+	public static final VoxelShape SHAPE_D = box(6, 0, 6, 10, 6, 10);
+	public static final VoxelShape SHAPE_U = box(6, 10, 6, 10, 16, 10);
+	public static final VoxelShape SHAPE_N = box(6, 6, 0, 10, 10, 6);
+	public static final VoxelShape SHAPE_S = box(6, 6, 10, 10, 10, 16);
+	public static final VoxelShape SHAPE_W = box(0, 6, 6, 6, 10, 10);
+	public static final VoxelShape SHAPE_E = box(10, 6, 6, 16, 10, 10);
 
 	public static final VoxelShape[] SHAPES = new VoxelShape[64];
-	public static final BooleanProperty[] TUBE = new BooleanProperty[6];
+	public static final EnumProperty<TubeConnectionType>[] TUBE = new EnumProperty[6];
 
-	static
-	{
-		for (int i = 0; i < 64; i++)
-		{
+	static {
+		for (int i = 0; i < 64; i++) {
 			List<VoxelShape> shapes = new ArrayList<>();
 
-			if (((i >> 0) & 1) != 0)
-			{
+			if (((i >> 0) & 1) != 0) {
 				shapes.add(SHAPE_D);
 			}
 
-			if (((i >> 1) & 1) != 0)
-			{
+			if (((i >> 1) & 1) != 0) {
 				shapes.add(SHAPE_U);
 			}
 
-			if (((i >> 2) & 1) != 0)
-			{
+			if (((i >> 2) & 1) != 0) {
 				shapes.add(SHAPE_N);
 			}
 
-			if (((i >> 3) & 1) != 0)
-			{
+			if (((i >> 3) & 1) != 0) {
 				shapes.add(SHAPE_S);
 			}
 
-			if (((i >> 4) & 1) != 0)
-			{
+			if (((i >> 4) & 1) != 0) {
 				shapes.add(SHAPE_W);
 			}
 
-			if (((i >> 5) & 1) != 0)
-			{
+			if (((i >> 5) & 1) != 0) {
 				shapes.add(SHAPE_E);
 			}
 
-			SHAPES[i] = shapes.isEmpty() ? SHAPE_CENTER : VoxelShapes.or(SHAPE_CENTER, shapes.toArray(new VoxelShape[0]));
+			SHAPES[i] = shapes.isEmpty() ? SHAPE_CENTER : Shapes.or(SHAPE_CENTER, shapes.toArray(new VoxelShape[0]));
 		}
 
-		for (Direction direction : Direction.values())
-		{
-			TUBE[direction.getIndex()] = BooleanProperty.create(direction.getString().substring(0, 1));
+		for (Direction direction : Direction.values()) {
+			TUBE[direction.ordinal()] = EnumProperty.create(direction.getName().substring(0, 1), TubeConnectionType.class);
 		}
 	}
 
-	public TubeBlock()
-	{
-		super(Properties.create(Material.IRON).sound(SoundType.NETHERITE));
-		setDefaultState(getStateContainer().getBaseState()
-				.with(BlockStateProperties.WATERLOGGED, false)
-				.with(TUBE[0], false)
-				.with(TUBE[1], false)
-				.with(TUBE[2], false)
-				.with(TUBE[3], false)
-				.with(TUBE[4], false)
-				.with(TUBE[5], false)
+	public TubeBlock() {
+		super(Properties.of(Material.METAL).strength(0.7F).sound(SoundType.NETHERITE_BLOCK));
+		registerDefaultState(stateDefinition.any()
+				.setValue(BlockStateProperties.WATERLOGGED, false)
+				.setValue(TUBE[0], TubeConnectionType.NOT_CONNECTED)
+				.setValue(TUBE[1], TubeConnectionType.NOT_CONNECTED)
+				.setValue(TUBE[2], TubeConnectionType.NOT_CONNECTED)
+				.setValue(TUBE[3], TubeConnectionType.NOT_CONNECTED)
+				.setValue(TUBE[4], TubeConnectionType.NOT_CONNECTED)
+				.setValue(TUBE[5], TubeConnectionType.NOT_CONNECTED)
 		);
 	}
 
 	@Override
 	@Deprecated
-	public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context)
-	{
+	public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
 		int index = 0;
 
-		for (Direction direction : Direction.values())
-		{
-			if (state.get(TUBE[direction.getIndex()]))
-			{
-				index |= 1 << direction.getIndex();
+		for (Direction direction : Direction.values()) {
+			if (state.getValue(TUBE[direction.ordinal()]).hasConnection()) {
+				index |= 1 << direction.ordinal();
 			}
 		}
 
@@ -121,73 +107,61 @@ public class TubeBlock extends Block implements IWaterLoggable, TubeConnection
 	}
 
 	@Override
-	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder)
-	{
+	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
 		builder.add(BlockStateProperties.WATERLOGGED, TUBE[0], TUBE[1], TUBE[2], TUBE[3], TUBE[4], TUBE[5]);
 	}
 
 	@Override
 	@Deprecated
-	public FluidState getFluidState(BlockState state)
-	{
-		return state.get(BlockStateProperties.WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
+	public FluidState getFluidState(BlockState state) {
+		return state.getValue(BlockStateProperties.WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
 	}
 
 	@Override
 	@Deprecated
-	public BlockState updatePostPlacement(BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos)
-	{
-		if (state.get(BlockStateProperties.WATERLOGGED))
-		{
-			world.getPendingFluidTicks().scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+	public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor world, BlockPos pos, BlockPos facingPos) {
+		if (state.getValue(BlockStateProperties.WATERLOGGED)) {
+			world.getLiquidTicks().scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
 		}
 
-		return state.with(TUBE[facing.getIndex()], canTubeConnectFrom(facingState, world, facingPos, facing.getOpposite()));
+		return state.setValue(TUBE[facing.ordinal()], canTubeConnectFrom(facingState, world, facingPos, facing.getOpposite()) ? TubeConnectionType.CONNECTED : TubeConnectionType.NOT_CONNECTED);
 	}
 
-	private boolean canTubeConnectFrom(BlockState state, IWorld world, BlockPos pos, Direction face)
-	{
-		if (state.getBlock() instanceof TubeConnection)
-		{
+	private boolean canTubeConnectFrom(BlockState state, BlockGetter world, BlockPos pos, Direction face) {
+		if (state.getBlock() instanceof TubeConnection) {
 			return ((TubeConnection) state.getBlock()).canTubeConnect(state, world, pos, face);
 		}
 
-		TileEntity t = world.getTileEntity(pos);
+		BlockEntity t = world.getBlockEntity(pos);
 		return t != null && (t.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, face).isPresent() || t.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, face).isPresent());
 	}
 
-	@Nullable
 	@Override
-	public BlockState getStateForPlacement(BlockItemUseContext context)
-	{
-		World world = context.getWorld();
-		BlockPos pos = context.getPos();
-		BlockState state = getDefaultState();
+	public BlockState getStateForPlacement(BlockPlaceContext context) {
+		Level world = context.getLevel();
+		BlockPos pos = context.getClickedPos();
+		BlockState state = defaultBlockState();
 
-		for (Direction direction : Direction.values())
-		{
-			BlockPos p = pos.offset(direction);
-			BlockState s = world.getBlockState(pos.offset(direction));
+		for (Direction direction : Direction.values()) {
+			BlockPos p = pos.relative(direction);
+			BlockState s = world.getBlockState(p);
 
-			if (canTubeConnectFrom(s, world, p, direction.getOpposite()))
-			{
-				state = state.with(TUBE[direction.getIndex()], true);
+			if (canTubeConnectFrom(s, world, p, direction.getOpposite())) {
+				state = state.setValue(TUBE[direction.ordinal()], TubeConnectionType.CONNECTED);
 			}
 		}
 
-		return state.with(BlockStateProperties.WATERLOGGED, context.getWorld().getFluidState(context.getPos()).getFluid() == Fluids.WATER);
+		return state.setValue(BlockStateProperties.WATERLOGGED, world.getFluidState(pos).getType() == Fluids.WATER);
 	}
 
 	@Override
-	public boolean propagatesSkylightDown(BlockState state, IBlockReader reader, BlockPos pos)
-	{
-		return !state.get(BlockStateProperties.WATERLOGGED);
+	public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
+		return !state.getValue(BlockStateProperties.WATERLOGGED);
 	}
 
 	@Override
 	@Deprecated
-	public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type)
-	{
+	public boolean isPathfindable(BlockState arg, BlockGetter arg2, BlockPos arg3, PathComputationType arg4) {
 		return false;
 	}
 }

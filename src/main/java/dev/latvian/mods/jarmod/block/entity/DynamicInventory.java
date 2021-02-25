@@ -1,7 +1,7 @@
 package dev.latvian.mods.jarmod.block.entity;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -11,52 +11,42 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-public class DynamicInventory implements IItemHandlerModifiable
-{
+public class DynamicInventory implements IItemHandlerModifiable {
 	public List<ItemStack> stacks = new ArrayList<>();
 
-	public void read(ListNBT nbt)
-	{
+	public void read(ListTag nbt) {
 	}
 
-	public ListNBT write()
-	{
-		ListNBT nbt = new ListNBT();
+	public ListTag write() {
+		ListTag nbt = new ListTag();
 
 		return nbt;
 	}
 
 	@Override
-	public int getSlots()
-	{
+	public int getSlots() {
 		return stacks.size();
 	}
 
 	@Override
-	public ItemStack getStackInSlot(int slot)
-	{
+	public ItemStack getStackInSlot(int slot) {
 		return slot < 0 || slot >= stacks.size() ? ItemStack.EMPTY : stacks.get(slot);
 	}
 
 	@Override
-	public void setStackInSlot(int slot, ItemStack stack)
-	{
-		if (slot >= 0 && slot < stacks.size())
-		{
+	public void setStackInSlot(int slot, ItemStack stack) {
+		if (slot >= 0 && slot < stacks.size()) {
 			stacks.set(slot, stack);
 		}
 	}
 
 	@Override
-	public ItemStack insertItem(int slot, ItemStack stack, boolean simulate)
-	{
-		if (stack.isEmpty())
-		{
+	public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+		if (stack.isEmpty()) {
 			return ItemStack.EMPTY;
 		}
 
-		if (!isItemValid(slot, stack))
-		{
+		if (!isItemValid(slot, stack)) {
 			return stack;
 		}
 
@@ -64,31 +54,24 @@ public class DynamicInventory implements IItemHandlerModifiable
 
 		int limit = Math.min(getSlotLimit(slot), stack.getMaxStackSize());
 
-		if (!existing.isEmpty())
-		{
-			if (!ItemHandlerHelper.canItemStacksStack(stack, existing))
-			{
+		if (!existing.isEmpty()) {
+			if (!ItemHandlerHelper.canItemStacksStack(stack, existing)) {
 				return stack;
 			}
 
 			limit -= existing.getCount();
 		}
 
-		if (limit <= 0)
-		{
+		if (limit <= 0) {
 			return stack;
 		}
 
 		boolean reachedLimit = stack.getCount() > limit;
 
-		if (!simulate)
-		{
-			if (existing.isEmpty())
-			{
+		if (!simulate) {
+			if (existing.isEmpty()) {
 				stacks.set(slot, reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack);
-			}
-			else
-			{
+			} else {
 				existing.grow(reachedLimit ? limit : stack.getCount());
 			}
 
@@ -99,39 +82,29 @@ public class DynamicInventory implements IItemHandlerModifiable
 	}
 
 	@Override
-	public ItemStack extractItem(int slot, int amount, boolean simulate)
-	{
-		if (amount == 0)
-		{
+	public ItemStack extractItem(int slot, int amount, boolean simulate) {
+		if (amount == 0) {
 			return ItemStack.EMPTY;
 		}
 
 		ItemStack existing = stacks.get(slot);
 
-		if (existing.isEmpty())
-		{
+		if (existing.isEmpty()) {
 			return ItemStack.EMPTY;
 		}
 
 		int toExtract = Math.min(amount, existing.getMaxStackSize());
 
-		if (existing.getCount() <= toExtract)
-		{
-			if (!simulate)
-			{
+		if (existing.getCount() <= toExtract) {
+			if (!simulate) {
 				stacks.set(slot, ItemStack.EMPTY);
 				onContentsChanged(slot);
 				return existing;
-			}
-			else
-			{
+			} else {
 				return existing.copy();
 			}
-		}
-		else
-		{
-			if (!simulate)
-			{
+		} else {
+			if (!simulate) {
 				stacks.set(slot, ItemHandlerHelper.copyStackWithSize(existing, existing.getCount() - toExtract));
 				onContentsChanged(slot);
 			}
@@ -141,18 +114,15 @@ public class DynamicInventory implements IItemHandlerModifiable
 	}
 
 	@Override
-	public int getSlotLimit(int slot)
-	{
+	public int getSlotLimit(int slot) {
 		return 64;
 	}
 
 	@Override
-	public boolean isItemValid(int slot, ItemStack stack)
-	{
+	public boolean isItemValid(int slot, ItemStack stack) {
 		return true;
 	}
 
-	public void onContentsChanged(int slot)
-	{
+	public void onContentsChanged(int slot) {
 	}
 }

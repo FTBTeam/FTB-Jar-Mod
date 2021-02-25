@@ -1,20 +1,22 @@
 {
-	"type": "jarmod:jar",
-	"inputFluids": [
-		{
-			"ingredient": {
-				"fluid": "minecraft:water"
-			},
-			"amount": 125
-		},
-		{
-			"ingredient": {
-				"fluid": "minecraft:lava"
-			},
-			"amount": 125
-		}
-	],
-	"outputItems": [
-		{"item": "minecraft:cobblestone"}
-	]
+  "type": "jarmod:jar",
+  "inputFluids": [
+	{
+	  "ingredient": {
+		"fluid": "minecraft:water"
+	  },
+	  "amount": 125
+	},
+	{
+	  "ingredient": {
+		"fluid": "minecraft:lava"
+	  },
+	  "amount": 125
+	}
+  ],
+  "outputItems": [
+	{
+	  "item": "minecraft:cobblestone"
+	}
+  ]
 }

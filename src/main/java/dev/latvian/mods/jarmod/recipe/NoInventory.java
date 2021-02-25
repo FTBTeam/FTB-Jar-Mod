@@ -6,12 +6,10 @@ import net.minecraftforge.items.wrapper.RecipeWrapper;
 /**
  * @author LatvianModder
  */
-public class NoInventory extends RecipeWrapper
-{
+public class NoInventory extends RecipeWrapper {
 	public static final NoInventory INSTANCE = new NoInventory();
 
-	private NoInventory()
-	{
+	private NoInventory() {
 		super(new ItemStackHandler(0));
 	}
 }

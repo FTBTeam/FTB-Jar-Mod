@@ -1,6 +1,0 @@
-{
-	"type": "jarmod:heat_source",
-	"temperature": 400,
-	"block": "minecraft:soul_campfire[lit=true]",
-	"resultBlock": "minecraft:soul_campfire[lit=false]"
-}

@@ -1,17 +1,15 @@
 package dev.latvian.mods.jarmod.block;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * @author LatvianModder
  */
-public interface TubeConnection
-{
-	default boolean canTubeConnect(BlockState state, IWorld world, BlockPos pos, Direction face)
-	{
+public interface TubeConnection {
+	default boolean canTubeConnect(BlockState state, BlockGetter world, BlockPos pos, Direction face) {
 		return true;
 	}
 }

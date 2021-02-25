@@ -3,130 +3,112 @@ package dev.latvian.mods.jarmod.block;
 import dev.latvian.mods.jarmod.block.entity.JarBlockEntity;
 import dev.latvian.mods.jarmod.block.entity.TemperedJarBlockEntity;
 import dev.latvian.mods.jarmod.item.JarModItems;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.pathfinding.PathType;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 
 /**
  * @author LatvianModder
  */
-public class JarBlock extends Block implements TubeConnection
-{
-	public static final VoxelShape SHAPE = VoxelShapes.or(
-			makeCuboidShape(3, 0, 3, 13, 13, 13),
-			makeCuboidShape(6, 13, 6, 10, 14, 10),
-			makeCuboidShape(5, 14, 5, 11, 16, 11)
+public class JarBlock extends Block implements TubeConnection {
+	public static final VoxelShape SHAPE = Shapes.or(
+			box(3, 0, 3, 13, 13, 13),
+			box(6, 13, 6, 10, 14, 10),
+			box(5, 14, 5, 11, 16, 11)
 	);
 
-	public JarBlock()
-	{
-		super(Properties.create(Material.GLASS).sound(SoundType.BONE).hardnessAndResistance(0.6F).notSolid());
+	public JarBlock() {
+		super(Properties.of(Material.GLASS).sound(SoundType.BONE_BLOCK).strength(0.6F).noOcclusion());
 	}
 
 	@Override
-	public boolean hasTileEntity(BlockState state)
-	{
+	public boolean hasTileEntity(BlockState state) {
 		return true;
 	}
 
 	@Nullable
 	@Override
-	public TileEntity createTileEntity(BlockState state, IBlockReader world)
-	{
+	public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
 		return new JarBlockEntity();
 	}
 
 	@Override
 	@Deprecated
-	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context)
-	{
+	public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
 		return SHAPE;
 	}
 
 	@Override
 	@Deprecated
-	public boolean hasComparatorInputOverride(BlockState state)
-	{
+	public boolean hasAnalogOutputSignal(BlockState state) {
 		return true;
 	}
 
 	@Override
 	@Deprecated
-	public int getComparatorInputOverride(BlockState blockState, World worldIn, BlockPos pos)
-	{
+	public int getAnalogOutputSignal(BlockState blockState, Level worldIn, BlockPos pos) {
 		return 0;
 	}
 
 	@Override
 	@Deprecated
-	public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving)
-	{
-		if (state.getBlock() != newState.getBlock())
-		{
-			TileEntity entity = world.getTileEntity(pos);
+	public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
+		if (state.getBlock() != newState.getBlock()) {
+			BlockEntity entity = world.getBlockEntity(pos);
 
-			if (entity instanceof JarBlockEntity)
-			{
-				world.updateComparatorOutputLevel(pos, this);
+			if (entity instanceof JarBlockEntity) {
+				world.updateNeighbourForOutputSignal(pos, this);
 			}
 
-			super.onReplaced(state, world, pos, newState, isMoving);
+			super.onRemove(state, world, pos, newState, isMoving);
 		}
 	}
 
 	@Override
 	@Deprecated
-	public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type)
-	{
+	public boolean isPathfindable(BlockState arg, BlockGetter arg2, BlockPos arg3, PathComputationType arg4) {
 		return false;
 	}
 
 	@Override
 	@Deprecated
-	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit)
-	{
-		ItemStack item = player.getHeldItem(hand);
+	public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+		ItemStack item = player.getItemInHand(hand);
 
-		if (item.getItem() == JarModItems.JAR.get() || item.getItem() == JarModItems.TEMPERED_JAR.get() || item.getItem() == JarModItems.TUBE.get())
-		{
-			return ActionResultType.PASS;
+		if (item.getItem() == JarModItems.JAR.get() || item.getItem() == JarModItems.TEMPERED_JAR.get() || item.getItem() == JarModItems.TUBE.get()) {
+			return InteractionResult.PASS;
 		}
 
-		TileEntity tileEntity = worldIn.getTileEntity(pos);
+		BlockEntity tileEntity = worldIn.getBlockEntity(pos);
 
-		if (tileEntity instanceof JarBlockEntity)
-		{
+		if (tileEntity instanceof JarBlockEntity) {
 			((JarBlockEntity) tileEntity).rightClick(player, hand, item);
-		}
-		else if (tileEntity instanceof TemperedJarBlockEntity)
-		{
+		} else if (tileEntity instanceof TemperedJarBlockEntity) {
 			((TemperedJarBlockEntity) tileEntity).rightClick(player, hand, item);
 		}
 
-		return ActionResultType.SUCCESS;
+		return InteractionResult.SUCCESS;
 	}
 
 	@Override
-	public boolean canTubeConnect(BlockState state, IWorld world, BlockPos pos, Direction face)
-	{
+	public boolean canTubeConnect(BlockState state, BlockGetter world, BlockPos pos, Direction face) {
 		return face == Direction.UP;
 	}
 }

@@ -1,7 +1,0 @@
-{
-	"type": "jarmod:heat_source",
-	"temperature": 70,
-	"burnTime": 6000,
-	"block": "minecraft:netherrack",
-	"resultBlock": "minecraft:cobblestone"
-}

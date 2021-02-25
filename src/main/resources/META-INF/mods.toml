@@ -1,27 +1,27 @@
-modLoader="javafml"
-loaderVersion="[30,)"
-issueTrackerURL="https://github.com/LatvianModder/Jar-Mod/issues"
-
-[[mods]]
-modId="jarmod"
-version="${file.jarVersion}"
-displayName="Jar Mod"
-authors="LatvianModder"
-description = '''
-Adds Jars and other things
-'''
+modLoader = "javafml"
+loaderVersion = "[36,)"
+issueTrackerURL = "https://github.com/LatvianModder/Jar-Mod/issues"
 license = "GNU LGPLv3"
 
-[[dependencies.jarmod]]
-    modId="forge"
-    mandatory=true
-    versionRange="[30,)"
-    ordering="NONE"
-    side="BOTH"
+[[mods]]
+modId = "jarmod"
+version = "${version}"
+displayName = "Jar Mod"
+authors = "LatvianModder"
+description = '''
+Adds Jars. Nothing else.
+'''
 
 [[dependencies.jarmod]]
-    modId="minecraft"
-    mandatory=true
-    versionRange="[1.15,)"
-    ordering="NONE"
-    side="BOTH"
+modId = "forge"
+mandatory = true
+versionRange = "[36,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.jarmod]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.16.5,)"
+ordering = "NONE"
+side = "BOTH"

@@ -1,47 +1,39 @@
 package dev.latvian.mods.jarmod.block;
 
-import dev.latvian.mods.jarmod.block.entity.TemperedJarBlockEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
+import dev.latvian.mods.jarmod.block.entity.TemperedJarBlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * @author LatvianModder
  */
-public class TemperedJarBlock extends JarBlock
-{
-	@Nullable
+public class TemperedJarBlock extends JarBlock {
 	@Override
-	public TileEntity createTileEntity(BlockState state, IBlockReader world)
-	{
+	public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
 		return new TemperedJarBlockEntity();
 	}
 
 	@Override
 	@Deprecated
-	public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving)
-	{
-		if (state.getBlock() != newState.getBlock())
-		{
-			TileEntity entity = world.getTileEntity(pos);
+	public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
+		if (state.getBlock() != newState.getBlock()) {
+			BlockEntity entity = world.getBlockEntity(pos);
 
-			if (entity instanceof TemperedJarBlockEntity)
-			{
+			if (entity instanceof TemperedJarBlockEntity) {
 				TemperedJarBlockEntity jar = (TemperedJarBlockEntity) entity;
 
-				for (int i = 0; i < jar.itemHandler.getSlots(); i++)
-				{
-					spawnAsEntity(world, pos, jar.itemHandler.getStackInSlot(i));
+				for (int i = 0; i < jar.itemHandler.getSlots(); i++) {
+					popResource(world, pos, jar.itemHandler.getStackInSlot(i));
 				}
 
-				world.updateComparatorOutputLevel(pos, this);
+				world.updateNeighbourForOutputSignal(pos, this);
 			}
 
-			super.onReplaced(state, world, pos, newState, isMoving);
+			super.onRemove(state, world, pos, newState, isMoving);
 		}
 	}
 }
