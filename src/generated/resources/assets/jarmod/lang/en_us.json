@@ -8,7 +8,7 @@
   "block.jarmod.jar.empty": "Empty",
   "block.jarmod.jar.mb": "%d mB of %s",
   "block.jarmod.tempered_jar": "Tempered Glass Jar",
-  "block.jarmod.tempered_jar.recipe_changed": "Recipe changed to, %s",
+  "block.jarmod.tempered_jar.recipe_changed": "Recipe changed to %s",
   "block.jarmod.tube": "Cast Iron Tube",
   "item.jarmod.cast_iron_gear": "Cast Iron Gear",
   "item.jarmod.cast_iron_ingot": "Cast Iron Ingot",
@@ -16,9 +16,10 @@
   "item.jarmod.tempered_glass": "Tempered Glass",
   "itemGroup.jarmod": "Jar Mod",
   "jarmod.burn_time": "Burn Time: %d min",
+  "jarmod.processing_time": "Processing Time: %d s",
   "jarmod.temperature": "Temperature",
-  "jarmod.temperature.none": "No Temperature",
-  "jarmod.temperature.low": "Low Temperature",
   "jarmod.temperature.high": "High Temperature",
-  "jarmod.processing_time": "Processing Time: %d s"
+  "jarmod.temperature.low": "Low Temperature",
+  "jarmod.temperature.none": "No Temperature",
+  "jarmod.temperature.subzero": "Sub-Zero Temperature"
 }
