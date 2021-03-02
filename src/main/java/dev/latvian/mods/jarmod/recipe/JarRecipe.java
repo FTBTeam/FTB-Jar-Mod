@@ -4,7 +4,6 @@ import dev.latvian.mods.jarmod.heat.Temperature;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -22,8 +21,8 @@ public class JarRecipe implements Recipe<NoInventory> {
 	private final String group;
 	public Temperature temperature;
 	public int time;
-	public final List<IngredientPair<Ingredient>> inputItems;
-	public final List<IngredientPair<FluidIngredient>> inputFluids;
+	public final List<ItemIngredientPair> inputItems;
+	public final List<FluidStack> inputFluids;
 	public final List<ItemStack> outputItems;
 	public final List<FluidStack> outputFluids;
 

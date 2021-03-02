@@ -2,17 +2,10 @@ package dev.latvian.mods.jarmod.block.entity.render;
 
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
 import dev.latvian.mods.jarmod.block.entity.TemperedJarBlockEntity;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.world.item.ItemStack;
 
 /**
  * @author LatvianModder
@@ -25,6 +18,7 @@ public class TemperedJarBlockEntityRenderer extends BlockEntityRenderer<Tempered
 	@Override
 	@SuppressWarnings("deprecation")
 	public void render(TemperedJarBlockEntity entity, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay) {
+		/*
 		if (entity.itemHandler.getSlots() <= 0) {
 			return;
 		}
@@ -47,5 +41,6 @@ public class TemperedJarBlockEntityRenderer extends BlockEntityRenderer<Tempered
 			itemRenderer.render(stack, ItemTransforms.TransformType.GROUND, false, matrixStack, buffer, combinedLight, OverlayTexture.NO_OVERLAY, bakedModel);
 			matrixStack.popPose();
 		}
+		*/
 	}
 }

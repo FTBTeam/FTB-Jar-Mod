@@ -1,6 +1,7 @@
 package dev.latvian.mods.jarmod.block;
 
 import dev.latvian.mods.jarmod.JarMod;
+import dev.latvian.mods.jarmod.heat.Temperature;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.Material;
@@ -18,7 +19,11 @@ public class JarModBlocks {
 	public static final RegistryObject<Block> JAR = REGISTRY.register("jar", JarBlock::new);
 	public static final RegistryObject<Block> TEMPERED_JAR = REGISTRY.register("tempered_jar", TemperedJarBlock::new);
 	public static final RegistryObject<Block> TUBE = REGISTRY.register("tube", TubeBlock::new);
-	public static final RegistryObject<Block> HEAT_SINK = REGISTRY.register("heat_sink", HeatSinkBlock::new);
-	public static final RegistryObject<Block> ELECTRIC_HEAT_SINK = REGISTRY.register("electric_heat_sink", ElectricHeatSinkBlock::new);
-	public static final RegistryObject<Block> CREATIVE_HEAT_SINK = REGISTRY.register("creative_heat_sink", ElectricHeatSinkBlock::new);
+	public static final RegistryObject<Block> LOW_TEMPERATURE_HEAT_SINK = REGISTRY.register("low_temperature_heat_sink", () -> new HeatSinkBlock(Temperature.LOW));
+	public static final RegistryObject<Block> HIGH_TEMPERATURE_HEAT_SINK = REGISTRY.register("high_temperature_heat_sink", () -> new HeatSinkBlock(Temperature.HIGH));
+	public static final RegistryObject<Block> SUBZERO_TEMPERATURE_HEAT_SINK = REGISTRY.register("subzero_temperature_heat_sink", () -> new HeatSinkBlock(Temperature.SUBZERO));
+	public static final RegistryObject<Block> CREATIVE_LOW_TEMPERATURE_SOURCE = REGISTRY.register("creative_low_temperature_source", () -> new CreativeTemperatureSourceBlock(Temperature.LOW));
+	public static final RegistryObject<Block> CREATIVE_HIGH_TEMPERATURE_SOURCE = REGISTRY.register("creative_high_temperature_source", () -> new CreativeTemperatureSourceBlock(Temperature.HIGH));
+	public static final RegistryObject<Block> CREATIVE_SUBZERO_TEMPERATURE_SOURCE = REGISTRY.register("creative_subzero_temperature_source", () -> new CreativeTemperatureSourceBlock(Temperature.SUBZERO));
+
 }

@@ -39,58 +39,46 @@ public class JarRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>>
 				JsonObject o = e.getAsJsonObject();
 				Ingredient ingredient = Ingredient.fromJson(o.get("ingredient"));
 				int count = o.has("count") ? o.get("count").getAsInt() : 1;
-				boolean consume = !o.has("consume") || o.get("consume").getAsBoolean();
-				r.inputItems.add(new IngredientPair<>(ingredient, count, consume));
+				r.inputItems.add(new ItemIngredientPair(ingredient, count));
 			}
 		}
 
 		if (json.has("inputFluids")) {
 			for (JsonElement e : json.get("inputFluids").getAsJsonArray()) {
 				JsonObject o = e.getAsJsonObject();
-				FluidIngredient ingredient = FluidIngredient.deserialize(o.get("ingredient"));
-				int amount = o.has("amount") ? o.get("amount").getAsInt() : FluidAttributes.BUCKET_VOLUME;
-				boolean consume = !o.has("consume") || o.get("consume").getAsBoolean();
-				r.inputFluids.add(new IngredientPair<>(ingredient, amount, consume));
+				FluidStack stack = new FluidStack(ForgeRegistries.FLUIDS.getValue(new ResourceLocation(o.get("fluid").getAsString())), FluidAttributes.BUCKET_VOLUME);
+
+				if (o.has("amount")) {
+					stack.setAmount(o.get("amount").getAsInt());
+				}
+
+				if (!stack.isEmpty()) {
+					r.inputFluids.add(stack);
+				}
 			}
 		}
 
 		if (json.has("outputItems")) {
 			for (JsonElement e : json.get("outputItems").getAsJsonArray()) {
-				if (e.isJsonObject()) {
-					ItemStack stack = ShapedRecipe.itemFromJson(e.getAsJsonObject());
+				ItemStack stack = ShapedRecipe.itemFromJson(e.getAsJsonObject());
 
-					if (!stack.isEmpty()) {
-						r.outputItems.add(stack);
-					}
-				} else {
-					ItemStack stack = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(e.getAsString())));
-
-					if (!stack.isEmpty()) {
-						r.outputItems.add(stack);
-					}
+				if (!stack.isEmpty()) {
+					r.outputItems.add(stack);
 				}
 			}
 		}
 
 		if (json.has("outputFluids")) {
 			for (JsonElement e : json.get("outputFluids").getAsJsonArray()) {
-				if (e.isJsonObject()) {
-					JsonObject o = e.getAsJsonObject();
-					FluidStack stack = new FluidStack(ForgeRegistries.FLUIDS.getValue(new ResourceLocation(o.get("fluid").getAsString())), FluidAttributes.BUCKET_VOLUME);
+				JsonObject o = e.getAsJsonObject();
+				FluidStack stack = new FluidStack(ForgeRegistries.FLUIDS.getValue(new ResourceLocation(o.get("fluid").getAsString())), FluidAttributes.BUCKET_VOLUME);
 
-					if (o.has("amount")) {
-						stack.setAmount(o.get("amount").getAsInt());
-					}
+				if (o.has("amount")) {
+					stack.setAmount(o.get("amount").getAsInt());
+				}
 
-					if (!stack.isEmpty()) {
-						r.outputFluids.add(stack);
-					}
-				} else {
-					FluidStack stack = new FluidStack(ForgeRegistries.FLUIDS.getValue(new ResourceLocation(e.getAsString())), FluidAttributes.BUCKET_VOLUME);
-
-					if (!stack.isEmpty()) {
-						r.outputFluids.add(stack);
-					}
+				if (!stack.isEmpty()) {
+					r.outputFluids.add(stack);
 				}
 			}
 		}
@@ -109,11 +97,11 @@ public class JarRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>>
 		int fout = buffer.readUnsignedByte();
 
 		for (int i = 0; i < iin; i++) {
-			r.inputItems.add(new IngredientPair<>(Ingredient.fromNetwork(buffer), buffer.readVarInt(), buffer.readBoolean()));
+			r.inputItems.add(new ItemIngredientPair(Ingredient.fromNetwork(buffer), buffer.readVarInt()));
 		}
 
 		for (int i = 0; i < fin; i++) {
-			r.inputFluids.add(new IngredientPair<>(FluidIngredient.read(buffer), buffer.readVarInt(), buffer.readBoolean()));
+			r.inputFluids.add(FluidStack.readFromPacket(buffer));
 		}
 
 		for (int i = 0; i < iout; i++) {
@@ -137,16 +125,13 @@ public class JarRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>>
 		buffer.writeByte(r.outputItems.size());
 		buffer.writeByte(r.outputFluids.size());
 
-		for (IngredientPair<Ingredient> p : r.inputItems) {
+		for (ItemIngredientPair p : r.inputItems) {
 			p.ingredient.toNetwork(buffer);
 			buffer.writeVarInt(p.amount);
-			buffer.writeBoolean(p.consume);
 		}
 
-		for (IngredientPair<FluidIngredient> p : r.inputFluids) {
-			p.ingredient.write(buffer);
-			buffer.writeVarInt(p.amount);
-			buffer.writeBoolean(p.consume);
+		for (FluidStack s : r.inputFluids) {
+			s.writeToPacket(buffer);
 		}
 
 		for (ItemStack s : r.outputItems) {

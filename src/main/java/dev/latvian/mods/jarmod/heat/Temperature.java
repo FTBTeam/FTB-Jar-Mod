@@ -1,10 +1,18 @@
 package dev.latvian.mods.jarmod.heat;
 
 import dev.latvian.mods.jarmod.JarMod;
+import dev.latvian.mods.jarmod.block.CreativeTemperatureSourceBlock;
+import dev.latvian.mods.jarmod.block.HeatSinkBlock;
+import dev.latvian.mods.jarmod.recipe.JarModRecipeSerializers;
+import dev.latvian.mods.jarmod.recipe.NoInventory;
+import dev.latvian.mods.jarmod.recipe.TemperatureSourceRecipe;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -55,15 +63,37 @@ public enum Temperature implements StringRepresentable {
 		return getValue() == 0;
 	}
 
-	public boolean isSubzero() {
+	public boolean isCold() {
 		return getValue() < 0;
 	}
 
-	public boolean isHeat() {
+	public boolean isHot() {
 		return getValue() > 0;
 	}
 
 	public static Temperature byName(String name) {
 		return MAP.getOrDefault(name.toLowerCase(), NONE);
+	}
+
+	public static Temperature fromWorld(Level level, BlockPos pos) {
+		BlockState state = level.getBlockState(pos);
+
+		if (state.getBlock() instanceof CreativeTemperatureSourceBlock) {
+			return ((CreativeTemperatureSourceBlock) state.getBlock()).temperature;
+		} else if (state.getBlock() instanceof HeatSinkBlock) {
+			if (state.getValue(HeatSinkBlock.ACTIVE)) {
+				return ((HeatSinkBlock) state.getBlock()).temperature;
+			}
+
+			return NONE;
+		}
+
+		for (TemperatureSourceRecipe recipe : level.getRecipeManager().getRecipesFor(JarModRecipeSerializers.TEMPERATURE_SOURCE_TYPE, NoInventory.INSTANCE, level)) {
+			if (recipe.test(state)) {
+				return recipe.temperature;
+			}
+		}
+
+		return Temperature.NONE;
 	}
 }

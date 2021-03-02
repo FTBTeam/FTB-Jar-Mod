@@ -1,7 +1,16 @@
 {
-  "variants": {
-	"": {
-	  "model": "jarmod:block/tempered_jar"
+	"variants": {
+		"temperature=none": {
+			"model": "jarmod:block/tempered_jar_none"
+		},
+		"temperature=low": {
+			"model": "jarmod:block/tempered_jar_low"
+		},
+		"temperature=high": {
+			"model": "jarmod:block/tempered_jar_high"
+		},
+		"temperature=subzero": {
+			"model": "jarmod:block/tempered_jar_subzero"
+		}
 	}
-  }
 }

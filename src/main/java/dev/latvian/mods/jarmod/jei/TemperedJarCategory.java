@@ -4,8 +4,7 @@ package dev.latvian.mods.jarmod.jei;
 import dev.latvian.mods.jarmod.JarMod;
 import dev.latvian.mods.jarmod.heat.Temperature;
 import dev.latvian.mods.jarmod.item.JarModItems;
-import dev.latvian.mods.jarmod.recipe.FluidIngredient;
-import dev.latvian.mods.jarmod.recipe.IngredientPair;
+import dev.latvian.mods.jarmod.recipe.ItemIngredientPair;
 import dev.latvian.mods.jarmod.recipe.JarRecipe;
 import dev.latvian.mods.jarmod.util.SortedFluids;
 import mezz.jei.api.constants.VanillaTypes;
@@ -22,8 +21,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,9 +68,8 @@ public class TemperedJarCategory implements IRecipeCategory<JarRecipe> {
 	@Override
 	public void setIngredients(JarRecipe recipe, IIngredients ingredients) {
 		List<List<ItemStack>> inputItems = new ArrayList<>();
-		List<List<FluidStack>> inputFluids = new ArrayList<>();
 
-		for (IngredientPair<Ingredient> ingredient : recipe.inputItems) {
+		for (ItemIngredientPair ingredient : recipe.inputItems) {
 			List<ItemStack> stackList = new ArrayList<>();
 
 			for (ItemStack is : ingredient.ingredient.getItems()) {
@@ -85,21 +81,9 @@ public class TemperedJarCategory implements IRecipeCategory<JarRecipe> {
 			inputItems.add(stackList);
 		}
 
-		for (IngredientPair<FluidIngredient> ingredient : recipe.inputFluids) {
-			List<FluidStack> stackList = new ArrayList<>();
-
-			for (FluidStack fs : ingredient.ingredient.getMatchingStacks()) {
-				FluidStack fs1 = fs.copy();
-				fs1.setAmount(ingredient.amount);
-				stackList.add(fs1);
-			}
-
-			inputFluids.add(stackList);
-		}
-
 		ingredients.setInput(JarModIngredients.TEMPERATURE, recipe.temperature);
 		ingredients.setInputLists(VanillaTypes.ITEM, inputItems);
-		ingredients.setInputLists(VanillaTypes.FLUID, inputFluids);
+		ingredients.setInputs(VanillaTypes.FLUID, recipe.outputFluids);
 		ingredients.setOutputs(VanillaTypes.ITEM, recipe.outputItems);
 		ingredients.setOutputs(VanillaTypes.FLUID, recipe.outputFluids);
 	}
@@ -120,7 +104,7 @@ public class TemperedJarCategory implements IRecipeCategory<JarRecipe> {
 			itemStacks.init(i + recipe.inputItems.size(), false, 81, 3 + 20 * i);
 		}
 
-		SortedFluids inputFluids = new SortedFluids(64, 8000, recipe.inputFluids.size(), i -> recipe.inputFluids.get(i).amount);
+		SortedFluids inputFluids = new SortedFluids(64, 8000, recipe.inputFluids.size(), i -> recipe.inputFluids.get(i).getAmount());
 		SortedFluids outputFluids = new SortedFluids(64, 8000, recipe.outputFluids.size(), i -> recipe.outputFluids.get(i).getAmount());
 
 		for (int i = 0; i < recipe.inputFluids.size(); i++) {

@@ -77,10 +77,13 @@ public class JarModDataGenHandler {
 			addBlock(JarModBlocks.TEMPERED_JAR, "Tempered Glass Jar");
 			add("block.jarmod.tempered_jar.recipe_changed", "Recipe changed to %s");
 			addBlock(JarModBlocks.TUBE, "Cast Iron Tube");
-			addBlock(JarModBlocks.HEAT_SINK, "Heat Sink");
+			addBlock(JarModBlocks.LOW_TEMPERATURE_HEAT_SINK, "Low Temperature Heat Sink");
+			addBlock(JarModBlocks.HIGH_TEMPERATURE_HEAT_SINK, "High Temperature Heat Sink");
+			addBlock(JarModBlocks.SUBZERO_TEMPERATURE_HEAT_SINK, "Sub-Zero Temperature Heat Sink");
 			add("block.jarmod.brick_furnace.tooltip", "Place in middle of 3x3x3 cube of Bricks");
-			addBlock(JarModBlocks.ELECTRIC_HEAT_SINK, "Electric Heat Sink");
-			addBlock(JarModBlocks.CREATIVE_HEAT_SINK, "Creative Heat Sink");
+			addBlock(JarModBlocks.CREATIVE_LOW_TEMPERATURE_SOURCE, "Creative Low Temperature Source");
+			addBlock(JarModBlocks.CREATIVE_HIGH_TEMPERATURE_SOURCE, "Creative High Temperature Source");
+			addBlock(JarModBlocks.CREATIVE_SUBZERO_TEMPERATURE_SOURCE, "Creative Sub-Zero Temperature Source");
 			add("jarmod.temperature", "Temperature");
 			add("jarmod.temperature.none", "No Temperature");
 			add("jarmod.temperature.low", "Low Temperature");
@@ -198,13 +201,31 @@ public class JarModDataGenHandler {
 
 			// Misc
 
-			ShapedRecipeBuilder.shaped(JarModItems.HEAT_SINK.get())
+			ShapedRecipeBuilder.shaped(JarModItems.LOW_TEMPERATURE_HEAT_SINK.get())
 					.unlockedBy("has_item", has(IRON_INGOT))
 					.pattern("PPP")
 					.pattern("BBB")
 					.pattern("PPP")
 					.define('P', Items.HEAVY_WEIGHTED_PRESSURE_PLATE)
 					.define('B', Items.IRON_BARS)
+					.save(consumer);
+
+			ShapedRecipeBuilder.shaped(JarModItems.HIGH_TEMPERATURE_HEAT_SINK.get())
+					.unlockedBy("has_item", has(JarModItems.LOW_TEMPERATURE_HEAT_SINK.get()))
+					.pattern("N N")
+					.pattern(" H ")
+					.pattern("N N")
+					.define('H', JarModItems.LOW_TEMPERATURE_HEAT_SINK.get())
+					.define('N', Items.NETHERITE_INGOT)
+					.save(consumer);
+
+			ShapedRecipeBuilder.shaped(JarModItems.SUBZERO_TEMPERATURE_HEAT_SINK.get())
+					.unlockedBy("has_item", has(JarModItems.LOW_TEMPERATURE_HEAT_SINK.get()))
+					.pattern("N N")
+					.pattern(" H ")
+					.pattern("N N")
+					.define('H', JarModItems.LOW_TEMPERATURE_HEAT_SINK.get())
+					.define('N', Items.PACKED_ICE)
 					.save(consumer);
 
 			// Jar

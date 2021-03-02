@@ -1,6 +1,6 @@
 {
-  "replace": false,
-  "values": [
-	"jarmod:cast_iron_ingot"
-  ]
+	"replace": false,
+	"values": [
+		"jarmod:cast_iron_ingot"
+	]
 }

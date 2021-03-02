@@ -1,6 +1,6 @@
 {
-  "replace": false,
-  "values": [
-	"#forge:ingots/cast_iron"
-  ]
+	"replace": false,
+	"values": [
+		"#forge:ingots/cast_iron"
+	]
 }

@@ -1,0 +1,6 @@
+{
+	"parent": "block/cube_all",
+	"textures": {
+		"all": "jarmod:block/creative_low_temperature_source"
+	}
+}

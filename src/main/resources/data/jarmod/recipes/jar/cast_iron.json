@@ -1,24 +1,24 @@
 {
-  "type": "jarmod:jar",
-  "temperature": "high",
-  "time": 600,
-  "inputItems": [
-	{
-	  "ingredient": {
-		"tag": "forge:ingots/iron"
-	  },
-	  "count": 16
-	},
-	{
-	  "ingredient": {
-		"tag": "minecraft:coals"
-	  }
-	}
-  ],
-  "outputItems": [
-	{
-	  "item": "jarmod:cast_iron_ingot",
-	  "count": 16
-	}
-  ]
+	"type": "jarmod:jar",
+	"temperature": "high",
+	"time": 600,
+	"inputItems": [
+		{
+			"ingredient": {
+				"tag": "forge:ingots/iron"
+			},
+			"count": 16
+		},
+		{
+			"ingredient": {
+				"tag": "minecraft:coals"
+			}
+		}
+	],
+	"outputItems": [
+		{
+			"item": "jarmod:cast_iron_ingot",
+			"count": 16
+		}
+	]
 }

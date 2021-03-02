@@ -44,7 +44,7 @@ public class JarModJEIPlugin implements IModPlugin {
 	@Override
 	public void registerRecipeCatalysts(IRecipeCatalystRegistration r) {
 		r.addRecipeCatalyst(new ItemStack(JarModItems.TEMPERED_JAR.get()), TemperedJarCategory.UID);
-		r.addRecipeCatalyst(new ItemStack(JarModItems.HEAT_SINK.get()), TemperatureSourceCategory.UID);
+		//r.addRecipeCatalyst(new ItemStack(JarModItems.HEAT_SINK.get()), TemperatureSourceCategory.UID);
 	}
 
 	@Override

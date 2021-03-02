@@ -5,6 +5,7 @@ import dev.latvian.mods.jarmod.block.entity.JarModBlockEntities;
 import dev.latvian.mods.jarmod.client.JarModClient;
 import dev.latvian.mods.jarmod.client.gui.JarModContainers;
 import dev.latvian.mods.jarmod.item.JarModItems;
+import dev.latvian.mods.jarmod.kubejs.JarModKubeJSIntegration;
 import dev.latvian.mods.jarmod.net.JarModNet;
 import dev.latvian.mods.jarmod.recipe.JarModRecipeSerializers;
 import net.minecraft.world.item.CreativeModeTab;
@@ -12,6 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
@@ -48,5 +50,13 @@ public class JarMod {
 
 		JarModNet.init();
 		proxy.init();
+
+		if (ModList.get().isLoaded("kubejs")) {
+			initKJS();
+		}
+	}
+
+	private void initKJS() {
+		JarModKubeJSIntegration.init();
 	}
 }

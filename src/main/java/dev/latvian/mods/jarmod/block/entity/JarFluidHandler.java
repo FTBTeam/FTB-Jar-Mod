@@ -32,13 +32,13 @@ public class JarFluidHandler implements IFluidHandler {
 	@Override
 	public int getTankCapacity(int tank) {
 		JarRecipe r = entity.getRecipe();
-		return r == null || tank >= r.inputFluids.size() ? 0 : r.inputFluids.get(tank).amount;
+		return r == null || tank >= r.inputFluids.size() ? 0 : r.inputFluids.get(tank).getAmount();
 	}
 
 	@Override
 	public boolean isFluidValid(int tank, FluidStack stack) {
 		JarRecipe r = entity.getRecipe();
-		return r != null && tank < r.inputFluids.size() && r.inputFluids.get(tank).ingredient.test(stack);
+		return r != null && tank < r.inputFluids.size() && r.inputFluids.get(tank).isFluidEqual(stack);
 	}
 
 	@Override

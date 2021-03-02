@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"N N",
+		" H ",
+		"N N"
+	],
+	"key": {
+		"H": {
+			"item": "jarmod:low_temperature_heat_sink"
+		},
+		"N": {
+			"item": "minecraft:netherite_ingot"
+		}
+	},
+	"result": {
+		"item": "jarmod:high_temperature_heat_sink"
+	}
+}

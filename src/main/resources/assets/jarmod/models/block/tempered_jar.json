@@ -1,6 +1,0 @@
-{
-  "parent": "jarmod:block/jar_base",
-  "textures": {
-	"cover": "jarmod:block/cast_iron_jar_cover"
-  }
-}

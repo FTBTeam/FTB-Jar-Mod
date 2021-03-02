@@ -34,7 +34,10 @@ public class JarModItems {
 	public static final RegistryObject<BlockItem> JAR = blockItem("jar", JarModBlocks.JAR);
 	public static final RegistryObject<BlockItem> TEMPERED_JAR = blockItem("tempered_jar", JarModBlocks.TEMPERED_JAR);
 	public static final RegistryObject<BlockItem> TUBE = blockItem("tube", JarModBlocks.TUBE);
-	public static final RegistryObject<BlockItem> HEAT_SINK = blockItem("heat_sink", JarModBlocks.HEAT_SINK);
-	public static final RegistryObject<BlockItem> ELECTRIC_HEAT_SINK = blockItem("electric_heat_sink", JarModBlocks.ELECTRIC_HEAT_SINK);
-	public static final RegistryObject<BlockItem> CREATIVE_HEAT_SINK = blockItem("creative_heat_sink", JarModBlocks.CREATIVE_HEAT_SINK);
+	public static final RegistryObject<BlockItem> LOW_TEMPERATURE_HEAT_SINK = blockItem("low_temperature_heat_sink", JarModBlocks.LOW_TEMPERATURE_HEAT_SINK);
+	public static final RegistryObject<BlockItem> HIGH_TEMPERATURE_HEAT_SINK = blockItem("high_temperature_heat_sink", JarModBlocks.HIGH_TEMPERATURE_HEAT_SINK);
+	public static final RegistryObject<BlockItem> SUBZERO_TEMPERATURE_HEAT_SINK = blockItem("subzero_temperature_heat_sink", JarModBlocks.SUBZERO_TEMPERATURE_HEAT_SINK);
+	public static final RegistryObject<BlockItem> CREATIVE_LOW_TEMPERATURE_SOURCE = blockItem("creative_low_temperature_source", JarModBlocks.CREATIVE_LOW_TEMPERATURE_SOURCE);
+	public static final RegistryObject<BlockItem> CREATIVE_HIGH_TEMPERATURE_SOURCE = blockItem("creative_high_temperature_source", JarModBlocks.CREATIVE_HIGH_TEMPERATURE_SOURCE);
+	public static final RegistryObject<BlockItem> CREATIVE_SUBZERO_TEMPERATURE_SOURCE = blockItem("creative_subzero_temperature_source", JarModBlocks.CREATIVE_SUBZERO_TEMPERATURE_SOURCE);
 }

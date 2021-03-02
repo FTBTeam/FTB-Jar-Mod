@@ -1,0 +1,8 @@
+{
+	"parent": "jarmod:block/jar_base",
+	"textures": {
+		"cover": "jarmod:block/cast_iron_jar_cover",
+		"glass_side": "jarmod:block/jar_glass_side_high",
+		"glass_bottom": "jarmod:block/jar_glass_bottom_high"
+	}
+}

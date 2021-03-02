@@ -9,7 +9,7 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 def ENV = System.getenv()
-version = ENV.BUILD_NUMBER ? "${mod_version}.${ENV.BUILD_NUMBER}" : "${mod_version}.custom"
+version = "${mod_version}-build.${ENV.BUILD_NUMBER ?: 9999}"
 archivesBaseName = project.archives_base_name
 group = project.maven_group
 
@@ -41,6 +41,9 @@ dependencies {
 	mappings minecraft.officialMojangMappings()
 	forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
 	modCompile "curse.maven:jei-238222:${jei_file}"
+	modCompile "curse.maven:kubejs-fabric-395864:${project.kubejs_file}"
+	modCompile "curse.maven:architectury-fabric-419697:${project.arch_file}"
+	modCompile "curse.maven:rhino-416294:${rhino_file}"
 }
 
 processResources {

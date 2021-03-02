@@ -1,6 +1,6 @@
 {
-  "replace": false,
-  "values": [
-	"#forge:nuggets/cast_iron"
-  ]
+	"replace": false,
+	"values": [
+		"#forge:nuggets/cast_iron"
+	]
 }

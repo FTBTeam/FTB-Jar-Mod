@@ -1,7 +1,7 @@
 {
-  "variants": {
-	"": {
-	  "model": "jarmod:block/creative_heat_sink"
+	"variants": {
+		"": {
+			"model": "jarmod:block/creative_heat_sink"
+		}
 	}
-  }
 }

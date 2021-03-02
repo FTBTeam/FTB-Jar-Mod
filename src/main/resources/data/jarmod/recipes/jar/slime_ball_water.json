@@ -1,29 +1,27 @@
 {
-  "type": "jarmod:jar",
-  "temperature": "low",
-  "inputItems": [
-	{
-	  "ingredient": [
+	"type": "jarmod:jar",
+	"temperature": "low",
+	"inputItems": [
 		{
-		  "item": "minecraft:brown_mushroom"
-		},
-		{
-		  "item": "minecraft:red_mushroom"
+			"ingredient": [
+				{
+					"item": "minecraft:brown_mushroom"
+				},
+				{
+					"item": "minecraft:red_mushroom"
+				}
+			]
 		}
-	  ]
-	}
-  ],
-  "inputFluids": [
-	{
-	  "ingredient": {
-		"fluid": "minecraft:water"
-	  },
-	  "amount": 1000
-	}
-  ],
-  "outputItems": [
-	{
-	  "item": "minecraft:slime_ball"
-	}
-  ]
+	],
+	"inputFluids": [
+		{
+			"fluid": "minecraft:water",
+			"amount": 1000
+		}
+	],
+	"outputItems": [
+		{
+			"item": "minecraft:slime_ball"
+		}
+	]
 }

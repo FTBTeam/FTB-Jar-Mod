@@ -1,17 +1,15 @@
 {
-  "type": "jarmod:jar",
-  "temperature": "subzero",
-  "inputFluids": [
-	{
-	  "ingredient": {
-		"fluid": "minecraft:water"
-	  },
-	  "amount": 1000
-	}
-  ],
-  "outputItems": [
-	{
-	  "item": "minecraft:ice"
-	}
-  ]
+	"type": "jarmod:jar",
+	"temperature": "subzero",
+	"inputFluids": [
+		{
+			"fluid": "minecraft:water",
+			"amount": 1000
+		}
+	],
+	"outputItems": [
+		{
+			"item": "minecraft:ice"
+		}
+	]
 }

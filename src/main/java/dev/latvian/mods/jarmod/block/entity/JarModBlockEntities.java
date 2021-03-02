@@ -15,7 +15,5 @@ public class JarModBlockEntities {
 
 	public static final RegistryObject<BlockEntityType<JarBlockEntity>> JAR = REGISTRY.register("jar", () -> BlockEntityType.Builder.of(JarBlockEntity::new, JarModBlocks.JAR.get()).build(null));
 	public static final RegistryObject<BlockEntityType<TemperedJarBlockEntity>> TEMPERED_JAR = REGISTRY.register("tempered_jar", () -> BlockEntityType.Builder.of(TemperedJarBlockEntity::new, JarModBlocks.TEMPERED_JAR.get()).build(null));
-	public static final RegistryObject<BlockEntityType<HeatSinkBlockEntity>> HEAT_SINK = REGISTRY.register("heat_sink", () -> BlockEntityType.Builder.of(HeatSinkBlockEntity::new, JarModBlocks.HEAT_SINK.get()).build(null));
-	public static final RegistryObject<BlockEntityType<ElectricHeatSinkBlockEntity>> ELECTRIC_HEAT_SINK = REGISTRY.register("electric_heat_sink", () -> BlockEntityType.Builder.of(ElectricHeatSinkBlockEntity::new, JarModBlocks.ELECTRIC_HEAT_SINK.get()).build(null));
-	public static final RegistryObject<BlockEntityType<CreativeHeatSinkBlockEntity>> CREATIVE_HEAT_SINK = REGISTRY.register("creative_heat_sink", () -> BlockEntityType.Builder.of(CreativeHeatSinkBlockEntity::new, JarModBlocks.CREATIVE_HEAT_SINK.get()).build(null));
+	public static final RegistryObject<BlockEntityType<HeatSinkBlockEntity>> HEAT_SINK = REGISTRY.register("heat_sink", () -> BlockEntityType.Builder.of(HeatSinkBlockEntity::new, JarModBlocks.LOW_TEMPERATURE_HEAT_SINK.get(), JarModBlocks.HIGH_TEMPERATURE_HEAT_SINK.get(), JarModBlocks.SUBZERO_TEMPERATURE_HEAT_SINK.get()).build(null));
 }
