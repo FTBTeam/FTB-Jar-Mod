@@ -83,7 +83,7 @@ public class TemperedJarCategory implements IRecipeCategory<JarRecipe> {
 
 		ingredients.setInput(JarModIngredients.TEMPERATURE, recipe.temperature);
 		ingredients.setInputLists(VanillaTypes.ITEM, inputItems);
-		ingredients.setInputs(VanillaTypes.FLUID, recipe.outputFluids);
+		ingredients.setInputs(VanillaTypes.FLUID, recipe.inputFluids);
 		ingredients.setOutputs(VanillaTypes.ITEM, recipe.outputItems);
 		ingredients.setOutputs(VanillaTypes.FLUID, recipe.outputFluids);
 	}
