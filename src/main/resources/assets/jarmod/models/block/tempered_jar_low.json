@@ -3,6 +3,7 @@
 	"textures": {
 		"cover": "jarmod:block/cast_iron_jar_cover",
 		"glass_side": "jarmod:block/jar_glass_side_low",
+		"glass_top": "jarmod:block/jar_glass_tempered_top",
 		"glass_bottom": "jarmod:block/jar_glass_bottom_low"
 	}
 }
