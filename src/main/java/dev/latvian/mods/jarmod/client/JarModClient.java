@@ -29,7 +29,7 @@ public class JarModClient extends JarModCommon {
 	@SubscribeEvent
 	public static void setup(FMLClientSetupEvent event) {
 		ItemBlockRenderTypes.setRenderLayer(JarModBlocks.JAR.get(), RenderType.cutout());
-		ItemBlockRenderTypes.setRenderLayer(JarModBlocks.TEMPERED_JAR.get(), RenderType.cutout());
+		ItemBlockRenderTypes.setRenderLayer(JarModBlocks.TEMPERED_JAR.get(), RenderType.translucent());
 		ItemBlockRenderTypes.setRenderLayer(JarModBlocks.LOW_TEMPERATURE_HEAT_SINK.get(), RenderType.cutout());
 		ItemBlockRenderTypes.setRenderLayer(JarModBlocks.HIGH_TEMPERATURE_HEAT_SINK.get(), RenderType.cutout());
 		ItemBlockRenderTypes.setRenderLayer(JarModBlocks.SUBZERO_TEMPERATURE_HEAT_SINK.get(), RenderType.cutout());
