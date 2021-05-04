@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"group": "ftbjarmod:jar",
+	"pattern": [
+		"IGI"
+	],
+	"key": {
+		"I": {
+			"tag": "forge:ingots/cast_iron"
+		},
+		"G": {
+			"tag": "forge:gears/cast_iron"
+		}
+	},
+  "result": {
+		"item": "ftbjarmod:tube",
+		"count": 12
+	}
+}

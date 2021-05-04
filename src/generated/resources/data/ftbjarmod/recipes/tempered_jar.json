@@ -1,0 +1,20 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"group": "ftbjarmod:jar",
+	"pattern": [
+		"GCG",
+		"G G",
+		"GGG"
+	],
+	"key": {
+		"G": {
+			"item": "ftbjarmod:tempered_glass"
+		},
+		"C": {
+			"tag": "forge:ingots/cast_iron"
+		}
+	},
+  "result": {
+		"item": "ftbjarmod:tempered_jar"
+  }
+}

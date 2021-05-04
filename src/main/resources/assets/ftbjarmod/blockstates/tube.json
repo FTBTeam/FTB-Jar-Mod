@@ -1,0 +1,66 @@
+{
+	"multipart": [
+		{
+			"apply": {
+				"model": "ftbjarmod:block/tube_center"
+			}
+		},
+		{
+			"when": {
+				"d": "connected"
+			},
+			"apply": {
+				"model": "ftbjarmod:block/tube"
+			}
+		},
+		{
+			"when": {
+				"u": "connected"
+			},
+			"apply": {
+				"model": "ftbjarmod:block/tube",
+				"x": 180
+			}
+		},
+		{
+			"when": {
+				"n": "connected"
+			},
+			"apply": {
+				"model": "ftbjarmod:block/tube",
+				"x": 90,
+				"y": 180
+			}
+		},
+		{
+			"when": {
+				"s": "connected"
+			},
+			"apply": {
+				"model": "ftbjarmod:block/tube",
+				"x": 90,
+				"y": 0
+			}
+		},
+		{
+			"when": {
+				"w": "connected"
+			},
+			"apply": {
+				"model": "ftbjarmod:block/tube",
+				"x": 90,
+				"y": 90
+			}
+		},
+		{
+			"when": {
+				"e": "connected"
+			},
+			"apply": {
+				"model": "ftbjarmod:block/tube",
+				"x": 90,
+				"y": 270
+			}
+		}
+	]
+}

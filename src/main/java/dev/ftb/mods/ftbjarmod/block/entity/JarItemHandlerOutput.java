@@ -1,0 +1,24 @@
+package dev.ftb.mods.ftbjarmod.block.entity;
+
+import net.minecraft.world.item.ItemStack;
+
+import javax.annotation.Nonnull;
+
+/**
+ * @author LatvianModder
+ */
+public class JarItemHandlerOutput extends JarItemHandler {
+	public JarItemHandlerOutput(TemperedJarBlockEntity e, int s) {
+		super(e, s);
+	}
+
+	@Override
+	public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+		return false;
+	}
+
+	@Override
+	public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+		return stack;
+	}
+}

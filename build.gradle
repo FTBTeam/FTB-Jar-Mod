@@ -1,9 +1,9 @@
 plugins {
-	id 'forgified-fabric-loom' version '0.6.70'
-	id 'maven-publish'
+    id 'forgified-fabric-loom' version '0.6-SNAPSHOT'
+    id 'maven-publish'
 }
 
-apply from: 'https://raw.githubusercontent.com/MinecraftModDevelopment/Gradle-Collection/master/generic/markdown-git-changelog.gradle'
+apply from: 'https://files.latmod.com/public/markdown-git-changelog.gradle'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -14,110 +14,117 @@ archivesBaseName = project.archives_base_name
 group = project.maven_group
 
 loom {
-	silentMojangMappingsLicense()
+    silentMojangMappingsLicense()
 
-	mixinConfigs = [
-	]
+    mixinConfigs = [
+    ]
 
-	useFabricMixin = true
+    useFabricMixin = true
 
-	dataGen {
-		mod project.mod_id
-	}
+    dataGen {
+        mod project.mod_id
+    }
 
-	launches {
-		data {
-			arg "--existing", file("src/main/resources").absolutePath
-		}
-	}
+    launches {
+        data {
+            arg "--existing", file("src/main/resources").absolutePath
+        }
+    }
 }
 
 repositories {
-	maven { url "https://www.cursemaven.com" }
+    maven { url "https://www.cursemaven.com" }
 }
 
 dependencies {
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings minecraft.officialMojangMappings()
-	forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
-	modCompile "curse.maven:jei-238222:${jei_file}"
-	modCompile "curse.maven:kubejs-fabric-395864:${project.kubejs_file}"
-	modCompile "curse.maven:architectury-fabric-419697:${project.arch_file}"
-	modCompile "curse.maven:rhino-416294:${rhino_file}"
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings minecraft.officialMojangMappings()
+    forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+    modCompile "curse.maven:jei-238222:${jei_file}"
+    modCompile "curse.maven:kubejs-fabric-395864:${project.kubejs_file}"
+    modCompile "curse.maven:architectury-fabric-419697:${project.arch_file}"
+    modCompile "curse.maven:rhino-416294:${rhino_file}"
 }
 
 processResources {
-	inputs.property "version", project.version
+    inputs.property "version", project.version
 
-	filesMatching("META-INF/mods.toml") {
-		expand "version": project.version
-	}
+    filesMatching("META-INF/mods.toml") {
+        expand "version": project.version
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.encoding = "UTF-8"
-	def targetVersion = 8
-	if (JavaVersion.current().isJava9Compatible()) {
-		it.options.release = targetVersion
-	}
+    it.options.encoding = "UTF-8"
+    def targetVersion = 8
+    if (JavaVersion.current().isJava9Compatible()) {
+        it.options.release = targetVersion
+    }
 }
 
 java {
-	withSourcesJar()
+    withSourcesJar()
 }
 
 jar {
-	from("LICENSE") {
-		rename { "${it}_${project.archivesBaseName}" }
-	}
+    from("LICENSE") {
+        rename { "${it}_${project.archivesBaseName}" }
+    }
 
-	manifest {
-		attributes([
-				"Specification-Title"     : project.mod_id,
-				"Specification-Vendor"    : project.mod_author,
-				"Specification-Version"   : "1",
-				"Implementation-Title"    : project.name,
-				"Implementation-Version"  : version,
-				"Implementation-Vendor"   : project.mod_author,
-				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-		])
-	}
-
-	classifier "dev"
+    manifest {
+        attributes([
+                "Specification-Title"     : project.mod_id,
+                "Specification-Vendor"    : project.mod_author,
+                "Specification-Version"   : "1",
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : version,
+                "Implementation-Vendor"   : project.mod_author,
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
 }
 
-// configure the maven publication
 publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			// add all the jars that should be included when publishing to maven
-			artifact(remapJar) {
-				builtBy remapJar
-			}
-			artifact(sourcesJar) {
-				builtBy remapSourcesJar
-			}
-		}
-	}
+    publications {
+        mavenForge(MavenPublication) {
+            artifactId = rootProject.archivesBaseName
+            artifact(remapJar) {
+                classifier null
+            }
+            artifact(sourcesJar) {
+                builtBy remapSourcesJar
+            }
+        }
+    }
 
-	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-	repositories {
-		// Add repositories to publish to here.
-		// Notice: This block does NOT have the same function as the block in the top level.
-		// The repositories here will be used for publishing your artifact, not for
-		// retrieving dependencies.
-	}
+    repositories {
+        if (ENV.LOCAL_MAVEN) {
+            maven {
+                url = "file://${ENV.LOCAL_MAVEN}"
+            }
+        }
+
+        if (ENV.SAPS_TOKEN) {
+            maven {
+                url "https://maven.saps.dev/minecraft"
+                credentials {
+                    username = "latvian"
+                    password = "${ENV.SAPS_TOKEN}"
+                }
+            }
+        }
+    }
 }
 
 if (ENV.CURSEFORGE_KEY) {
-	curseforge {
-		apiKey = ENV.CURSEFORGE_KEY
-		project {
-			id = project.curseforge_id
-			releaseType = "release"
-			addGameVersion "1.16.5"
-			changelog = getGitChangelog
-			changelogType = 'markdown'
-		}
-	}
+    curseforge {
+        apiKey = ENV.CURSEFORGE_KEY
+        project {
+            id = project.curseforge_id
+            releaseType = "release"
+            addGameVersion "1.16.5"
+            changelog = getGitChangelog
+            changelogType = 'markdown'
+        }
+    }
 }

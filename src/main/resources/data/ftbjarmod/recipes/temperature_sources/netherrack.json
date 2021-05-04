@@ -1,0 +1,7 @@
+{
+	"type": "ftbjarmod:temperature_source",
+	"temperature": "low",
+	"burnTime": 6000,
+	"block": "minecraft:netherrack",
+	"resultBlock": "minecraft:cobblestone"
+}

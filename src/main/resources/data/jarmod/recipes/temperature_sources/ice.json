@@ -1,7 +1,0 @@
-{
-	"type": "jarmod:temperature_source",
-	"temperature": "subzero",
-	"burnTime": 2000,
-	"block": "minecraft:ice",
-	"resultBlock": "minecraft:water"
-}

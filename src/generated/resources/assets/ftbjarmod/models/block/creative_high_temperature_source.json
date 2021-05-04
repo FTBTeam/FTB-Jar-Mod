@@ -1,0 +1,6 @@
+{
+	"parent": "minecraft:block/cube_all",
+	"textures": {
+		"all": "ftbjarmod:block/creative_high_temperature_source"
+	}
+}

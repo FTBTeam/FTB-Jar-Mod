@@ -1,0 +1,13 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"group": "ftbjarmod:cast_iron",
+	"ingredients": [
+		{
+			"tag": "forge:storage_blocks/cast_iron"
+		}
+	],
+	"result": {
+		"item": "ftbjarmod:cast_iron_ingot",
+		"count": 9
+	}
+}

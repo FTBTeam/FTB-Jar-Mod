@@ -1,1 +1,1 @@
-# Jar Mod
+# FTB Jar Mod

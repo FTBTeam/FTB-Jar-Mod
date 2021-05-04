@@ -1,0 +1,15 @@
+{
+	"type": "ftbjarmod:jar",
+	"temperature": "subzero",
+	"inputFluids": [
+		{
+			"fluid": "minecraft:water",
+			"amount": 1000
+		}
+	],
+	"outputItems": [
+		{
+			"item": "minecraft:ice"
+		}
+	]
+}

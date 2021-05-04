@@ -1,7 +1,0 @@
-{
-	"type": "jarmod:temperature_source",
-	"temperature": "subzero",
-	"burnTime": 128000,
-	"block": "minecraft:blue_ice",
-	"resultBlock": "minecraft:packed_ice"
-}

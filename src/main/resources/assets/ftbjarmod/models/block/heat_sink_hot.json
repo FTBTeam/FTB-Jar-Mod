@@ -1,0 +1,7 @@
+{
+	"parent": "ftbjarmod:block/heat_sink_base",
+	"textures": {
+		"2": "ftbjarmod:block/heat_sink_side_hot",
+		"3": "ftbjarmod:block/heat_sink_base_hot"
+	}
+}

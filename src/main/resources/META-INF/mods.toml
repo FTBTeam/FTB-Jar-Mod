@@ -1,25 +1,25 @@
 modLoader = "javafml"
 loaderVersion = "[36,)"
-issueTrackerURL = "https://github.com/LatvianModder/Jar-Mod/issues"
-license = "GNU LGPLv3"
+issueTrackerURL = "https://github.com/FTBTeam/FTB-Jar-Mod/issues"
+license = "All Rights Reserved"
 
 [[mods]]
-modId = "jarmod"
+modId = "ftbjarmod"
 version = "${version}"
-displayName = "Jar Mod"
+displayName = "FTB Jar Mod"
 authors = "LatvianModder"
 description = '''
 Adds Jars. Nothing else.
 '''
 
-[[dependencies.jarmod]]
+[[dependencies.ftbjarmod]]
 modId = "forge"
 mandatory = true
 versionRange = "[36,)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.jarmod]]
+[[dependencies.ftbjarmod]]
 modId = "minecraft"
 mandatory = true
 versionRange = "[1.16.5,)"

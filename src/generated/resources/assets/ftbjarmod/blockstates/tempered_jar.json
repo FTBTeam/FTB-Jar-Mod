@@ -1,0 +1,16 @@
+{
+	"variants": {
+		"temperature=none": {
+			"model": "ftbjarmod:block/tempered_jar_none"
+		},
+		"temperature=low": {
+			"model": "ftbjarmod:block/tempered_jar_low"
+		},
+		"temperature=high": {
+			"model": "ftbjarmod:block/tempered_jar_high"
+		},
+		"temperature=subzero": {
+			"model": "ftbjarmod:block/tempered_jar_subzero"
+		}
+	}
+}

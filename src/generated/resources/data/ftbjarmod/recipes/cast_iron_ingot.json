@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"group": "ftbjarmod:cast_iron",
+	"pattern": [
+		"III",
+		"III",
+		"III"
+	],
+	"key": {
+		"I": {
+			"tag": "forge:nuggets/cast_iron"
+		}
+	},
+  "result": {
+		"item": "ftbjarmod:cast_iron_ingot"
+  }
+}

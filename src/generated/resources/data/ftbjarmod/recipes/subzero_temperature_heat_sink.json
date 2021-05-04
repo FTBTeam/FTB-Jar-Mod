@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"N N",
+		" H ",
+		"N N"
+	],
+	"key": {
+		"H": {
+			"item": "ftbjarmod:low_temperature_heat_sink"
+		},
+		"N": {
+			"item": "minecraft:packed_ice"
+		}
+	},
+	"result": {
+		"item": "ftbjarmod:subzero_temperature_heat_sink"
+	}
+}

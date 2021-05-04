@@ -1,7 +1,0 @@
-{
-	"type": "jarmod:temperature_source",
-	"temperature": "low",
-	"burnTime": 3600,
-	"block": "minecraft:torch",
-	"item": "minecraft:torch"
-}

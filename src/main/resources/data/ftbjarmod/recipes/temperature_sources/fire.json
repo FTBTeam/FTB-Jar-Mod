@@ -1,0 +1,14 @@
+{
+	"type": "ftbjarmod:temperature_source",
+	"temperature": "low",
+	"burnTime": 6000,
+	"block": "minecraft:fire",
+	"item": {
+		"item": "minecraft:flint_and_steel",
+		"nbt": {
+			"display": {
+				"Name": "{\"translate\": \"block.minecraft.fire\"}"
+			}
+		}
+	}
+}

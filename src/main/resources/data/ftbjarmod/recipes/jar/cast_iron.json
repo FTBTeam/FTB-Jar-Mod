@@ -1,0 +1,24 @@
+{
+	"type": "ftbjarmod:jar",
+	"temperature": "high",
+	"time": 600,
+	"inputItems": [
+		{
+			"ingredient": {
+				"tag": "forge:ingots/iron"
+			},
+			"count": 16
+		},
+		{
+			"ingredient": {
+				"tag": "minecraft:coals"
+			}
+		}
+	],
+	"outputItems": [
+		{
+			"item": "ftbjarmod:cast_iron_ingot",
+			"count": 16
+		}
+	]
+}
