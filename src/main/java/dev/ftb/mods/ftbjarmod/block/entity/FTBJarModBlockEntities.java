@@ -10,7 +10,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 /**
  * @author LatvianModder
  */
-public class JarModBlockEntities {
+public class FTBJarModBlockEntities {
 	public static final DeferredRegister<BlockEntityType<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, FTBJarMod.MOD_ID);
 
 	public static final RegistryObject<BlockEntityType<JarBlockEntity>> JAR = REGISTRY.register("jar", () -> BlockEntityType.Builder.of(JarBlockEntity::new, FTBJarModBlocks.JAR.get()).build(null));

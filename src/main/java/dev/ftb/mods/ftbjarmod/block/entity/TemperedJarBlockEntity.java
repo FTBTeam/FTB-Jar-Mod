@@ -3,6 +3,7 @@ package dev.ftb.mods.ftbjarmod.block.entity;
 import dev.ftb.mods.ftbjarmod.FTBJarMod;
 import dev.ftb.mods.ftbjarmod.block.FTBJarModBlocks;
 import dev.ftb.mods.ftbjarmod.recipe.JarRecipe;
+import dev.ftb.mods.ftblibrary.util.TimeUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.TextComponent;
@@ -23,34 +24,27 @@ import javax.annotation.Nullable;
  * @author LatvianModder
  */
 public class TemperedJarBlockEntity extends BlockEntity implements TickableBlockEntity {
-	public long recipeTime;
-	public long maxRecipeTime;
-	public long temperatureTime;
+	public int recipeTime;
+	public int temperatureTime;
 	public ResourceLocation recipe;
 	public boolean redstonePowered;
 
 	public TemperedJarBlockEntity() {
-		super(JarModBlockEntities.TEMPERED_JAR.get());
-		recipeTime = 0L;
-		maxRecipeTime = 0L;
-		temperatureTime = 0L;
+		super(FTBJarModBlockEntities.TEMPERED_JAR.get());
+		recipeTime = 0;
+		temperatureTime = 0;
 		recipe = null;
 		redstonePowered = false;
 	}
 
 	@Override
 	public void tick() {
-		if (maxRecipeTime == 0L) {
-			return;
-		}
+		if (recipeTime > 0) {
+			recipeTime--;
 
-		recipeTime++;
-
-		if (recipeTime >= maxRecipeTime) {
-			recipeTime = 0L;
-			maxRecipeTime = 0L;
-
-			JarRecipe r = getRecipe();
+			if (recipeTime == 0) {
+				JarRecipe r = getRecipe();
+			}
 		}
 	}
 
@@ -59,9 +53,9 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 			return;
 		}
 
-		if (maxRecipeTime > 0L) {
+		if (recipeTime > 0) {
 			if (!level.isClientSide()) {
-				player.displayClientMessage(new TextComponent((int) (recipeTime * 100D / (double) maxRecipeTime) + "%"), true);
+				player.displayClientMessage(new TextComponent(TimeUtils.prettyTimeString(recipeTime / 20L) + " left"), true);
 			}
 
 			return;
@@ -69,17 +63,21 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 
 		if (player.isCrouching() || recipe == null) {
 			if (level.isClientSide()) {
-				FTBJarMod.proxy.openTemperedJarScreen(this);
+				FTBJarMod.PROXY.openTemperedJarScreen(this);
 			}
 
 			return;
 		}
 
 		startProgress();
+
+		if (!level.isClientSide()) {
+			player.displayClientMessage(new TextComponent(TimeUtils.prettyTimeString(recipeTime / 20L) + " left"), true);
+		}
 	}
 
 	public void startProgress() {
-		if (maxRecipeTime > 0L || level.isClientSide()) {
+		if (level.isClientSide() || recipeTime > 0) {
 			return;
 		}
 
@@ -89,7 +87,8 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 			return;
 		}
 
-		maxRecipeTime = r.time;
+		recipeTime = r.time;
+		setChangedAndSend();
 	}
 
 	public void setRecipe(Player player, @Nullable JarRecipe r) {
@@ -105,8 +104,14 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 
 		// verify if player can set recipe //
 
-		recipeTime = 0L;
-		maxRecipeTime = 0L;
+		recipeTime = 0;
+
+		if (r == null) {
+			recipe = null;
+		} else {
+			recipe = r.getId();
+		}
+
 		setChangedAndSend();
 	}
 
@@ -122,20 +127,19 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 	}
 
 	@Override
-	public CompoundTag save(CompoundTag compound) {
-		compound.putLong("RecipeTime", recipeTime);
-		compound.putLong("MaxRecipeTime", maxRecipeTime);
-		compound.putLong("TemperatureTime", temperatureTime);
-		compound.putString("Recipe", recipe == null ? "" : recipe.toString());
-		return super.save(compound);
+	public CompoundTag save(CompoundTag tag) {
+		tag.putInt("RecipeTime", recipeTime);
+		tag.putInt("TemperatureTime", temperatureTime);
+		tag.putString("Recipe", recipe == null ? "" : recipe.toString());
+		return super.save(tag);
 	}
 
 	@Override
-	public void load(BlockState state, CompoundTag compound) {
-		super.load(state, compound);
-		recipeTime = compound.getLong("RecipeTime");
-		maxRecipeTime = compound.getLong("MaxRecipeTime");
-		String r = compound.getString("Recipe");
+	public void load(BlockState state, CompoundTag tag) {
+		super.load(state, tag);
+		recipeTime = tag.getInt("RecipeTime");
+		temperatureTime = tag.getInt("TemperatureTime");
+		String r = tag.getString("Recipe");
 		recipe = r.isEmpty() ? null : new ResourceLocation(r);
 	}
 

@@ -91,6 +91,7 @@ public class FTBJarModDataGenHandler {
 		@Override
 		protected void addTranslations() {
 			add("itemGroup.ftbjarmod", "FTB Jar Mod");
+			addItem(FTBJarModItems.FLUID, "Fluid Container");
 			addItem(FTBJarModItems.CAST_IRON_INGOT, "Cast Iron Ingot");
 			addItem(FTBJarModItems.CAST_IRON_NUGGET, "Cast Iron Nugget");
 			addItem(FTBJarModItems.CAST_IRON_GEAR, "Cast Iron Gear");
@@ -344,7 +345,7 @@ public class FTBJarModDataGenHandler {
 					.pattern("G G")
 					.pattern("GGG")
 					.define('G', FTBJarModItems.TEMPERED_GLASS.get())
-					.define('C', CAST_IRON_INGOT)
+					.define('C', FTBJarModItems.TUBE.get())
 					.save(consumer);
 
 			ShapedRecipeBuilder.shaped(FTBJarModItems.TUBE.get(), 12)

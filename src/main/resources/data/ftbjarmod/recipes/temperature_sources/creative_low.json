@@ -1,0 +1,7 @@
+{
+	"type": "ftbjarmod:temperature_source",
+	"temperature": "low",
+	"burnTime": 1000000000,
+	"block": "ftbjarmod:creative_low_temperature_source",
+	"resultBlock": "ftbjarmod:creative_low_temperature_source"
+}

@@ -1,0 +1,7 @@
+{
+	"type": "ftbjarmod:temperature_source",
+	"temperature": "high",
+	"burnTime": 1000000000,
+	"block": "ftbjarmod:creative_high_temperature_source",
+	"resultBlock": "ftbjarmod:creative_high_temperature_source"
+}

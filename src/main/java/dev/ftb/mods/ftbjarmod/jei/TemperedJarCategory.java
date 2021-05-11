@@ -6,7 +6,6 @@ import dev.ftb.mods.ftbjarmod.heat.Temperature;
 import dev.ftb.mods.ftbjarmod.item.FTBJarModItems;
 import dev.ftb.mods.ftbjarmod.recipe.ItemIngredientPair;
 import dev.ftb.mods.ftbjarmod.recipe.JarRecipe;
-import dev.ftb.mods.ftbjarmod.util.SortedFluids;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -36,7 +35,7 @@ public class TemperedJarCategory implements IRecipeCategory<JarRecipe> {
 	private final IDrawable icon;
 
 	public TemperedJarCategory(IGuiHelper guiHelper) {
-		background = guiHelper.drawableBuilder(new ResourceLocation(FTBJarMod.MOD_ID + ":textures/gui/tempered_jar_jei.png"), 0, 0, 128, 64).setTextureSize(128, 64).build();
+		background = guiHelper.drawableBuilder(new ResourceLocation(FTBJarMod.MOD_ID + ":textures/gui/tempered_jar_jei.png"), 0, 0, 150, 18).setTextureSize(256, 32).build();
 		icon = guiHelper.createDrawableIngredient(new ItemStack(FTBJarModItems.TEMPERED_JAR.get()));
 	}
 
@@ -94,25 +93,22 @@ public class TemperedJarCategory implements IRecipeCategory<JarRecipe> {
 		IGuiItemStackGroup itemStacks = layout.getItemStacks();
 		IGuiFluidStackGroup fluidStacks = layout.getFluidStacks();
 
-		heatStacks.init(0, true, 56, 40);
-
-		for (int i = 0; i < recipe.inputItems.size(); i++) {
-			itemStacks.init(i, true, 29, 3 + 20 * i);
-		}
-
-		for (int i = 0; i < recipe.outputItems.size(); i++) {
-			itemStacks.init(i + recipe.inputItems.size(), false, 81, 3 + 20 * i);
-		}
-
-		SortedFluids inputFluids = new SortedFluids(64, 8000, recipe.inputFluids.size(), i -> recipe.inputFluids.get(i).getAmount());
-		SortedFluids outputFluids = new SortedFluids(64, 8000, recipe.outputFluids.size(), i -> recipe.outputFluids.get(i).getAmount());
+		heatStacks.init(0, true, 67, 1);
 
 		for (int i = 0; i < recipe.inputFluids.size(); i++) {
-			fluidStacks.init(i, true, 2, inputFluids.offsets[i], 22, inputFluids.heights[i], inputFluids.amounts[i], false, null);
+			fluidStacks.init(i, true, 1 + i * 20, 1);
+		}
+
+		for (int i = 0; i < recipe.inputItems.size(); i++) {
+			itemStacks.init(i, true, (i + recipe.inputFluids.size()) * 20, 1);
 		}
 
 		for (int i = 0; i < recipe.outputFluids.size(); i++) {
-			fluidStacks.init(i + recipe.inputFluids.size(), false, 104, outputFluids.offsets[i], 22, outputFluids.heights[i], outputFluids.amounts[i], false, null);
+			fluidStacks.init(i + recipe.inputFluids.size(), false, 93 + i * 20, 1);
+		}
+
+		for (int i = 0; i < recipe.outputItems.size(); i++) {
+			itemStacks.init(i + recipe.inputItems.size(), false, 92 + (i + recipe.outputFluids.size()) * 20, 0);
 		}
 
 		heatStacks.set(ingredients);

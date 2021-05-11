@@ -69,12 +69,12 @@ public class JarRecipe implements Recipe<NoInventory> {
 
 	@Override
 	public RecipeSerializer<?> getSerializer() {
-		return JarModRecipeSerializers.JAR.get();
+		return FTBJarModRecipeSerializers.JAR.get();
 	}
 
 	@Override
 	public RecipeType<?> getType() {
-		return JarModRecipeSerializers.JAR_TYPE;
+		return FTBJarModRecipeSerializers.JAR_TYPE;
 	}
 
 	public boolean isAvailableFor(Player player) {

@@ -1,7 +1,7 @@
 package dev.ftb.mods.ftbjarmod.block.entity;
 
 import dev.ftb.mods.ftbjarmod.heat.Temperature;
-import dev.ftb.mods.ftbjarmod.recipe.JarModRecipeSerializers;
+import dev.ftb.mods.ftbjarmod.recipe.FTBJarModRecipeSerializers;
 import dev.ftb.mods.ftbjarmod.recipe.NoInventory;
 import dev.ftb.mods.ftbjarmod.recipe.TemperatureSourceRecipe;
 import net.minecraft.core.BlockPos;
@@ -20,7 +20,7 @@ public class HeatSinkBlockEntity extends BlockEntity implements TickableBlockEnt
 	public TemperatureSourceRecipe temperatureSource = TemperatureSourceRecipe.NONE;
 
 	public HeatSinkBlockEntity() {
-		super(JarModBlockEntities.HEAT_SINK.get());
+		super(FTBJarModBlockEntities.HEAT_SINK.get());
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public class HeatSinkBlockEntity extends BlockEntity implements TickableBlockEnt
 		BlockState downState = level.getBlockState(down);
 
 		if (downState != Blocks.AIR.defaultBlockState()) {
-			for (TemperatureSourceRecipe recipe : level.getRecipeManager().getRecipesFor(JarModRecipeSerializers.TEMPERATURE_SOURCE_TYPE, NoInventory.INSTANCE, level)) {
+			for (TemperatureSourceRecipe recipe : level.getRecipeManager().getRecipesFor(FTBJarModRecipeSerializers.TEMPERATURE_SOURCE_TYPE, NoInventory.INSTANCE, level)) {
 				if (recipe.test(downState)) {
 					temperatureSource = recipe;
 					break;

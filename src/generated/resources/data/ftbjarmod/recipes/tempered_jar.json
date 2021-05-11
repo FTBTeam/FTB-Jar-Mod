@@ -11,10 +11,10 @@
 			"item": "ftbjarmod:tempered_glass"
 		},
 		"C": {
-			"tag": "forge:ingots/cast_iron"
+			"item": "ftbjarmod:tube"
 		}
 	},
-  "result": {
+	"result": {
 		"item": "ftbjarmod:tempered_jar"
-  }
+	}
 }

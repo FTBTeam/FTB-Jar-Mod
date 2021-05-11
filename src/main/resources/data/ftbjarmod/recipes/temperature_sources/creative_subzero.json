@@ -1,0 +1,7 @@
+{
+	"type": "ftbjarmod:temperature_source",
+	"temperature": "subzero",
+	"burnTime": 1000000000,
+	"block": "ftbjarmod:creative_subzero_temperature_source",
+	"resultBlock": "ftbjarmod:creative_subzero_temperature_source"
+}

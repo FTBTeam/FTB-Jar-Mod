@@ -28,7 +28,7 @@ public class JarBlockEntity extends BlockEntity {
 	public final LazyOptional<IFluidHandler> tankOptional;
 
 	public JarBlockEntity() {
-		super(JarModBlockEntities.JAR.get());
+		super(FTBJarModBlockEntities.JAR.get());
 		tank = new FluidTank(8000);
 		tankOptional = LazyOptional.of(() -> tank);
 	}
@@ -40,9 +40,9 @@ public class JarBlockEntity extends BlockEntity {
 
 		if (!level.isClientSide()) {
 			if (tank.isEmpty()) {
-				player.displayClientMessage(new TranslatableComponent("block.jarmod.jar.empty"), true);
+				player.displayClientMessage(new TranslatableComponent("block.ftbjarmod.jar.empty"), true);
 			} else {
-				player.displayClientMessage(new TranslatableComponent("block.jarmod.jar.mb", tank.getFluidAmount(), tank.getFluid().getDisplayName()), true);
+				player.displayClientMessage(new TranslatableComponent("block.ftbjarmod.jar.mb", tank.getFluidAmount(), tank.getFluid().getDisplayName()), true);
 			}
 		}
 	}

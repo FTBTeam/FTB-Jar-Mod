@@ -3,7 +3,8 @@ package dev.ftb.mods.ftbjarmod.jei;
 import dev.ftb.mods.ftbjarmod.FTBJarMod;
 import dev.ftb.mods.ftbjarmod.heat.Temperature;
 import dev.ftb.mods.ftbjarmod.item.FTBJarModItems;
-import dev.ftb.mods.ftbjarmod.recipe.JarModRecipeSerializers;
+import dev.ftb.mods.ftbjarmod.item.FluidItem;
+import dev.ftb.mods.ftbjarmod.recipe.FTBJarModRecipeSerializers;
 import dev.ftb.mods.ftbjarmod.recipe.NoInventory;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -11,6 +12,7 @@ import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
+import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -37,6 +39,11 @@ public class FTBJarModJEIPlugin implements IModPlugin {
 	}
 
 	@Override
+	public void registerItemSubtypes(ISubtypeRegistration registration) {
+		registration.registerSubtypeInterpreter(FTBJarModItems.FLUID.get(), FluidItem::getFluidStackHash);
+	}
+
+	@Override
 	public void registerIngredients(IModIngredientRegistration registration) {
 		registration.register(FTBJarModIngredients.TEMPERATURE, Arrays.asList(Temperature.VALUES), new TemperatureHelper(), new TemperatureRenderer());
 	}
@@ -50,8 +57,8 @@ public class FTBJarModJEIPlugin implements IModPlugin {
 	@Override
 	public void registerRecipes(IRecipeRegistration r) {
 		Level level = Minecraft.getInstance().level;
-		r.addRecipes(level.getRecipeManager().getRecipesFor(JarModRecipeSerializers.JAR_TYPE, NoInventory.INSTANCE, level), TemperedJarCategory.UID);
-		r.addRecipes(level.getRecipeManager().getRecipesFor(JarModRecipeSerializers.TEMPERATURE_SOURCE_TYPE, NoInventory.INSTANCE, level), TemperatureSourceCategory.UID);
+		r.addRecipes(level.getRecipeManager().getRecipesFor(FTBJarModRecipeSerializers.JAR_TYPE, NoInventory.INSTANCE, level), TemperedJarCategory.UID);
+		r.addRecipes(level.getRecipeManager().getRecipesFor(FTBJarModRecipeSerializers.TEMPERATURE_SOURCE_TYPE, NoInventory.INSTANCE, level), TemperatureSourceCategory.UID);
 	}
 
 	@Override

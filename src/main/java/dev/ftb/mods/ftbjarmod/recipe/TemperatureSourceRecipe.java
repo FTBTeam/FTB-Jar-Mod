@@ -137,11 +137,11 @@ public class TemperatureSourceRecipe implements Recipe<NoInventory> {
 
 	@Override
 	public RecipeSerializer<?> getSerializer() {
-		return JarModRecipeSerializers.TEMPERATURE_SOURCE.get();
+		return FTBJarModRecipeSerializers.TEMPERATURE_SOURCE.get();
 	}
 
 	@Override
 	public RecipeType<?> getType() {
-		return JarModRecipeSerializers.TEMPERATURE_SOURCE_TYPE;
+		return FTBJarModRecipeSerializers.TEMPERATURE_SOURCE_TYPE;
 	}
 }

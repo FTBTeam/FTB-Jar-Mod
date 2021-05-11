@@ -1,13 +1,13 @@
 package dev.ftb.mods.ftbjarmod;
 
 import dev.ftb.mods.ftbjarmod.block.FTBJarModBlocks;
-import dev.ftb.mods.ftbjarmod.block.entity.JarModBlockEntities;
+import dev.ftb.mods.ftbjarmod.block.entity.FTBJarModBlockEntities;
 import dev.ftb.mods.ftbjarmod.client.FTBJarModClient;
 import dev.ftb.mods.ftbjarmod.client.gui.FTBJarModContainers;
 import dev.ftb.mods.ftbjarmod.item.FTBJarModItems;
 import dev.ftb.mods.ftbjarmod.kubejs.FTBJarModKubeJSIntegration;
 import dev.ftb.mods.ftbjarmod.net.FTBJarModNet;
-import dev.ftb.mods.ftbjarmod.recipe.JarModRecipeSerializers;
+import dev.ftb.mods.ftbjarmod.recipe.FTBJarModRecipeSerializers;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
@@ -26,13 +26,13 @@ public class FTBJarMod {
 	public static final String MOD_ID = "ftbjarmod";
 
 	public static FTBJarMod instance;
-	public static FTBJarModCommon proxy;
+	public static FTBJarModCommon PROXY;
 
 	public static CreativeModeTab group;
 
 	public FTBJarMod() {
 		instance = this;
-		proxy = DistExecutor.safeRunForDist(() -> FTBJarModClient::new, () -> FTBJarModCommon::new);
+		PROXY = DistExecutor.safeRunForDist(() -> FTBJarModClient::new, () -> FTBJarModCommon::new);
 
 		group = new CreativeModeTab(MOD_ID) {
 			@Override
@@ -44,12 +44,12 @@ public class FTBJarMod {
 
 		FTBJarModBlocks.REGISTRY.register(FMLJavaModLoadingContext.get().getModEventBus());
 		FTBJarModItems.REGISTRY.register(FMLJavaModLoadingContext.get().getModEventBus());
-		JarModBlockEntities.REGISTRY.register(FMLJavaModLoadingContext.get().getModEventBus());
-		JarModRecipeSerializers.REGISTRY.register(FMLJavaModLoadingContext.get().getModEventBus());
+		FTBJarModBlockEntities.REGISTRY.register(FMLJavaModLoadingContext.get().getModEventBus());
+		FTBJarModRecipeSerializers.REGISTRY.register(FMLJavaModLoadingContext.get().getModEventBus());
 		FTBJarModContainers.REGISTRY.register(FMLJavaModLoadingContext.get().getModEventBus());
 
 		FTBJarModNet.init();
-		proxy.init();
+		PROXY.init();
 
 		if (ModList.get().isLoaded("kubejs")) {
 			initKJS();

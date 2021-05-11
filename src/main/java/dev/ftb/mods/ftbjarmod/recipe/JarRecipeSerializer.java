@@ -3,21 +3,46 @@ package dev.ftb.mods.ftbjarmod.recipe;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.ftb.mods.ftbjarmod.heat.Temperature;
+import dev.ftb.mods.ftbjarmod.item.FluidItem;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 /**
  * @author LatvianModder
  */
 public class JarRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<JarRecipe> {
+	public static FluidStack parseFluid(JsonObject o) {
+		if (o.has("fluid")) {
+			Fluid fluid = FluidItem.FLUID_REGISTRY.getValue(new ResourceLocation(o.get("fluid").getAsString()));
+			int amount = FluidAttributes.BUCKET_VOLUME;
+
+			if (o.has("amount")) {
+				amount = o.get("amount").getAsInt();
+			}
+
+			if (fluid != null && fluid != Fluids.EMPTY && amount > 0) {
+				FluidStack fs = new FluidStack(fluid, amount);
+
+				if (o.has("nbt")) {
+
+				}
+
+				return fs;
+			}
+		}
+
+		return FluidStack.EMPTY;
+	}
+
 	@Override
 	public JarRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
 		JarRecipe r = new JarRecipe(recipeId, json.has("group") ? json.get("group").getAsString() : "");
@@ -34,51 +59,34 @@ public class JarRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>>
 			r.temperature = Temperature.byName(json.get("temperature").getAsString());
 		}
 
-		if (json.has("inputItems")) {
-			for (JsonElement e : json.get("inputItems").getAsJsonArray()) {
+		if (json.has("input")) {
+			for (JsonElement e : json.get("input").getAsJsonArray()) {
 				JsonObject o = e.getAsJsonObject();
-				Ingredient ingredient = Ingredient.fromJson(o.get("ingredient"));
-				int count = o.has("count") ? o.get("count").getAsInt() : 1;
-				r.inputItems.add(new ItemIngredientPair(ingredient, count));
-			}
-		}
+				FluidStack fs = parseFluid(o);
 
-		if (json.has("inputFluids")) {
-			for (JsonElement e : json.get("inputFluids").getAsJsonArray()) {
-				JsonObject o = e.getAsJsonObject();
-				FluidStack stack = new FluidStack(ForgeRegistries.FLUIDS.getValue(new ResourceLocation(o.get("fluid").getAsString())), FluidAttributes.BUCKET_VOLUME);
-
-				if (o.has("amount")) {
-					stack.setAmount(o.get("amount").getAsInt());
-				}
-
-				if (!stack.isEmpty()) {
-					r.inputFluids.add(stack);
+				if (!fs.isEmpty()) {
+					r.inputFluids.add(fs);
+				} else {
+					Ingredient ingredient = Ingredient.fromJson(o.get("ingredient"));
+					int count = o.has("count") ? o.get("count").getAsInt() : 1;
+					r.inputItems.add(new ItemIngredientPair(ingredient, count));
 				}
 			}
 		}
 
-		if (json.has("outputItems")) {
-			for (JsonElement e : json.get("outputItems").getAsJsonArray()) {
-				ItemStack stack = ShapedRecipe.itemFromJson(e.getAsJsonObject());
-
-				if (!stack.isEmpty()) {
-					r.outputItems.add(stack);
-				}
-			}
-		}
-
-		if (json.has("outputFluids")) {
-			for (JsonElement e : json.get("outputFluids").getAsJsonArray()) {
+		if (json.has("output")) {
+			for (JsonElement e : json.get("output").getAsJsonArray()) {
 				JsonObject o = e.getAsJsonObject();
-				FluidStack stack = new FluidStack(ForgeRegistries.FLUIDS.getValue(new ResourceLocation(o.get("fluid").getAsString())), FluidAttributes.BUCKET_VOLUME);
+				FluidStack fs = parseFluid(o);
 
-				if (o.has("amount")) {
-					stack.setAmount(o.get("amount").getAsInt());
-				}
+				if (!fs.isEmpty()) {
+					r.outputFluids.add(fs);
+				} else {
+					ItemStack stack = ShapedRecipe.itemFromJson(e.getAsJsonObject());
 
-				if (!stack.isEmpty()) {
-					r.outputFluids.add(stack);
+					if (!stack.isEmpty()) {
+						r.outputItems.add(stack);
+					}
 				}
 			}
 		}

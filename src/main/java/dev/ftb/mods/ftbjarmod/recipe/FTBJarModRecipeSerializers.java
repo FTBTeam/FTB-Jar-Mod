@@ -10,7 +10,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 /**
  * @author LatvianModder
  */
-public class JarModRecipeSerializers {
+public class FTBJarModRecipeSerializers {
 	public static final DeferredRegister<RecipeSerializer<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, FTBJarMod.MOD_ID);
 
 	public static final RegistryObject<RecipeSerializer<?>> JAR = REGISTRY.register("jar", JarRecipeSerializer::new);

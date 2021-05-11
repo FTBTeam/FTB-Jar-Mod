@@ -3,9 +3,10 @@ package dev.ftb.mods.ftbjarmod.heat;
 import dev.ftb.mods.ftbjarmod.FTBJarMod;
 import dev.ftb.mods.ftbjarmod.block.CreativeTemperatureSourceBlock;
 import dev.ftb.mods.ftbjarmod.block.HeatSinkBlock;
-import dev.ftb.mods.ftbjarmod.recipe.JarModRecipeSerializers;
+import dev.ftb.mods.ftbjarmod.recipe.FTBJarModRecipeSerializers;
 import dev.ftb.mods.ftbjarmod.recipe.NoInventory;
 import dev.ftb.mods.ftbjarmod.recipe.TemperatureSourceRecipe;
+import dev.ftb.mods.ftblibrary.icon.Icon;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -34,12 +35,14 @@ public enum Temperature implements StringRepresentable {
 	private final int value;
 	private final Component name;
 	private final ResourceLocation texture;
+	private final Icon icon;
 
 	Temperature(String n, int v) {
 		id = n;
 		value = v;
 		name = new TranslatableComponent("ftbjarmod.temperature." + id);
 		texture = new ResourceLocation(FTBJarMod.MOD_ID, "textures/gui/temperature/" + id + ".png");
+		icon = Icon.getIcon(texture);
 	}
 
 	@Override
@@ -57,6 +60,10 @@ public enum Temperature implements StringRepresentable {
 
 	public ResourceLocation getTexture() {
 		return texture;
+	}
+
+	public Icon getIcon() {
+		return icon;
 	}
 
 	public boolean isNone() {
@@ -88,7 +95,7 @@ public enum Temperature implements StringRepresentable {
 			return NONE;
 		}
 
-		for (TemperatureSourceRecipe recipe : level.getRecipeManager().getRecipesFor(JarModRecipeSerializers.TEMPERATURE_SOURCE_TYPE, NoInventory.INSTANCE, level)) {
+		for (TemperatureSourceRecipe recipe : level.getRecipeManager().getRecipesFor(FTBJarModRecipeSerializers.TEMPERATURE_SOURCE_TYPE, NoInventory.INSTANCE, level)) {
 			if (recipe.test(state)) {
 				return recipe.temperature;
 			}

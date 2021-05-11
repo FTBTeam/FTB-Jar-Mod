@@ -20,6 +20,7 @@
 	"ftbjarmod.temperature.low": "Low Temperature",
 	"ftbjarmod.temperature.none": "No Temperature",
 	"ftbjarmod.temperature.subzero": "Sub-Zero Temperature",
+	"item.ftbjarmod.fluid": "Fluid Container",
 	"item.ftbjarmod.cast_iron_gear": "Cast Iron Gear",
 	"item.ftbjarmod.cast_iron_ingot": "Cast Iron Ingot",
 	"item.ftbjarmod.cast_iron_nugget": "Cast Iron Nugget",
