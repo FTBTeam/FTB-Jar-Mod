@@ -35,7 +35,7 @@ public class TemperedJarCategory implements IRecipeCategory<JarRecipe> {
 	private final IDrawable icon;
 
 	public TemperedJarCategory(IGuiHelper guiHelper) {
-		background = guiHelper.drawableBuilder(new ResourceLocation(FTBJarMod.MOD_ID + ":textures/gui/tempered_jar_jei.png"), 0, 0, 150, 18).setTextureSize(256, 32).build();
+		background = guiHelper.drawableBuilder(new ResourceLocation(FTBJarMod.MOD_ID + ":textures/gui/tempered_jar_recipe.png"), 0, 0, 150, 18).setTextureSize(256, 32).build();
 		icon = guiHelper.createDrawableIngredient(new ItemStack(FTBJarModItems.TEMPERED_JAR.get()));
 	}
 
@@ -100,7 +100,7 @@ public class TemperedJarCategory implements IRecipeCategory<JarRecipe> {
 		}
 
 		for (int i = 0; i < recipe.inputItems.size(); i++) {
-			itemStacks.init(i, true, (i + recipe.inputFluids.size()) * 20, 1);
+			itemStacks.init(i, true, (i + recipe.inputFluids.size()) * 20, 0);
 		}
 
 		for (int i = 0; i < recipe.outputFluids.size(); i++) {

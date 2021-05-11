@@ -33,7 +33,7 @@ import net.minecraftforge.fluids.FluidStack;
  * @author LatvianModder
  */
 public class SelectJarRecipeScreen extends ButtonListBaseScreen {
-	private static final Icon TEXTURE = new ImageIcon(new ResourceLocation(FTBJarMod.MOD_ID + ":textures/gui/tempered_jar_jei.png")).withUV(0, 0, 150, 18, 256, 32);
+	private static final Icon TEXTURE = new ImageIcon(new ResourceLocation(FTBJarMod.MOD_ID + ":textures/gui/tempered_jar_recipe.png")).withUV(0, 0, 150, 18, 256, 32);
 
 	public static class ItemButton extends Widget {
 		public final ItemStack[] items;
@@ -239,9 +239,16 @@ public class SelectJarRecipeScreen extends ButtonListBaseScreen {
 	@Override
 	public void addButtons(Panel panel) {
 		Minecraft mc = Minecraft.getInstance();
+		boolean first = true;
 
 		for (JarRecipe recipe : mc.level.getRecipeManager().getRecipesFor(FTBJarModRecipeSerializers.JAR_TYPE, NoInventory.INSTANCE, mc.level)) {
 			if (recipe.isAvailableFor(mc.player)) {
+				if (first) {
+					first = false;
+				} else {
+					panel.add(new Widget(panel).setPosAndSize(0, 0, 1, 5));
+				}
+
 				panel.add(new JarRecipeButton(panel, recipe));
 			}
 		}
