@@ -2,8 +2,11 @@ package dev.ftb.mods.ftbjarmod.block.entity;
 
 import dev.ftb.mods.ftbjarmod.FTBJarMod;
 import dev.ftb.mods.ftbjarmod.block.FTBJarModBlocks;
+import dev.ftb.mods.ftbjarmod.block.TubeBlock;
 import dev.ftb.mods.ftbjarmod.recipe.JarRecipe;
 import dev.ftb.mods.ftblibrary.util.TimeUtils;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.TextComponent;
@@ -13,17 +16,32 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.TickableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author LatvianModder
  */
 public class TemperedJarBlockEntity extends BlockEntity implements TickableBlockEntity {
+	private static final Direction[] DIRECTIONS = Direction.values();
+
 	public int recipeTime;
 	public int temperatureTime;
 	public ResourceLocation recipe;
@@ -87,8 +105,68 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 			return;
 		}
 
+		Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks = getConnectedBlocks();
+		System.out.println(connectedBlocks.getLeft() + " / " + connectedBlocks.getRight());
+
 		recipeTime = r.time;
 		setChangedAndSend();
+	}
+
+	public Pair<Set<IItemHandler>, Set<IFluidHandler>> getConnectedBlocks() {
+		LinkedHashMap<BlockPos, BlockState> known = new LinkedHashMap<>();
+		Set<BlockPos> traversed = new HashSet<>();
+		Deque<BlockPos> openSet = new ArrayDeque<>();
+		openSet.add(worldPosition);
+		traversed.add(worldPosition);
+
+		while (!openSet.isEmpty()) {
+			BlockPos ptr = openSet.pop();
+			BlockState state = Blocks.AIR.defaultBlockState();
+
+			if ((ptr == worldPosition || level.isLoaded(ptr) && ((state = level.getBlockState(ptr)).getBlock()) instanceof TubeBlock) && known.put(ptr, state) == null) {
+				if (known.size() >= 64) {
+					break;
+				}
+
+				for (Direction side : DIRECTIONS) {
+					BlockPos offset = ptr.relative(side);
+
+					if (traversed.add(offset)) {
+						openSet.add(offset);
+					}
+				}
+			}
+		}
+
+		known.remove(worldPosition);
+		Set<IItemHandler> itemHandlers = new LinkedHashSet<>();
+		Set<IFluidHandler> fluidHandlers = new LinkedHashSet<>();
+
+		for (Map.Entry<BlockPos, BlockState> entry : known.entrySet()) {
+			if (entry.getValue().getBlock() instanceof TubeBlock) {
+				for (int i = 0; i < 6; i++) {
+					if (entry.getValue().getValue(TubeBlock.TUBE[i]).hasConnection()) {
+						BlockEntity blockEntity = level.getBlockEntity(entry.getKey().relative(DIRECTIONS[i]));
+
+						if (blockEntity != null) {
+							IItemHandler itemHandler = blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, DIRECTIONS[i].getOpposite()).orElse(null);
+
+							if (itemHandler != null) {
+								itemHandlers.add(itemHandler);
+							}
+
+							IFluidHandler fluidHandler = blockEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, DIRECTIONS[i].getOpposite()).orElse(null);
+
+							if (fluidHandler != null) {
+								fluidHandlers.add(fluidHandler);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return Pair.of(itemHandlers, fluidHandlers);
 	}
 
 	public void setRecipe(Player player, @Nullable JarRecipe r) {

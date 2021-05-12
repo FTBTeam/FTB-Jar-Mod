@@ -5,6 +5,7 @@ import dev.ftb.mods.ftbjarmod.block.entity.TemperedJarBlockEntity;
 import dev.ftb.mods.ftbjarmod.heat.Temperature;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -14,7 +15,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Random;
 
 /**
  * @author LatvianModder
@@ -76,6 +81,19 @@ public class TemperedJarBlock extends JarBlock {
 
 		if (entity instanceof TemperedJarBlockEntity) {
 			((TemperedJarBlockEntity) entity).neighborChanged();
+		}
+	}
+
+	@Override
+	@OnlyIn(Dist.CLIENT)
+	public void animateTick(BlockState stateIn, Level worldIn, BlockPos pos, Random rand) {
+		BlockEntity entity = worldIn.getBlockEntity(pos);
+		Temperature temperature = stateIn.getValue(TEMPERATURE);
+
+		if (entity instanceof TemperedJarBlockEntity && ((TemperedJarBlockEntity) entity).recipeTime > 0) {
+			for (int i = 0; i < 5; i++) {
+				worldIn.addParticle(temperature == Temperature.HIGH ? ParticleTypes.SOUL_FIRE_FLAME : temperature == Temperature.LOW ? ParticleTypes.FLAME : ParticleTypes.SNEEZE, pos.getX() + rand.nextFloat(), pos.getY() + rand.nextFloat() / 3F, pos.getZ() + rand.nextFloat(), 0D, 0D, 0D);
+			}
 		}
 	}
 }
