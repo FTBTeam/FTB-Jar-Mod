@@ -3,26 +3,29 @@ package dev.ftb.mods.ftbjarmod.kubejs;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.ftb.mods.ftbjarmod.item.FluidItem;
 import dev.latvian.kubejs.fluid.FluidStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.IngredientStackJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.util.ListJS;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.Nullable;
 
 public class JarRecipeJS extends RecipeJS {
+	private ItemStackJS fromFluid(FluidStackJS fluid) {
+		CompoundTag tag = new CompoundTag();
+		fluid.getFluidStack().write(tag);
+		return ItemStackJS.of(FluidItem.of(FluidStack.loadFluidStackFromNBT(tag)));
+	}
+
 	@Override
 	public void create(ListJS args) {
-		JsonArray outputFluids = new JsonArray();
-		JsonArray inputFluids = new JsonArray();
-
 		for (Object o : ListJS.orSelf(args.get(0))) {
 			if (o instanceof FluidStackJS) {
-				JsonObject j = new JsonObject();
-				j.addProperty("fluid", ((FluidStackJS) o).getId());
-				j.addProperty("amount", ((FluidStackJS) o).getAmount());
-				outputFluids.add(j);
+				outputItems.add(fromFluid((FluidStackJS) o));
 			} else {
 				outputItems.add(parseResultItem(o));
 			}
@@ -30,17 +33,11 @@ public class JarRecipeJS extends RecipeJS {
 
 		for (Object o : ListJS.orSelf(args.get(1))) {
 			if (o instanceof FluidStackJS) {
-				JsonObject j = new JsonObject();
-				j.addProperty("fluid", ((FluidStackJS) o).getId());
-				j.addProperty("amount", ((FluidStackJS) o).getAmount());
-				inputFluids.add(j);
+				inputItems.add(fromFluid((FluidStackJS) o).asIngredientStack());
 			} else {
 				inputItems.add(parseIngredientItem(o).asIngredientStack());
 			}
 		}
-
-		json.add("outputFluids", outputFluids);
-		json.add("inputFluids", inputFluids);
 	}
 
 	public JarRecipeJS time(int t) {
@@ -61,22 +58,22 @@ public class JarRecipeJS extends RecipeJS {
 		return this;
 	}
 
-	public JarRecipeJS highTemperature() {
+	public JarRecipeJS highTemp() {
 		return temperature("high");
 	}
 
-	public JarRecipeJS lowTemperature() {
+	public JarRecipeJS lowTemp() {
 		return temperature("low");
 	}
 
-	public JarRecipeJS subzeroTemperature() {
+	public JarRecipeJS subzeroTemp() {
 		return temperature("subzero");
 	}
 
 	@Override
 	public void deserialize() {
-		inputItems.addAll(parseIngredientItemStackList(json.get("inputItems")));
-		outputItems.addAll(parseResultItemList(json.get("outputItems")));
+		inputItems.addAll(parseIngredientItemStackList(json.get("input")));
+		outputItems.addAll(parseResultItemList(json.get("output")));
 	}
 
 	@Override
@@ -88,7 +85,7 @@ public class JarRecipeJS extends RecipeJS {
 				array.add(in.toResultJson());
 			}
 
-			json.add("outputItems", array);
+			json.add("output", array);
 		}
 
 		if (serializeInputs) {
@@ -98,7 +95,7 @@ public class JarRecipeJS extends RecipeJS {
 				array.add(in.toJson());
 			}
 
-			json.add("inputItems", array);
+			json.add("input", array);
 		}
 	}
 

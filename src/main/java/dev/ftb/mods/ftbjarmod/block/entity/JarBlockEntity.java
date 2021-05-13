@@ -1,5 +1,6 @@
 package dev.ftb.mods.ftbjarmod.block.entity;
 
+import dev.ftb.mods.ftbjarmod.item.FluidItem;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
@@ -13,6 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -41,7 +43,14 @@ public class JarBlockEntity extends BlockEntity {
 	}
 
 	public void rightClick(Player player, InteractionHand hand, ItemStack stack) {
-		if (FluidUtil.interactWithFluidHandler(player, hand, tank)) {
+		if (stack.getItem() instanceof FluidItem) {
+			FluidStack fs = FluidItem.getFluidStack(stack);
+
+			if (!fs.isEmpty() && tank.fill(fs, IFluidHandler.FluidAction.SIMULATE) == fs.getAmount()) {
+				tank.fill(fs, IFluidHandler.FluidAction.EXECUTE);
+				stack.shrink(1);
+			}
+		} else if (FluidUtil.interactWithFluidHandler(player, hand, tank)) {
 			// return;
 		}
 

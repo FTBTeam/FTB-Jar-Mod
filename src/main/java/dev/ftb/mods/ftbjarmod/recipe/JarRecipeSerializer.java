@@ -10,9 +10,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
@@ -20,29 +17,6 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
  * @author LatvianModder
  */
 public class JarRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<JarRecipe> {
-	public static FluidStack parseFluid(JsonObject o) {
-		if (o.has("fluid")) {
-			Fluid fluid = FluidItem.FLUID_REGISTRY.getValue(new ResourceLocation(o.get("fluid").getAsString()));
-			int amount = FluidAttributes.BUCKET_VOLUME;
-
-			if (o.has("amount")) {
-				amount = o.get("amount").getAsInt();
-			}
-
-			if (fluid != null && fluid != Fluids.EMPTY && amount > 0) {
-				FluidStack fs = new FluidStack(fluid, amount);
-
-				if (o.has("nbt")) {
-
-				}
-
-				return fs;
-			}
-		}
-
-		return FluidStack.EMPTY;
-	}
-
 	@Override
 	public JarRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
 		JarRecipe r = new JarRecipe(recipeId, json.has("group") ? json.get("group").getAsString() : "");
@@ -66,13 +40,12 @@ public class JarRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>>
 		if (json.has("input")) {
 			for (JsonElement e : json.get("input").getAsJsonArray()) {
 				JsonObject o = e.getAsJsonObject();
-				FluidStack fs = parseFluid(o);
+				Ingredient ingredient = Ingredient.fromJson(o.get("ingredient"));
+				int count = o.has("count") ? o.get("count").getAsInt() : 1;
 
-				if (!fs.isEmpty()) {
-					r.inputFluids.add(fs);
+				if (ingredient.getItems().length == 1 && ingredient.getItems()[0].getItem() instanceof FluidItem) {
+					r.inputFluids.add(FluidItem.getFluidStack(ingredient.getItems()[0]));
 				} else {
-					Ingredient ingredient = Ingredient.fromJson(o.get("ingredient"));
-					int count = o.has("count") ? o.get("count").getAsInt() : 1;
 					r.inputItems.add(new ItemIngredientPair(ingredient, count));
 				}
 			}
@@ -81,16 +54,12 @@ public class JarRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>>
 		if (json.has("output")) {
 			for (JsonElement e : json.get("output").getAsJsonArray()) {
 				JsonObject o = e.getAsJsonObject();
-				FluidStack fs = parseFluid(o);
+				ItemStack stack = ShapedRecipe.itemFromJson(o);
 
-				if (!fs.isEmpty()) {
-					r.outputFluids.add(fs);
+				if (stack.getItem() instanceof FluidItem) {
+					r.outputFluids.add(FluidItem.getFluidStack(stack));
 				} else {
-					ItemStack stack = ShapedRecipe.itemFromJson(e.getAsJsonObject());
-
-					if (!stack.isEmpty()) {
-						r.outputItems.add(stack);
-					}
+					r.outputItems.add(stack);
 				}
 			}
 		}
