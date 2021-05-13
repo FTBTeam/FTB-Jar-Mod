@@ -2,7 +2,10 @@ package dev.ftb.mods.ftbjarmod.block.entity;
 
 import dev.ftb.mods.ftbjarmod.FTBJarMod;
 import dev.ftb.mods.ftbjarmod.block.FTBJarModBlocks;
+import dev.ftb.mods.ftbjarmod.block.TemperedJarBlock;
 import dev.ftb.mods.ftbjarmod.block.TubeBlock;
+import dev.ftb.mods.ftbjarmod.item.FluidItem;
+import dev.ftb.mods.ftbjarmod.recipe.ItemIngredientPair;
 import dev.ftb.mods.ftbjarmod.recipe.JarRecipe;
 import dev.ftb.mods.ftblibrary.util.TimeUtils;
 import net.minecraft.core.BlockPos;
@@ -15,24 +18,33 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.TickableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -57,11 +69,73 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 
 	@Override
 	public void tick() {
-		if (recipeTime > 0) {
-			recipeTime--;
+		if (recipeTime <= 0) {
+			if (redstonePowered && !level.isClientSide() && level.getGameTime() % 20L == 18L) {
+				startProgress();
+			}
 
-			if (recipeTime == 0) {
-				JarRecipe r = getRecipe();
+			return;
+		}
+
+		JarRecipe r = getRecipe();
+
+		if (r == null) {
+			return;
+		}
+
+		if (getBlockState().getValue(TemperedJarBlock.TEMPERATURE) != r.temperature) {
+			return;
+		}
+
+		recipeTime--;
+
+		if (recipeTime == 0) {
+			if (!level.isClientSide()) {
+				Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks = getConnectedBlocks(r.hasItems(), r.hasFluids());
+				System.out.println(connectedBlocks.getLeft() + " / " + connectedBlocks.getRight());
+				List<ItemStack> itemStacks = new ArrayList<>(r.outputItems);
+
+				for (FluidStack fs : r.outputFluids) {
+					int amount = fs.getAmount();
+
+					for (IFluidHandler handler : connectedBlocks.getRight()) {
+						FluidStack fs1 = fs.copy();
+						fs1.setAmount(amount);
+						amount -= handler.fill(fs, IFluidHandler.FluidAction.EXECUTE);
+
+						if (amount <= 0) {
+							break;
+						}
+					}
+
+					if (amount > 0) {
+						FluidStack fs1 = fs.copy();
+						fs1.setAmount(amount);
+						itemStacks.add(FluidItem.of(fs1));
+					}
+				}
+
+				for (ItemStack is : itemStacks) {
+					ItemStack is1 = is;
+
+					for (IItemHandler handler : connectedBlocks.getLeft()) {
+						is1 = ItemHandlerHelper.insertItem(handler, is, false);
+
+						if (is1.isEmpty()) {
+							break;
+						}
+					}
+
+					if (!is1.isEmpty()) {
+						Block.popResource(level, worldPosition.above(), is1.copy());
+					}
+				}
+
+				if (r.canRepeat && consumeResources(r, connectedBlocks, false)) {
+					consumeResources(r, connectedBlocks, true);
+					recipeTime = r.time;
+					setChangedAndSend();
+				}
 			}
 		}
 	}
@@ -73,7 +147,13 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 
 		if (recipeTime > 0) {
 			if (!level.isClientSide()) {
-				player.displayClientMessage(new TextComponent(TimeUtils.prettyTimeString(recipeTime / 20L) + " left"), true);
+				if (player.isCrouching()) {
+					player.displayClientMessage(new TextComponent("Recipe stopped!"), true);
+					recipeTime = 0;
+					setChangedAndSend();
+				} else {
+					player.displayClientMessage(new TextComponent(TimeUtils.prettyTimeString(recipeTime / 20L) + " left"), true);
+				}
 			}
 
 			return;
@@ -105,14 +185,43 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 			return;
 		}
 
-		Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks = getConnectedBlocks();
-		System.out.println(connectedBlocks.getLeft() + " / " + connectedBlocks.getRight());
+		if (getBlockState().getValue(TemperedJarBlock.TEMPERATURE) != r.temperature) {
+			return;
+		}
 
-		recipeTime = r.time;
-		setChangedAndSend();
+		Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks = getConnectedBlocks(r.hasItems(), r.hasFluids());
+
+		if (consumeResources(r, connectedBlocks, false)) {
+			consumeResources(r, connectedBlocks, true);
+			recipeTime = r.time;
+			setChangedAndSend();
+		}
 	}
 
-	public Pair<Set<IItemHandler>, Set<IFluidHandler>> getConnectedBlocks() {
+	public boolean consumeResources(JarRecipe r, Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks, boolean actual) {
+		Map<Ingredient, MutableInt> items = new HashMap<>();
+		Map<FluidStack, MutableInt> fluids = new HashMap<>();
+
+		for (ItemIngredientPair is : r.inputItems) {
+			items.put(is.ingredient, new MutableInt(is.amount));
+		}
+
+		for (FluidStack fs : r.inputFluids) {
+			fluids.put(fs, new MutableInt(fs.getAmount()));
+		}
+
+		if (actual) {
+			System.out.println(connectedBlocks.getLeft() + " / " + connectedBlocks.getRight());
+		}
+
+		return true;
+	}
+
+	public Pair<Set<IItemHandler>, Set<IFluidHandler>> getConnectedBlocks(boolean lookForItems, boolean lookForFluids) {
+		if (!lookForItems && !lookForFluids) {
+			return Pair.of(Collections.emptySet(), Collections.emptySet());
+		}
+
 		LinkedHashMap<BlockPos, BlockState> known = new LinkedHashMap<>();
 		Set<BlockPos> traversed = new HashSet<>();
 		Deque<BlockPos> openSet = new ArrayDeque<>();
@@ -139,8 +248,8 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 		}
 
 		known.remove(worldPosition);
-		Set<IItemHandler> itemHandlers = new LinkedHashSet<>();
-		Set<IFluidHandler> fluidHandlers = new LinkedHashSet<>();
+		Set<IItemHandler> itemHandlers = lookForItems ? new LinkedHashSet<>() : Collections.emptySet();
+		Set<IFluidHandler> fluidHandlers = lookForFluids ? new LinkedHashSet<>() : Collections.emptySet();
 
 		for (Map.Entry<BlockPos, BlockState> entry : known.entrySet()) {
 			if (entry.getValue().getBlock() instanceof TubeBlock) {
@@ -149,16 +258,20 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 						BlockEntity blockEntity = level.getBlockEntity(entry.getKey().relative(DIRECTIONS[i]));
 
 						if (blockEntity != null) {
-							IItemHandler itemHandler = blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, DIRECTIONS[i].getOpposite()).orElse(null);
+							if (lookForItems) {
+								IItemHandler itemHandler = blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, DIRECTIONS[i].getOpposite()).orElse(null);
 
-							if (itemHandler != null) {
-								itemHandlers.add(itemHandler);
+								if (itemHandler != null) {
+									itemHandlers.add(itemHandler);
+								}
 							}
 
-							IFluidHandler fluidHandler = blockEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, DIRECTIONS[i].getOpposite()).orElse(null);
+							if (lookForFluids) {
+								IFluidHandler fluidHandler = blockEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, DIRECTIONS[i].getOpposite()).orElse(null);
 
-							if (fluidHandler != null) {
-								fluidHandlers.add(fluidHandler);
+								if (fluidHandler != null) {
+									fluidHandlers.add(fluidHandler);
+								}
 							}
 						}
 					}
@@ -209,6 +322,7 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 		tag.putInt("RecipeTime", recipeTime);
 		tag.putInt("TemperatureTime", temperatureTime);
 		tag.putString("Recipe", recipe == null ? "" : recipe.toString());
+		tag.putBoolean("RedstonePowered", redstonePowered);
 		return super.save(tag);
 	}
 
@@ -219,6 +333,7 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 		temperatureTime = tag.getInt("TemperatureTime");
 		String r = tag.getString("Recipe");
 		recipe = r.isEmpty() ? null : new ResourceLocation(r);
+		redstonePowered = tag.getBoolean("RedstonePowered");
 	}
 
 	@Override

@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -29,7 +30,13 @@ public class JarBlockEntity extends BlockEntity {
 
 	public JarBlockEntity() {
 		super(FTBJarModBlockEntities.JAR.get());
-		tank = new FluidTank(8000);
+		tank = new FluidTank(8000) {
+			@Override
+			protected void onContentsChanged() {
+				setChanged();
+				level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.DEFAULT_AND_RERENDER);
+			}
+		};
 		tankOptional = LazyOptional.of(() -> tank);
 	}
 

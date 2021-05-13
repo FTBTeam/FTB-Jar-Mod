@@ -25,7 +25,7 @@ public class FTBJarModItems {
 		return REGISTRY.register(id, () -> new BlockItem(sup.get(), new Item.Properties().tab(FTBJarMod.group)));
 	}
 
-	public static final RegistryObject<Item> FLUID = REGISTRY.register("fluid", () -> new FluidItem(new Item.Properties().stacksTo(1).tab(FTBJarMod.group)));
+	public static final RegistryObject<Item> FLUID = REGISTRY.register("fluid", () -> new FluidItem(new Item.Properties().stacksTo(16).tab(FTBJarMod.group)));
 	public static final RegistryObject<Item> CAST_IRON_INGOT = basicItem("cast_iron_ingot");
 	public static final RegistryObject<Item> CAST_IRON_NUGGET = basicItem("cast_iron_nugget");
 	public static final RegistryObject<Item> CAST_IRON_GEAR = basicItem("cast_iron_gear");

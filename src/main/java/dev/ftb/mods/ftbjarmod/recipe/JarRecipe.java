@@ -25,6 +25,7 @@ public class JarRecipe implements Recipe<NoInventory> {
 	public final List<FluidStack> inputFluids;
 	public final List<ItemStack> outputItems;
 	public final List<FluidStack> outputFluids;
+	public boolean canRepeat;
 
 	public JarRecipe(ResourceLocation i, String g) {
 		id = i;
@@ -35,6 +36,7 @@ public class JarRecipe implements Recipe<NoInventory> {
 		inputFluids = new ArrayList<>();
 		outputItems = new ArrayList<>();
 		outputFluids = new ArrayList<>();
+		canRepeat = true;
 	}
 
 	@Override
@@ -79,5 +81,13 @@ public class JarRecipe implements Recipe<NoInventory> {
 
 	public boolean isAvailableFor(Player player) {
 		return true;
+	}
+
+	public boolean hasItems() {
+		return !inputItems.isEmpty() || !outputItems.isEmpty();
+	}
+
+	public boolean hasFluids() {
+		return !inputFluids.isEmpty() || !outputFluids.isEmpty();
 	}
 }

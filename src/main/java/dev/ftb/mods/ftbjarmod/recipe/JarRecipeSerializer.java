@@ -59,6 +59,10 @@ public class JarRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>>
 			r.temperature = Temperature.byName(json.get("temperature").getAsString());
 		}
 
+		if (json.has("canRepeat")) {
+			r.canRepeat = json.get("canRepeat").getAsBoolean();
+		}
+
 		if (json.has("input")) {
 			for (JsonElement e : json.get("input").getAsJsonArray()) {
 				JsonObject o = e.getAsJsonObject();
@@ -91,6 +95,14 @@ public class JarRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>>
 			}
 		}
 
+		if (r.inputItems.isEmpty() && r.inputFluids.isEmpty()) {
+			throw new IllegalStateException("Can't have no input items and fluids!");
+		}
+
+		if (r.outputItems.isEmpty() && r.outputFluids.isEmpty()) {
+			throw new IllegalStateException("Can't have no output items and fluids!");
+		}
+
 		return r;
 	}
 
@@ -99,6 +111,7 @@ public class JarRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>>
 		JarRecipe r = new JarRecipe(recipeId, buffer.readUtf(Short.MAX_VALUE));
 		r.time = buffer.readVarInt();
 		r.temperature = Temperature.VALUES[buffer.readVarInt()];
+		r.canRepeat = buffer.readBoolean();
 		int iin = buffer.readUnsignedByte();
 		int fin = buffer.readUnsignedByte();
 		int iout = buffer.readUnsignedByte();
@@ -128,6 +141,7 @@ public class JarRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>>
 		buffer.writeUtf(r.getGroup(), Short.MAX_VALUE);
 		buffer.writeVarInt(r.time);
 		buffer.writeVarInt(r.temperature.ordinal());
+		buffer.writeBoolean(r.canRepeat);
 		buffer.writeByte(r.inputItems.size());
 		buffer.writeByte(r.inputFluids.size());
 		buffer.writeByte(r.outputItems.size());
