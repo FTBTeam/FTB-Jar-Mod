@@ -42,6 +42,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -57,23 +58,17 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 	public int recipeTime;
 	public int temperatureTime;
 	public ResourceLocation recipe;
-	public boolean redstonePowered;
 
 	public TemperedJarBlockEntity() {
 		super(FTBJarModBlockEntities.TEMPERED_JAR.get());
 		recipeTime = 0;
 		temperatureTime = 0;
 		recipe = null;
-		redstonePowered = false;
 	}
 
 	@Override
 	public void tick() {
 		if (recipeTime <= 0) {
-			if (redstonePowered && !level.isClientSide() && level.getGameTime() % 20L == 18L) {
-				startProgress();
-			}
-
 			return;
 		}
 
@@ -131,11 +126,11 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 					}
 				}
 
-				if (r.canRepeat && consumeResources(r, connectedBlocks, false)) {
-					consumeResources(r, connectedBlocks, true);
-					recipeTime = r.time;
-					setChangedAndSend();
-				}
+				//if (r.canRepeat && consumeResources(r, connectedBlocks, false)) {
+				//	consumeResources(r, connectedBlocks, true);
+				//	recipeTime = r.time;
+				//	setChangedAndSend();
+				//}
 			}
 		}
 	}
@@ -167,25 +162,33 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 			return;
 		}
 
-		startProgress();
-
-		if (!level.isClientSide()) {
-			player.displayClientMessage(new TextComponent(TimeUtils.prettyTimeString(recipeTime / 20L) + " left"), true);
-		}
+		startProgress(player);
 	}
 
-	public void startProgress() {
-		if (level.isClientSide() || recipeTime > 0) {
+	public void startProgress(Player player) {
+		if (level.isClientSide()) {
+			return;
+		}
+
+		if (recipeTime > 0) {
+			player.displayClientMessage(new TextComponent("Recipe already in progress!"), true);
 			return;
 		}
 
 		JarRecipe r = getRecipe();
 
 		if (r == null) {
+			player.displayClientMessage(new TextComponent("Invalid recipe!"), true);
+			return;
+		}
+
+		if (!r.isAvailableFor(player)) {
+			player.displayClientMessage(new TextComponent("Recipe isn't available for you!"), true);
 			return;
 		}
 
 		if (getBlockState().getValue(TemperedJarBlock.TEMPERATURE) != r.temperature) {
+			player.displayClientMessage(new TextComponent("Temperature isn't right!"), true);
 			return;
 		}
 
@@ -195,10 +198,13 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 			consumeResources(r, connectedBlocks, true);
 			recipeTime = r.time;
 			setChangedAndSend();
+			player.displayClientMessage(new TextComponent(TimeUtils.prettyTimeString(recipeTime / 20L) + " left"), true);
+		} else {
+			player.displayClientMessage(new TextComponent("Insufficient resources!"), true);
 		}
 	}
 
-	public boolean consumeResources(JarRecipe r, Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks, boolean actual) {
+	public boolean consumeResources(JarRecipe r, Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks, boolean execute) {
 		Map<Ingredient, MutableInt> items = new HashMap<>();
 		Map<FluidStack, MutableInt> fluids = new HashMap<>();
 
@@ -210,11 +216,41 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 			fluids.put(fs, new MutableInt(fs.getAmount()));
 		}
 
-		if (actual) {
-			System.out.println(connectedBlocks.getLeft() + " / " + connectedBlocks.getRight());
+		Iterator<Map.Entry<Ingredient, MutableInt>> itemIterator = items.entrySet().iterator();
+
+		while (itemIterator.hasNext()) {
+			Map.Entry<Ingredient, MutableInt> entry = itemIterator.next();
+
+			for (IItemHandler handler : connectedBlocks.getLeft()) {
+				for (int i = 0; i < handler.getSlots(); i++) {
+					if (entry.getKey().test(handler.getStackInSlot(i))) {
+						entry.getValue().subtract(handler.extractItem(i, entry.getValue().intValue(), !execute).getCount());
+					}
+				}
+			}
+
+			if (entry.getValue().intValue() <= 0) {
+				itemIterator.remove();
+			}
 		}
 
-		return true;
+		Iterator<Map.Entry<FluidStack, MutableInt>> fluidIterator = fluids.entrySet().iterator();
+
+		while (fluidIterator.hasNext()) {
+			Map.Entry<FluidStack, MutableInt> entry = fluidIterator.next();
+
+			for (IFluidHandler handler : connectedBlocks.getRight()) {
+				FluidStack toDrain = entry.getKey().copy();
+				toDrain.setAmount(entry.getValue().intValue());
+				entry.getValue().subtract(handler.drain(toDrain, execute ? IFluidHandler.FluidAction.EXECUTE : IFluidHandler.FluidAction.SIMULATE).getAmount());
+			}
+
+			if (entry.getValue().intValue() <= 0) {
+				fluidIterator.remove();
+			}
+		}
+
+		return items.isEmpty() && fluids.isEmpty();
 	}
 
 	public Pair<Set<IItemHandler>, Set<IFluidHandler>> getConnectedBlocks(boolean lookForItems, boolean lookForFluids) {
@@ -322,7 +358,6 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 		tag.putInt("RecipeTime", recipeTime);
 		tag.putInt("TemperatureTime", temperatureTime);
 		tag.putString("Recipe", recipe == null ? "" : recipe.toString());
-		tag.putBoolean("RedstonePowered", redstonePowered);
 		return super.save(tag);
 	}
 
@@ -333,7 +368,6 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 		temperatureTime = tag.getInt("TemperatureTime");
 		String r = tag.getString("Recipe");
 		recipe = r.isEmpty() ? null : new ResourceLocation(r);
-		redstonePowered = tag.getBoolean("RedstonePowered");
 	}
 
 	@Override
@@ -355,17 +389,5 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 	@Override
 	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
 		handleUpdateTag(FTBJarModBlocks.TEMPERED_JAR.get().defaultBlockState(), pkt.getTag());
-	}
-
-	public void neighborChanged() {
-		boolean p = level.hasNeighborSignal(worldPosition);
-
-		if (redstonePowered != p) {
-			redstonePowered = p;
-
-			if (p) {
-				startProgress();
-			}
-		}
 	}
 }

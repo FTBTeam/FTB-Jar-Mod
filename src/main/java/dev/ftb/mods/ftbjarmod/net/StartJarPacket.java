@@ -40,7 +40,7 @@ public class StartJarPacket extends BaseC2SPacket {
 		BlockEntity entity = player.level.getBlockEntity(pos);
 
 		if (entity instanceof TemperedJarBlockEntity) {
-			((TemperedJarBlockEntity) entity).startProgress();
+			((TemperedJarBlockEntity) entity).startProgress(player);
 		}
 	}
 }

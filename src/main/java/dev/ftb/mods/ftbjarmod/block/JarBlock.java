@@ -63,21 +63,22 @@ public class JarBlock extends Block implements TubeConnection {
 
 	@Override
 	@Deprecated
-	public int getAnalogOutputSignal(BlockState blockState, Level worldIn, BlockPos pos) {
+	public int getAnalogOutputSignal(BlockState blockState, Level level, BlockPos pos) {
+		BlockEntity entity = level.getBlockEntity(pos);
+
+		if (entity instanceof JarBlockEntity) {
+			return ((JarBlockEntity) entity).tank.getFluidAmount() * 15 / ((JarBlockEntity) entity).tank.getCapacity();
+		}
+
 		return 0;
 	}
 
 	@Override
 	@Deprecated
-	public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
+	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
 		if (state.getBlock() != newState.getBlock()) {
-			BlockEntity entity = world.getBlockEntity(pos);
-
-			if (entity instanceof JarBlockEntity) {
-				world.updateNeighbourForOutputSignal(pos, this);
-			}
-
-			super.onRemove(state, world, pos, newState, isMoving);
+			level.updateNeighbourForOutputSignal(pos, this);
+			super.onRemove(state, level, pos, newState, isMoving);
 		}
 	}
 
