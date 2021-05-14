@@ -60,7 +60,7 @@ public class TemperedJarBlock extends JarBlock {
 		if (entity instanceof TemperedJarBlockEntity) {
 			TemperedJarBlockEntity t = (TemperedJarBlockEntity) entity;
 
-			if (t.recipeTime > 0) {
+			if (t.particles) {
 				for (int i = 0; i < 5; i++) {
 					worldIn.addParticle(temperature == Temperature.HIGH ? ParticleTypes.SOUL_FIRE_FLAME : temperature == Temperature.LOW ? ParticleTypes.FLAME : ParticleTypes.SNEEZE, pos.getX() + rand.nextFloat(), pos.getY() + rand.nextFloat() / 3F, pos.getZ() + rand.nextFloat(), 0D, 0D, 0D);
 				}

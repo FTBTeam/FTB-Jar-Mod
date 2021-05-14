@@ -58,6 +58,7 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 	public int recipeTime;
 	public int temperatureTime;
 	public ResourceLocation recipe;
+	public boolean particles;
 
 	public TemperedJarBlockEntity() {
 		super(FTBJarModBlockEntities.TEMPERED_JAR.get());
@@ -68,6 +69,8 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 
 	@Override
 	public void tick() {
+		particles = false;
+
 		if (recipeTime <= 0) {
 			return;
 		}
@@ -83,11 +86,13 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 		}
 
 		recipeTime--;
+		particles = true;
 
-		if (recipeTime == 0) {
-			if (!level.isClientSide()) {
-				Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks = getConnectedBlocks(r.hasItems(), r.hasFluids());
-				System.out.println(connectedBlocks.getLeft() + " / " + connectedBlocks.getRight());
+		if (recipeTime == 0 && !level.isClientSide()) {
+			Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks = getConnectedBlocks(r.hasItems(), r.hasFluids());
+
+			if (consumeResources(r, connectedBlocks, false)) {
+				consumeResources(r, connectedBlocks, true);
 				List<ItemStack> itemStacks = new ArrayList<>(r.outputItems);
 
 				for (FluidStack fs : r.outputFluids) {
@@ -195,7 +200,6 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 		Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks = getConnectedBlocks(r.hasItems(), r.hasFluids());
 
 		if (consumeResources(r, connectedBlocks, false)) {
-			consumeResources(r, connectedBlocks, true);
 			recipeTime = r.time;
 			setChangedAndSend();
 			player.displayClientMessage(new TextComponent(TimeUtils.prettyTimeString(recipeTime / 20L) + " left"), true);

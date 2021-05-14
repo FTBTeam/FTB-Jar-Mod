@@ -12,7 +12,6 @@ import dev.ftb.mods.ftbjarmod.recipe.NoInventory;
 import dev.ftb.mods.ftblibrary.icon.Color4I;
 import dev.ftb.mods.ftblibrary.icon.Icon;
 import dev.ftb.mods.ftblibrary.icon.ImageIcon;
-import dev.ftb.mods.ftblibrary.icon.ItemIcon;
 import dev.ftb.mods.ftblibrary.ui.GuiHelper;
 import dev.ftb.mods.ftblibrary.ui.Panel;
 import dev.ftb.mods.ftblibrary.ui.Theme;
@@ -21,7 +20,6 @@ import dev.ftb.mods.ftblibrary.ui.WidgetType;
 import dev.ftb.mods.ftblibrary.ui.input.MouseButton;
 import dev.ftb.mods.ftblibrary.ui.misc.ButtonListBaseScreen;
 import dev.ftb.mods.ftblibrary.util.TooltipList;
-import dev.ftb.mods.ftblibrary.util.WrappedIngredient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -34,87 +32,6 @@ import net.minecraftforge.fluids.FluidStack;
  */
 public class SelectJarRecipeScreen extends ButtonListBaseScreen {
 	private static final Icon TEXTURE = new ImageIcon(new ResourceLocation(FTBJarMod.MOD_ID + ":textures/gui/tempered_jar_recipe.png")).withUV(0, 0, 150, 18, 256, 32);
-
-	public static class ItemButton extends Widget {
-		public final ItemStack[] items;
-		public final Icon[] icons;
-
-		public ItemButton(Panel p, ItemStack[] is, int a) {
-			super(p);
-			items = is.length == 0 ? new ItemStack[]{ItemStack.EMPTY} : is;
-			icons = new Icon[items.length];
-
-			for (int i = 0; i < items.length; i++) {
-				items[i] = items[i].copy();
-				items[i].setCount(a);
-				icons[i] = ItemIcon.getItemIcon(items[i]);
-			}
-		}
-
-		public int getIndex() {
-			if (items.length == 1) {
-				return 0;
-			}
-
-			return (int) ((System.currentTimeMillis() / 1000L) % items.length);
-		}
-
-		@Override
-		public void addMouseOverText(TooltipList list) {
-		}
-
-		@Override
-		public void draw(PoseStack matrixStack, Theme theme, int x, int y, int w, int h) {
-			GuiHelper.setupDrawing();
-			icons[getIndex()].draw(matrixStack, x, y, w, h);
-
-			String s = Integer.toString(items[getIndex()].getCount());
-			matrixStack.pushPose();
-			matrixStack.translate(x + w - theme.getStringWidth(s) / 2F, y + h - 4, 250);
-			matrixStack.scale(0.5F, 0.5F, 1F);
-			theme.drawString(matrixStack, s, 0, 0);
-			matrixStack.popPose();
-		}
-
-		@Override
-		public Object getIngredientUnderMouse() {
-			return new WrappedIngredient(items[getIndex()]).tooltip();
-		}
-	}
-
-	public static class FluidButton extends Widget {
-		public final FluidStack fluid;
-		public final Icon icon;
-
-		public FluidButton(Panel p, FluidStack fs) {
-			super(p);
-			fluid = fs;
-			icon = Icon.getIcon(fluid.getFluid().getAttributes().getStillTexture(fluid)).withTint(Color4I.rgba(fluid.getFluid().getAttributes().getColor(fluid)));
-		}
-
-		@Override
-		public void addMouseOverText(TooltipList list) {
-			list.add(new TranslatableComponent("block.ftbjarmod.jar.mb", fluid.getAmount(), fluid.getDisplayName()));
-		}
-
-		@Override
-		public void draw(PoseStack matrixStack, Theme theme, int x, int y, int w, int h) {
-			GuiHelper.setupDrawing();
-			icon.draw(matrixStack, x, y, w, h);
-
-			String s = Integer.toString(fluid.getAmount());
-			matrixStack.pushPose();
-			matrixStack.translate(x + w - theme.getStringWidth(s) / 2F, y + h - 4, 250);
-			matrixStack.scale(0.5F, 0.5F, 1F);
-			theme.drawString(matrixStack, s, 0, 0);
-			matrixStack.popPose();
-		}
-
-		@Override
-		public Object getIngredientUnderMouse() {
-			return fluid;
-		}
-	}
 
 	public static class TemperatureButton extends Widget {
 		public final Temperature temperature;
@@ -196,6 +113,11 @@ public class SelectJarRecipeScreen extends ButtonListBaseScreen {
 		@Override
 		public void drawBackground(PoseStack matrixStack, Theme theme, int x, int y, int w, int h) {
 			GuiHelper.setupDrawing();
+
+			if (recipe == jar.getRecipe()) {
+				Color4I.LIGHT_GREEN.withAlpha(80).draw(matrixStack, x, y - 2, w, h + 4);
+			}
+
 			TEXTURE.draw(matrixStack, x + 2, y + 2, 150, 18);
 		}
 
@@ -239,17 +161,12 @@ public class SelectJarRecipeScreen extends ButtonListBaseScreen {
 	@Override
 	public void addButtons(Panel panel) {
 		Minecraft mc = Minecraft.getInstance();
-		boolean first = true;
+		panel.add(new Widget(panel).setPosAndSize(0, 0, 1, 5));
 
 		for (JarRecipe recipe : mc.level.getRecipeManager().getRecipesFor(FTBJarModRecipeSerializers.JAR_TYPE, NoInventory.INSTANCE, mc.level)) {
 			if (recipe.isAvailableFor(mc.player)) {
-				if (first) {
-					first = false;
-				} else {
-					panel.add(new Widget(panel).setPosAndSize(0, 0, 1, 5));
-				}
-
 				panel.add(new JarRecipeButton(panel, recipe));
+				panel.add(new Widget(panel).setPosAndSize(0, 0, 1, 5));
 			}
 		}
 	}
