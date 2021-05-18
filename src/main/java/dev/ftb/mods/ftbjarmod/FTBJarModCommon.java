@@ -9,6 +9,9 @@ public class FTBJarModCommon {
 	public void init() {
 	}
 
-	public void openTemperedJarScreen(TemperedJarBlockEntity entity) {
+	public void openJarScreen(TemperedJarBlockEntity entity, boolean[] in) {
+	}
+
+	public void openJarRecipeScreen(TemperedJarBlockEntity entity) {
 	}
 }

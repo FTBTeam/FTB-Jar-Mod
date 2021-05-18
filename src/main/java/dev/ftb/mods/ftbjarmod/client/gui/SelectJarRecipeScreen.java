@@ -4,7 +4,6 @@ package dev.ftb.mods.ftbjarmod.client.gui;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.ftb.mods.ftbjarmod.FTBJarMod;
 import dev.ftb.mods.ftbjarmod.block.entity.TemperedJarBlockEntity;
-import dev.ftb.mods.ftbjarmod.heat.Temperature;
 import dev.ftb.mods.ftbjarmod.net.SelectJarRecipePacket;
 import dev.ftb.mods.ftbjarmod.recipe.FTBJarModRecipeSerializers;
 import dev.ftb.mods.ftbjarmod.recipe.JarRecipe;
@@ -19,10 +18,8 @@ import dev.ftb.mods.ftblibrary.ui.Widget;
 import dev.ftb.mods.ftblibrary.ui.WidgetType;
 import dev.ftb.mods.ftblibrary.ui.input.MouseButton;
 import dev.ftb.mods.ftblibrary.ui.misc.ButtonListBaseScreen;
-import dev.ftb.mods.ftblibrary.util.TooltipList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
@@ -32,34 +29,6 @@ import net.minecraftforge.fluids.FluidStack;
  */
 public class SelectJarRecipeScreen extends ButtonListBaseScreen {
 	private static final Icon TEXTURE = new ImageIcon(new ResourceLocation(FTBJarMod.MOD_ID + ":textures/gui/tempered_jar_recipe.png")).withUV(0, 0, 150, 18, 256, 32);
-
-	public static class TemperatureButton extends Widget {
-		public final Temperature temperature;
-		public final int time;
-
-		public TemperatureButton(Panel p, Temperature t, int ti) {
-			super(p);
-			temperature = t;
-			time = ti;
-		}
-
-		@Override
-		public void addMouseOverText(TooltipList list) {
-			list.add(temperature.getName());
-			list.add(new TranslatableComponent("ftbjarmod.processing_time", time));
-		}
-
-		@Override
-		public void draw(PoseStack matrixStack, Theme theme, int x, int y, int w, int h) {
-			GuiHelper.setupDrawing();
-			temperature.getIcon().draw(matrixStack, x, y, w, h);
-		}
-
-		@Override
-		public Object getIngredientUnderMouse() {
-			return temperature;
-		}
-	}
 
 	public class JarRecipeButton extends Panel {
 		public final JarRecipe recipe;

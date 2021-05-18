@@ -1,13 +1,14 @@
 package dev.ftb.mods.ftbjarmod.block.entity;
 
-import dev.ftb.mods.ftbjarmod.FTBJarMod;
 import dev.ftb.mods.ftbjarmod.block.FTBJarModBlocks;
 import dev.ftb.mods.ftbjarmod.block.TemperedJarBlock;
 import dev.ftb.mods.ftbjarmod.block.TubeBlock;
+import dev.ftb.mods.ftbjarmod.heat.Temperature;
 import dev.ftb.mods.ftbjarmod.item.FluidItem;
+import dev.ftb.mods.ftbjarmod.net.OpenJarScreenPacket;
+import dev.ftb.mods.ftbjarmod.net.OpenSelectJarRecipeScreenPacket;
 import dev.ftb.mods.ftbjarmod.recipe.ItemIngredientPair;
 import dev.ftb.mods.ftbjarmod.recipe.JarRecipe;
-import dev.ftb.mods.ftblibrary.util.TimeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -15,10 +16,10 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -32,7 +33,6 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
-import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -40,9 +40,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -67,6 +65,10 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 		recipe = null;
 	}
 
+	public boolean isTemperature(Temperature t) {
+		return getBlockState().getValue(TemperedJarBlock.TEMPERATURE) == t;
+	}
+
 	@Override
 	public void tick() {
 		particles = false;
@@ -81,7 +83,7 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 			return;
 		}
 
-		if (getBlockState().getValue(TemperedJarBlock.TEMPERATURE) != r.temperature) {
+		if (!isTemperature(r.temperature)) {
 			return;
 		}
 
@@ -91,7 +93,7 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 		if (recipeTime == 0 && !level.isClientSide()) {
 			Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks = getConnectedBlocks(r.hasItems(), r.hasFluids());
 
-			if (consumeResources(r, connectedBlocks, false)) {
+			if (canStart(consumeResources(r, connectedBlocks, false))) {
 				consumeResources(r, connectedBlocks, true);
 				List<ItemStack> itemStacks = new ArrayList<>(r.outputItems);
 
@@ -141,33 +143,13 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 	}
 
 	public void rightClick(Player player, InteractionHand hand, ItemStack item) {
-		if (level == null) {
-			return;
-		}
-
-		if (recipeTime > 0) {
-			if (!level.isClientSide()) {
-				if (player.isCrouching()) {
-					player.displayClientMessage(new TextComponent("Recipe stopped!"), true);
-					recipeTime = 0;
-					setChangedAndSend();
-				} else {
-					player.displayClientMessage(new TextComponent(TimeUtils.prettyTimeString(recipeTime / 20L) + " left"), true);
-				}
+		if (level != null && !level.isClientSide()) {
+			if (getRecipe() == null) {
+				new OpenSelectJarRecipeScreenPacket(getBlockPos()).sendTo((ServerPlayer) player);
+			} else {
+				new OpenJarScreenPacket(getBlockPos(), findIngredients()).sendTo((ServerPlayer) player);
 			}
-
-			return;
 		}
-
-		if (player.isCrouching() || recipe == null) {
-			if (level.isClientSide()) {
-				FTBJarMod.PROXY.openTemperedJarScreen(this);
-			}
-
-			return;
-		}
-
-		startProgress(player);
 	}
 
 	public void startProgress(Player player) {
@@ -192,69 +174,68 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 			return;
 		}
 
-		if (getBlockState().getValue(TemperedJarBlock.TEMPERATURE) != r.temperature) {
+		if (!isTemperature(r.temperature)) {
 			player.displayClientMessage(new TextComponent("Temperature isn't right!"), true);
 			return;
 		}
 
 		Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks = getConnectedBlocks(r.hasItems(), r.hasFluids());
 
-		if (consumeResources(r, connectedBlocks, false)) {
+		if (canStart(consumeResources(r, connectedBlocks, false))) {
 			recipeTime = r.time;
 			setChangedAndSend();
-			player.displayClientMessage(new TextComponent(TimeUtils.prettyTimeString(recipeTime / 20L) + " left"), true);
+			// player.displayClientMessage(new TextComponent(TimeUtils.prettyTimeString(recipeTime / 20L) + " left"), true);
 		} else {
 			player.displayClientMessage(new TextComponent("Insufficient resources!"), true);
 		}
 	}
 
-	public boolean consumeResources(JarRecipe r, Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks, boolean execute) {
-		Map<Ingredient, MutableInt> items = new HashMap<>();
-		Map<FluidStack, MutableInt> fluids = new HashMap<>();
-
-		for (ItemIngredientPair is : r.inputItems) {
-			items.put(is.ingredient, new MutableInt(is.amount));
+	public boolean[] consumeResources(@Nullable JarRecipe r, Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks, boolean execute) {
+		if (r == null) {
+			return new boolean[0];
 		}
+
+		boolean[] in = new boolean[r.inputFluids.size() + r.inputItems.size()];
+		int index = 0;
 
 		for (FluidStack fs : r.inputFluids) {
-			fluids.put(fs, new MutableInt(fs.getAmount()));
+			int amount = fs.getAmount();
+
+			for (IFluidHandler handler : connectedBlocks.getRight()) {
+				FluidStack toDrain = fs.copy();
+				toDrain.setAmount(amount);
+				amount -= handler.drain(toDrain, execute ? IFluidHandler.FluidAction.EXECUTE : IFluidHandler.FluidAction.SIMULATE).getAmount();
+
+				if (amount <= 0) {
+					in[index] = true;
+					break;
+				}
+			}
+
+			index++;
 		}
 
-		Iterator<Map.Entry<Ingredient, MutableInt>> itemIterator = items.entrySet().iterator();
+		for (ItemIngredientPair is : r.inputItems) {
+			int amount = is.amount;
 
-		while (itemIterator.hasNext()) {
-			Map.Entry<Ingredient, MutableInt> entry = itemIterator.next();
-
+			itemLabel:
 			for (IItemHandler handler : connectedBlocks.getLeft()) {
 				for (int i = 0; i < handler.getSlots(); i++) {
-					if (entry.getKey().test(handler.getStackInSlot(i))) {
-						entry.getValue().subtract(handler.extractItem(i, entry.getValue().intValue(), !execute).getCount());
+					if (is.ingredient.test(handler.getStackInSlot(i))) {
+						amount -= handler.extractItem(i, amount, !execute).getCount();
+
+						if (amount <= 0) {
+							in[index] = true;
+							break itemLabel;
+						}
 					}
 				}
 			}
 
-			if (entry.getValue().intValue() <= 0) {
-				itemIterator.remove();
-			}
+			index++;
 		}
 
-		Iterator<Map.Entry<FluidStack, MutableInt>> fluidIterator = fluids.entrySet().iterator();
-
-		while (fluidIterator.hasNext()) {
-			Map.Entry<FluidStack, MutableInt> entry = fluidIterator.next();
-
-			for (IFluidHandler handler : connectedBlocks.getRight()) {
-				FluidStack toDrain = entry.getKey().copy();
-				toDrain.setAmount(entry.getValue().intValue());
-				entry.getValue().subtract(handler.drain(toDrain, execute ? IFluidHandler.FluidAction.EXECUTE : IFluidHandler.FluidAction.SIMULATE).getAmount());
-			}
-
-			if (entry.getValue().intValue() <= 0) {
-				fluidIterator.remove();
-			}
-		}
-
-		return items.isEmpty() && fluids.isEmpty();
+		return in;
 	}
 
 	public Pair<Set<IItemHandler>, Set<IFluidHandler>> getConnectedBlocks(boolean lookForItems, boolean lookForFluids) {
@@ -323,17 +304,9 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 	}
 
 	public void setRecipe(Player player, @Nullable JarRecipe r) {
-		if (level.isClientSide()) {
+		if (r != null && !r.isAvailableFor(player)) {
 			return;
 		}
-
-		JarRecipe prev = getRecipe();
-
-		if (prev == r) {
-			return;
-		}
-
-		// verify if player can set recipe //
 
 		recipeTime = 0;
 
@@ -393,5 +366,30 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 	@Override
 	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
 		handleUpdateTag(FTBJarModBlocks.TEMPERED_JAR.get().defaultBlockState(), pkt.getTag());
+	}
+
+	public boolean[] findIngredients() {
+		JarRecipe r = getRecipe();
+
+		if (r == null) {
+			return new boolean[0];
+		}
+
+		Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks = getConnectedBlocks(r.hasItems(), r.hasFluids());
+		return consumeResources(r, connectedBlocks, false);
+	}
+
+	public static boolean canStart(boolean[] in) {
+		if (in.length == 0) {
+			return false;
+		}
+
+		for (boolean b : in) {
+			if (!b) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 }

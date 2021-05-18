@@ -8,6 +8,7 @@ import dev.ftb.mods.ftbjarmod.block.entity.FTBJarModBlockEntities;
 import dev.ftb.mods.ftbjarmod.block.entity.TemperedJarBlockEntity;
 import dev.ftb.mods.ftbjarmod.block.entity.render.JarBlockEntityRenderer;
 import dev.ftb.mods.ftbjarmod.block.entity.render.TemperedJarBlockEntityRenderer;
+import dev.ftb.mods.ftbjarmod.client.gui.JarScreen;
 import dev.ftb.mods.ftbjarmod.client.gui.SelectJarRecipeScreen;
 import dev.ftb.mods.ftbjarmod.item.FTBJarModItems;
 import dev.ftb.mods.ftbjarmod.item.FluidItem;
@@ -117,7 +118,12 @@ public class FTBJarModClient extends FTBJarModCommon {
 	}
 
 	@Override
-	public void openTemperedJarScreen(TemperedJarBlockEntity entity) {
+	public void openJarScreen(TemperedJarBlockEntity entity, boolean[] in) {
+		new JarScreen(entity, in).openGui();
+	}
+
+	@Override
+	public void openJarRecipeScreen(TemperedJarBlockEntity entity) {
 		new SelectJarRecipeScreen(entity).openGui();
 	}
 }

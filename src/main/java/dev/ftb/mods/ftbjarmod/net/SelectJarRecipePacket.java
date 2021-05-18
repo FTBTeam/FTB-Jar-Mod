@@ -50,6 +50,8 @@ public class SelectJarRecipePacket extends BaseC2SPacket {
 				if (r instanceof JarRecipe && ((JarRecipe) r).isAvailableFor(player)) {
 					((TemperedJarBlockEntity) entity).setRecipe(player, (JarRecipe) r);
 					entity.setChanged();
+					new SelectJarRecipeResponsePacket(pos, id).sendTo(player);
+					new OpenJarScreenPacket(pos, ((TemperedJarBlockEntity) entity).findIngredients()).sendTo(player);
 				}
 			});
 		}
