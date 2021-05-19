@@ -12,7 +12,10 @@ import dev.ftb.mods.ftbjarmod.client.gui.JarScreen;
 import dev.ftb.mods.ftbjarmod.client.gui.SelectJarRecipeScreen;
 import dev.ftb.mods.ftbjarmod.item.FTBJarModItems;
 import dev.ftb.mods.ftbjarmod.item.FluidItem;
+import dev.ftb.mods.ftbjarmod.net.OpenJarScreenPacket;
+import dev.ftb.mods.ftbjarmod.net.OpenSelectJarRecipeScreenPacket;
 import dev.ftb.mods.ftblibrary.icon.Color4I;
+import dev.ftb.mods.ftblibrary.util.ClientUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -20,6 +23,7 @@ import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -118,12 +122,30 @@ public class FTBJarModClient extends FTBJarModCommon {
 	}
 
 	@Override
-	public void openJarScreen(TemperedJarBlockEntity entity, boolean[] in) {
-		new JarScreen(entity, in).openGui();
+	public void openJarScreen(OpenJarScreenPacket packet) {
+		if (packet.force) {
+			BlockEntity entity = Minecraft.getInstance().level.getBlockEntity(packet.pos);
+
+			if (entity instanceof TemperedJarBlockEntity) {
+				((TemperedJarBlockEntity) entity).recipeTime = packet.recipeTime;
+				new JarScreen((TemperedJarBlockEntity) entity, packet.ingredients).openGui();
+			}
+		} else {
+			JarScreen screen = ClientUtils.getCurrentGuiAs(JarScreen.class);
+
+			if (screen != null) {
+				screen.jar.recipeTime = packet.recipeTime;
+				screen.updateRecipe(packet.ingredients);
+			}
+		}
 	}
 
 	@Override
-	public void openJarRecipeScreen(TemperedJarBlockEntity entity) {
-		new SelectJarRecipeScreen(entity).openGui();
+	public void openJarRecipeScreen(OpenSelectJarRecipeScreenPacket packet) {
+		BlockEntity entity = Minecraft.getInstance().level.getBlockEntity(packet.pos);
+
+		if (entity instanceof TemperedJarBlockEntity) {
+			new SelectJarRecipeScreen((TemperedJarBlockEntity) entity).openGui();
+		}
 	}
 }

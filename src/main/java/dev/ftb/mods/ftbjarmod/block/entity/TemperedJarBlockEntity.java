@@ -1,5 +1,6 @@
 package dev.ftb.mods.ftbjarmod.block.entity;
 
+import dev.ftb.mods.ftbjarmod.block.AutoProcessingBlock;
 import dev.ftb.mods.ftbjarmod.block.FTBJarModBlocks;
 import dev.ftb.mods.ftbjarmod.block.TemperedJarBlock;
 import dev.ftb.mods.ftbjarmod.block.TubeBlock;
@@ -16,6 +17,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -74,6 +76,14 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 		particles = false;
 
 		if (recipeTime <= 0) {
+			if (!level.isClientSide() && level.getGameTime() % 200L == 45L && level.getBlockState(worldPosition.above()).getBlock() instanceof AutoProcessingBlock) {
+				JarRecipe r = getRecipe();
+
+				if (r != null) {
+					startProgress(r, getConnectedBlocks(r));
+				}
+			}
+
 			return;
 		}
 
@@ -91,7 +101,7 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 		particles = true;
 
 		if (recipeTime == 0 && !level.isClientSide()) {
-			Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks = getConnectedBlocks(r.hasItems(), r.hasFluids());
+			Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks = getConnectedBlocks(r);
 
 			if (canStart(consumeResources(r, connectedBlocks, false))) {
 				consumeResources(r, connectedBlocks, true);
@@ -133,11 +143,11 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 					}
 				}
 
-				//if (r.canRepeat && consumeResources(r, connectedBlocks, false)) {
-				//	consumeResources(r, connectedBlocks, true);
-				//	recipeTime = r.time;
-				//	setChangedAndSend();
-				//}
+				if (level.getBlockState(worldPosition.above()).getBlock() instanceof AutoProcessingBlock) {
+					startProgress(r, connectedBlocks);
+				}
+
+				new OpenJarScreenPacket(getBlockPos(), consumeResources(r, connectedBlocks, false), false, recipeTime).sendToDimension((ServerLevel) level);
 			}
 		}
 	}
@@ -147,7 +157,7 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 			if (getRecipe() == null) {
 				new OpenSelectJarRecipeScreenPacket(getBlockPos()).sendTo((ServerPlayer) player);
 			} else {
-				new OpenJarScreenPacket(getBlockPos(), findIngredients()).sendTo((ServerPlayer) player);
+				new OpenJarScreenPacket(getBlockPos(), findIngredients(), true, recipeTime).sendTo((ServerPlayer) player);
 			}
 		}
 	}
@@ -179,15 +189,21 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 			return;
 		}
 
-		Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks = getConnectedBlocks(r.hasItems(), r.hasFluids());
+		Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks = getConnectedBlocks(r);
 
+		if (!startProgress(r, connectedBlocks)) {
+			player.displayClientMessage(new TextComponent("Insufficient resources!"), true);
+		}
+	}
+
+	public boolean startProgress(JarRecipe r, Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks) {
 		if (canStart(consumeResources(r, connectedBlocks, false))) {
 			recipeTime = r.time;
 			setChangedAndSend();
-			// player.displayClientMessage(new TextComponent(TimeUtils.prettyTimeString(recipeTime / 20L) + " left"), true);
-		} else {
-			player.displayClientMessage(new TextComponent("Insufficient resources!"), true);
+			return true;
 		}
+
+		return false;
 	}
 
 	public boolean[] consumeResources(@Nullable JarRecipe r, Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks, boolean execute) {
@@ -238,7 +254,14 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 		return in;
 	}
 
-	public Pair<Set<IItemHandler>, Set<IFluidHandler>> getConnectedBlocks(boolean lookForItems, boolean lookForFluids) {
+	private boolean isValidBlock(BlockState state) {
+		return state.getBlock() instanceof TubeBlock || state.getBlock() instanceof AutoProcessingBlock;
+	}
+
+	public Pair<Set<IItemHandler>, Set<IFluidHandler>> getConnectedBlocks(JarRecipe r) {
+		boolean lookForItems = r.hasItems();
+		boolean lookForFluids = r.hasFluids();
+
 		if (!lookForItems && !lookForFluids) {
 			return Pair.of(Collections.emptySet(), Collections.emptySet());
 		}
@@ -253,7 +276,7 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 			BlockPos ptr = openSet.pop();
 			BlockState state = Blocks.AIR.defaultBlockState();
 
-			if ((ptr == worldPosition || level.isLoaded(ptr) && ((state = level.getBlockState(ptr)).getBlock()) instanceof TubeBlock) && known.put(ptr, state) == null) {
+			if ((ptr == worldPosition || level.isLoaded(ptr) && isValidBlock(state = level.getBlockState(ptr))) && known.put(ptr, state) == null) {
 				if (known.size() >= 64) {
 					break;
 				}
@@ -375,7 +398,7 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 			return new boolean[0];
 		}
 
-		Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks = getConnectedBlocks(r.hasItems(), r.hasFluids());
+		Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks = getConnectedBlocks(r);
 		return consumeResources(r, connectedBlocks, false);
 	}
 

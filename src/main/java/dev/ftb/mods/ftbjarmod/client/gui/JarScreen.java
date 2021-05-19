@@ -4,9 +4,9 @@ package dev.ftb.mods.ftbjarmod.client.gui;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.ftb.mods.ftbjarmod.FTBJarMod;
 import dev.ftb.mods.ftbjarmod.block.entity.TemperedJarBlockEntity;
+import dev.ftb.mods.ftbjarmod.net.SelectJarRecipePacket;
 import dev.ftb.mods.ftbjarmod.net.StartJarPacket;
 import dev.ftb.mods.ftbjarmod.recipe.JarRecipe;
-import dev.ftb.mods.ftblibrary.icon.Color4I;
 import dev.ftb.mods.ftblibrary.icon.Icon;
 import dev.ftb.mods.ftblibrary.icon.ImageIcon;
 import dev.ftb.mods.ftblibrary.ui.BaseScreen;
@@ -78,8 +78,12 @@ public class JarScreen extends BaseScreen {
 
 		@Override
 		public void onClicked(MouseButton mouseButton) {
-			if (rightTemperature && jar.recipeTime == 0 && TemperedJarBlockEntity.canStart(ingredientsFound)) {
-				new StartJarPacket(jar.getBlockPos()).sendToServer();
+			if (rightTemperature && TemperedJarBlockEntity.canStart(ingredientsFound)) {
+				if (jar.recipeTime > 0) {
+					new SelectJarRecipePacket(jar.getBlockPos(), recipe.getId()).sendToServer();
+				} else {
+					new StartJarPacket(jar.getBlockPos()).sendToServer();
+				}
 			}
 		}
 
@@ -93,6 +97,28 @@ public class JarScreen extends BaseScreen {
 				(isMouseOver() ? STOP_RECIPE_OVER : STOP_RECIPE).draw(matrixStack, x, y, w, h);
 			} else {
 				(isMouseOver() ? START_RECIPE_OVER : START_RECIPE).draw(matrixStack, x, y, w, h);
+			}
+		}
+	}
+
+	private class ProgressWidget extends Widget {
+		public ProgressWidget(Panel p) {
+			super(p);
+		}
+
+		@Override
+		public void draw(PoseStack matrixStack, Theme theme, int x, int y, int w, int h) {
+			if (recipe != null && jar.recipeTime > 0) {
+				double progress = Mth.clamp((recipe.time - jar.recipeTime) / (double) recipe.time, 0D, 1D);
+				int w1 = (int) (w * progress);
+				sub(0, 93, w1, h).draw(matrixStack, x, y, w1, h);
+			}
+		}
+
+		@Override
+		public void addMouseOverText(TooltipList list) {
+			if (recipe != null && jar.recipeTime > 0) {
+				list.string(TimeUtils.prettyTimeString(Mth.ceil(jar.recipeTime / 20D)));
 			}
 		}
 	}
@@ -142,6 +168,7 @@ public class JarScreen extends BaseScreen {
 	public void addWidgets() {
 		add(new OpenRecipeButton(this).setPosAndSize(131, 29, 34, 18));
 		add(new StartRecipeButton(this).setPosAndSize(93, 29, 34, 18));
+		add(new ProgressWidget(this).setPosAndSize(8, 30, 80, 16));
 
 		if (recipe != null) {
 			add(new TemperatureButton(this, recipe.temperature, recipe.time / 20).setPosAndSize(78, 8, 16, 16));
@@ -174,14 +201,5 @@ public class JarScreen extends BaseScreen {
 	@Override
 	public void drawBackground(PoseStack matrixStack, Theme theme, int x, int y, int w, int h) {
 		BACKGROUND.draw(matrixStack, x, y, w, h);
-
-		if (recipe != null && jar.recipeTime > 0) {
-			double progress = Mth.clamp((recipe.time - jar.recipeTime) / (double) recipe.time, 0D, 1D);
-			int w1 = (int) (80D * progress);
-			sub(0, 93, w1, 16).draw(matrixStack, x + 8, y + 30, w1, 16);
-
-			String s = TimeUtils.prettyTimeString(Mth.ceil(jar.recipeTime / 20D));
-			theme.drawString(matrixStack, s, x + 49, y + 34, Color4I.BLACK, Theme.CENTERED);
-		}
 	}
 }

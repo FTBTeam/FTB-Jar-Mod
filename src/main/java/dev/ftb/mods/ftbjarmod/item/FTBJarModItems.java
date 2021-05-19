@@ -32,6 +32,7 @@ public class FTBJarModItems {
 	public static final RegistryObject<Item> TEMPERED_GLASS = basicItem("tempered_glass");
 
 	public static final RegistryObject<BlockItem> CAST_IRON_BLOCK = blockItem("cast_iron_block", FTBJarModBlocks.CAST_IRON_BLOCK);
+	public static final RegistryObject<BlockItem> AUTO_PROCESSING_BLOCK = blockItem("auto_processing_block", FTBJarModBlocks.AUTO_PROCESSING_BLOCK);
 	public static final RegistryObject<BlockItem> JAR = blockItem("jar", FTBJarModBlocks.JAR);
 	public static final RegistryObject<BlockItem> TEMPERED_JAR = blockItem("tempered_jar", FTBJarModBlocks.TEMPERED_JAR);
 	public static final RegistryObject<BlockItem> TUBE = blockItem("tube", FTBJarModBlocks.TUBE);

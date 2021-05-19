@@ -46,12 +46,13 @@ public class SelectJarRecipePacket extends BaseC2SPacket {
 		BlockEntity entity = player.level.getBlockEntity(pos);
 
 		if (entity instanceof TemperedJarBlockEntity) {
+			TemperedJarBlockEntity jar = (TemperedJarBlockEntity) entity;
 			player.level.getRecipeManager().byKey(id).ifPresent(r -> {
 				if (r instanceof JarRecipe && ((JarRecipe) r).isAvailableFor(player)) {
-					((TemperedJarBlockEntity) entity).setRecipe(player, (JarRecipe) r);
+					jar.setRecipe(player, (JarRecipe) r);
 					entity.setChanged();
 					new SelectJarRecipeResponsePacket(pos, id).sendTo(player);
-					new OpenJarScreenPacket(pos, ((TemperedJarBlockEntity) entity).findIngredients()).sendTo(player);
+					new OpenJarScreenPacket(pos, jar.findIngredients(), true, jar.recipeTime).sendTo(player);
 				}
 			});
 		}

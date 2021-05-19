@@ -97,6 +97,7 @@ public class FTBJarModDataGenHandler {
 			addItem(FTBJarModItems.CAST_IRON_GEAR, "Cast Iron Gear");
 			addItem(FTBJarModItems.TEMPERED_GLASS, "Tempered Glass");
 			addBlock(FTBJarModBlocks.CAST_IRON_BLOCK, "Cast Iron Block");
+			addBlock(FTBJarModBlocks.AUTO_PROCESSING_BLOCK, "Jar Auto-Processing Block");
 			addBlock(FTBJarModBlocks.JAR, "Glass Jar");
 			add("block.ftbjarmod.jar.empty", "Empty");
 			add("block.ftbjarmod.jar.mb", "%d mB of %s");
@@ -128,6 +129,7 @@ public class FTBJarModDataGenHandler {
 		@Override
 		protected void registerStatesAndModels() {
 			simpleBlock(FTBJarModBlocks.CAST_IRON_BLOCK.get());
+			simpleBlock(FTBJarModBlocks.AUTO_PROCESSING_BLOCK.get());
 			simpleBlock(FTBJarModBlocks.CREATIVE_LOW_TEMPERATURE_SOURCE.get());
 			simpleBlock(FTBJarModBlocks.CREATIVE_HIGH_TEMPERATURE_SOURCE.get());
 			simpleBlock(FTBJarModBlocks.CREATIVE_SUBZERO_TEMPERATURE_SOURCE.get());
@@ -200,6 +202,7 @@ public class FTBJarModDataGenHandler {
 			singleTexture("tempered_glass", mcLoc("item/generated"), "layer0", modLoc("item/tempered_glass"));
 
 			withExistingParent("cast_iron_block", modLoc("block/cast_iron_block"));
+			withExistingParent("auto_processing_block", modLoc("block/auto_processing_block"));
 			withExistingParent("jar", modLoc("block/jar"));
 			withExistingParent("tempered_jar", modLoc("block/tempered_jar_none"));
 			// withExistingParent("tube", modLoc("block/tube"));

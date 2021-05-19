@@ -93,7 +93,7 @@ public class JarBlock extends Block implements TubeConnection {
 	public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
 		ItemStack item = player.getItemInHand(hand);
 
-		if (item.getItem() == FTBJarModItems.JAR.get() || item.getItem() == FTBJarModItems.TEMPERED_JAR.get() || item.getItem() == FTBJarModItems.TUBE.get()) {
+		if (hit.getDirection() == Direction.UP && (item.getItem() == FTBJarModItems.JAR.get() || item.getItem() == FTBJarModItems.TEMPERED_JAR.get() || item.getItem() == FTBJarModItems.TUBE.get())) {
 			return InteractionResult.PASS;
 		}
 

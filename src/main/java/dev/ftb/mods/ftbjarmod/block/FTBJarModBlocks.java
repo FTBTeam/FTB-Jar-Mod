@@ -16,6 +16,7 @@ public class FTBJarModBlocks {
 	public static final DeferredRegister<Block> REGISTRY = DeferredRegister.create(ForgeRegistries.BLOCKS, FTBJarMod.MOD_ID);
 
 	public static final RegistryObject<Block> CAST_IRON_BLOCK = REGISTRY.register("cast_iron_block", () -> new Block(Block.Properties.of(Material.METAL).strength(5F, 6F).sound(SoundType.METAL)));
+	public static final RegistryObject<Block> AUTO_PROCESSING_BLOCK = REGISTRY.register("auto_processing_block", AutoProcessingBlock::new);
 	public static final RegistryObject<Block> JAR = REGISTRY.register("jar", JarBlock::new);
 	public static final RegistryObject<Block> TEMPERED_JAR = REGISTRY.register("tempered_jar", TemperedJarBlock::new);
 	public static final RegistryObject<Block> TUBE = REGISTRY.register("tube", TubeBlock::new);
