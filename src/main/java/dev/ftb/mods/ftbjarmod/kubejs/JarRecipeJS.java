@@ -107,4 +107,11 @@ public class JarRecipeJS extends RecipeJS {
 		o.addProperty("count", in.getCount());
 		return o;
 	}
+
+	@Override
+	public RecipeJS stage(String s) {
+		json.addProperty("stage", s);
+		save();
+		return this;
+	}
 }

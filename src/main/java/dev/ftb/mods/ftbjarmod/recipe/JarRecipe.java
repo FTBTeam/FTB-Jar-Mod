@@ -1,6 +1,7 @@
 package dev.ftb.mods.ftbjarmod.recipe;
 
 import dev.ftb.mods.ftbjarmod.heat.Temperature;
+import dev.latvian.kubejs.integration.gamestages.GameStageKJSHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -26,6 +27,7 @@ public class JarRecipe implements Recipe<NoInventory> {
 	public final List<ItemStack> outputItems;
 	public final List<FluidStack> outputFluids;
 	public boolean canRepeat;
+	public String stage;
 
 	public JarRecipe(ResourceLocation i, String g) {
 		id = i;
@@ -37,6 +39,7 @@ public class JarRecipe implements Recipe<NoInventory> {
 		outputItems = new ArrayList<>();
 		outputFluids = new ArrayList<>();
 		canRepeat = true;
+		stage = "";
 	}
 
 	@Override
@@ -80,7 +83,7 @@ public class JarRecipe implements Recipe<NoInventory> {
 	}
 
 	public boolean isAvailableFor(Player player) {
-		return true;
+		return stage.isEmpty() || GameStageKJSHelper.hasStage(player, stage);
 	}
 
 	public boolean hasItems() {
