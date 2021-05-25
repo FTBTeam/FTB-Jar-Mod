@@ -122,12 +122,6 @@ publishing {
     }
 
     repositories {
-        if (ENV.LOCAL_MAVEN) {
-            maven {
-                url = "file://${ENV.LOCAL_MAVEN}"
-            }
-        }
-
         if (ENV.SAPS_TOKEN) {
             maven {
                 url "https://maven.saps.dev/minecraft"
@@ -145,7 +139,7 @@ if (ENV.CURSEFORGE_KEY) {
         apiKey = ENV.CURSEFORGE_KEY
         project {
             id = project.curseforge_id
-            releaseType = "release"
+            releaseType = project.curseforge_type
             addGameVersion "1.16.5"
             mainArtifact(remapJar.archivePath)
             relations {
