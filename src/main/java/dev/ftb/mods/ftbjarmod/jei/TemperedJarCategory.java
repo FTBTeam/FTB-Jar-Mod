@@ -114,6 +114,10 @@ public class TemperedJarCategory implements IRecipeCategory<JarRecipe> {
 		heatStacks.set(ingredients);
 		itemStacks.set(ingredients);
 		fluidStacks.set(ingredients);
+
+		fluidStacks.addTooltipCallback((idx, input, stack, tooltip) -> {
+			tooltip.set(0, new TranslatableComponent("block.ftbjarmod.jar.mb", stack.getAmount(), stack.getDisplayName()));
+		});
 	}
 
 	@Override
