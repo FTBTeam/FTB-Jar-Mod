@@ -193,7 +193,7 @@ public class JarScreen extends BaseScreen {
 
 			for (int i = 0; i < ingredientsFound.length; i++) {
 				final int j = i;
-				add(new IngredientButton(this, () -> ingredientsFound[j]).setPosAndSize(20 + j * 22, 5, 7, 7));
+				add(new IngredientButton(this, () -> j < ingredientsFound.length && ingredientsFound[j]).setPosAndSize(20 + j * 22, 5, 7, 7));
 			}
 		}
 	}

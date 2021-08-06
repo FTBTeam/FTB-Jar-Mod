@@ -105,7 +105,11 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 
 			if (canStart(consumeResources(r, connectedBlocks, false))) {
 				consumeResources(r, connectedBlocks, true);
-				List<ItemStack> itemStacks = new ArrayList<>(r.outputItems);
+				List<ItemStack> itemStacks = new ArrayList<>();
+
+				for (ItemStack is : r.outputItems) {
+					itemStacks.add(is.copy());
+				}
 
 				for (FluidStack fs : r.outputFluids) {
 					int amount = fs.getAmount();
