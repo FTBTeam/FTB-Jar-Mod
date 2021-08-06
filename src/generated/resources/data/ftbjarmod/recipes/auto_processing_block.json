@@ -1,0 +1,25 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"CDC",
+		"CPC",
+		"CHC"
+	],
+	"key": {
+		"C": {
+			"tag": "forge:ingots/cast_iron"
+		},
+		"D": {
+			"item": "minecraft:dropper"
+		},
+		"P": {
+			"item": "minecraft:piston"
+		},
+		"H": {
+			"item": "minecraft:hopper"
+		}
+	},
+	"result": {
+		"item": "ftbjarmod:auto_processing_block"
+	}
+}

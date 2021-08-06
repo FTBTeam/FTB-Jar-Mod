@@ -265,6 +265,8 @@ public class FTBJarModDataGenHandler {
 
 			// Misc
 
+			ShapedRecipeBuilder.shaped(FTBJarModItems.AUTO_PROCESSING_BLOCK.get()).unlockedBy("has_item", has(CAST_IRON_INGOT)).pattern("CDC").pattern("CPC").pattern("CHC").define('C', CAST_IRON_INGOT).define('D', Items.DROPPER).define('P', Items.PISTON).define('H', Items.HOPPER).save(consumer);
+
 			ShapedRecipeBuilder.shaped(FTBJarModItems.LOW_TEMPERATURE_HEAT_SINK.get()).unlockedBy("has_item", has(IRON_INGOT)).pattern("PPP").pattern("BBB").pattern("PPP").define('P', Items.HEAVY_WEIGHTED_PRESSURE_PLATE).define('B', Items.IRON_BARS).save(consumer);
 
 			ShapedRecipeBuilder.shaped(FTBJarModItems.HIGH_TEMPERATURE_HEAT_SINK.get()).unlockedBy("has_item", has(FTBJarModItems.LOW_TEMPERATURE_HEAT_SINK.get())).pattern("N N").pattern(" H ").pattern("N N").define('H', FTBJarModItems.LOW_TEMPERATURE_HEAT_SINK.get()).define('N', Items.NETHERITE_INGOT).save(consumer);
