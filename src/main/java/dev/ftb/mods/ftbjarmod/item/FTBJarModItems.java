@@ -36,9 +36,6 @@ public class FTBJarModItems {
 	public static final RegistryObject<BlockItem> JAR = blockItem("jar", FTBJarModBlocks.JAR);
 	public static final RegistryObject<BlockItem> TEMPERED_JAR = blockItem("tempered_jar", FTBJarModBlocks.TEMPERED_JAR);
 	public static final RegistryObject<BlockItem> TUBE = blockItem("tube", FTBJarModBlocks.TUBE);
-	public static final RegistryObject<BlockItem> LOW_TEMPERATURE_HEAT_SINK = blockItem("low_temperature_heat_sink", FTBJarModBlocks.LOW_TEMPERATURE_HEAT_SINK);
-	public static final RegistryObject<BlockItem> HIGH_TEMPERATURE_HEAT_SINK = blockItem("high_temperature_heat_sink", FTBJarModBlocks.HIGH_TEMPERATURE_HEAT_SINK);
-	public static final RegistryObject<BlockItem> SUBZERO_TEMPERATURE_HEAT_SINK = blockItem("subzero_temperature_heat_sink", FTBJarModBlocks.SUBZERO_TEMPERATURE_HEAT_SINK);
 	public static final RegistryObject<BlockItem> CREATIVE_LOW_TEMPERATURE_SOURCE = blockItem("creative_low_temperature_source", FTBJarModBlocks.CREATIVE_LOW_TEMPERATURE_SOURCE);
 	public static final RegistryObject<BlockItem> CREATIVE_HIGH_TEMPERATURE_SOURCE = blockItem("creative_high_temperature_source", FTBJarModBlocks.CREATIVE_HIGH_TEMPERATURE_SOURCE);
 	public static final RegistryObject<BlockItem> CREATIVE_SUBZERO_TEMPERATURE_SOURCE = blockItem("creative_subzero_temperature_source", FTBJarModBlocks.CREATIVE_SUBZERO_TEMPERATURE_SOURCE);

@@ -52,18 +52,9 @@ import java.util.function.Supplier;
 @Mod.EventBusSubscriber(modid = FTBJarMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class FTBJarModDataGenHandler {
 	public static final String MODID = FTBJarMod.MOD_ID;
-	//private static Gson GSON;
 
 	@SubscribeEvent
 	public static void dataGenEvent(GatherDataEvent event) {
-		/*
-		GSON = new GsonBuilder()
-				.registerTypeAdapter(Variant.class, new Variant.Deserializer())
-				.registerTypeAdapter(ItemCameraTransforms.class, new ItemCameraTransforms.Deserializer())
-				.registerTypeAdapter(ItemTransformVec3f.class, new ItemTransformVec3f.Deserializer())
-				.create();
-		 */
-
 		DataGenerator gen = event.getGenerator();
 		ExistingFileHelper efh = event.getExistingFileHelper();
 
@@ -104,10 +95,6 @@ public class FTBJarModDataGenHandler {
 			addBlock(FTBJarModBlocks.TEMPERED_JAR, "Tempered Glass Jar");
 			add("block.ftbjarmod.tempered_jar.recipe_changed", "Recipe changed to %s");
 			addBlock(FTBJarModBlocks.TUBE, "Cast Iron Tube");
-			addBlock(FTBJarModBlocks.LOW_TEMPERATURE_HEAT_SINK, "Low Temperature Heat Sink");
-			addBlock(FTBJarModBlocks.HIGH_TEMPERATURE_HEAT_SINK, "High Temperature Heat Sink");
-			addBlock(FTBJarModBlocks.SUBZERO_TEMPERATURE_HEAT_SINK, "Sub-Zero Temperature Heat Sink");
-			add("block.ftbjarmod.brick_furnace.tooltip", "Place in middle of 3x3x3 cube of Bricks");
 			addBlock(FTBJarModBlocks.CREATIVE_LOW_TEMPERATURE_SOURCE, "Creative Low Temperature Source");
 			addBlock(FTBJarModBlocks.CREATIVE_HIGH_TEMPERATURE_SOURCE, "Creative High Temperature Source");
 			addBlock(FTBJarModBlocks.CREATIVE_SUBZERO_TEMPERATURE_SOURCE, "Creative Sub-Zero Temperature Source");
@@ -267,12 +254,6 @@ public class FTBJarModDataGenHandler {
 
 			ShapedRecipeBuilder.shaped(FTBJarModItems.AUTO_PROCESSING_BLOCK.get()).unlockedBy("has_item", has(CAST_IRON_INGOT)).pattern("CDC").pattern("CPC").pattern("CHC").define('C', CAST_IRON_INGOT).define('D', Items.DROPPER).define('P', Items.PISTON).define('H', Items.HOPPER).save(consumer);
 
-			ShapedRecipeBuilder.shaped(FTBJarModItems.LOW_TEMPERATURE_HEAT_SINK.get()).unlockedBy("has_item", has(IRON_INGOT)).pattern("PPP").pattern("BBB").pattern("PPP").define('P', Items.HEAVY_WEIGHTED_PRESSURE_PLATE).define('B', Items.IRON_BARS).save(consumer);
-
-			ShapedRecipeBuilder.shaped(FTBJarModItems.HIGH_TEMPERATURE_HEAT_SINK.get()).unlockedBy("has_item", has(FTBJarModItems.LOW_TEMPERATURE_HEAT_SINK.get())).pattern("N N").pattern(" H ").pattern("N N").define('H', FTBJarModItems.LOW_TEMPERATURE_HEAT_SINK.get()).define('N', Items.NETHERITE_INGOT).save(consumer);
-
-			ShapedRecipeBuilder.shaped(FTBJarModItems.SUBZERO_TEMPERATURE_HEAT_SINK.get()).unlockedBy("has_item", has(FTBJarModItems.LOW_TEMPERATURE_HEAT_SINK.get())).pattern("N N").pattern(" H ").pattern("N N").define('H', FTBJarModItems.LOW_TEMPERATURE_HEAT_SINK.get()).define('N', Items.PACKED_ICE).save(consumer);
-
 			// Jar
 
 			ShapedRecipeBuilder.shaped(FTBJarModItems.JAR.get()).unlockedBy("has_item", has(GLASS_PANES)).group(MODID + ":jar").pattern("GCG").pattern("G G").pattern("GGG").define('G', GLASS_PANES).define('C', ItemTags.bind("minecraft:wooden_buttons")).save(consumer);
@@ -305,12 +286,10 @@ public class FTBJarModDataGenHandler {
 			dropSelf(FTBJarModBlocks.JAR.get());
 			dropSelf(FTBJarModBlocks.TEMPERED_JAR.get());
 			dropSelf(FTBJarModBlocks.TUBE.get());
-			dropSelf(FTBJarModBlocks.LOW_TEMPERATURE_HEAT_SINK.get());
-			dropSelf(FTBJarModBlocks.HIGH_TEMPERATURE_HEAT_SINK.get());
-			dropSelf(FTBJarModBlocks.SUBZERO_TEMPERATURE_HEAT_SINK.get());
 			dropSelf(FTBJarModBlocks.CREATIVE_LOW_TEMPERATURE_SOURCE.get());
 			dropSelf(FTBJarModBlocks.CREATIVE_HIGH_TEMPERATURE_SOURCE.get());
 			dropSelf(FTBJarModBlocks.CREATIVE_SUBZERO_TEMPERATURE_SOURCE.get());
+			dropSelf(FTBJarModBlocks.AUTO_PROCESSING_BLOCK.get());
 		}
 
 		@Override

@@ -50,9 +50,6 @@ public class FTBJarModClient extends FTBJarModCommon {
 	public static void setup(FMLClientSetupEvent event) {
 		ItemBlockRenderTypes.setRenderLayer(FTBJarModBlocks.JAR.get(), RenderType.cutout());
 		ItemBlockRenderTypes.setRenderLayer(FTBJarModBlocks.TEMPERED_JAR.get(), RenderType.translucent());
-		ItemBlockRenderTypes.setRenderLayer(FTBJarModBlocks.LOW_TEMPERATURE_HEAT_SINK.get(), RenderType.cutout());
-		ItemBlockRenderTypes.setRenderLayer(FTBJarModBlocks.HIGH_TEMPERATURE_HEAT_SINK.get(), RenderType.cutout());
-		ItemBlockRenderTypes.setRenderLayer(FTBJarModBlocks.SUBZERO_TEMPERATURE_HEAT_SINK.get(), RenderType.cutout());
 
 		ClientRegistry.bindTileEntityRenderer(FTBJarModBlockEntities.JAR.get(), JarBlockEntityRenderer::new);
 		ClientRegistry.bindTileEntityRenderer(FTBJarModBlockEntities.TEMPERED_JAR.get(), TemperedJarBlockEntityRenderer::new);

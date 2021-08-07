@@ -22,7 +22,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
+
+import java.util.stream.Collectors;
 
 /**
  * @author LatvianModder
@@ -32,26 +33,11 @@ public class SelectJarRecipeScreen extends ButtonListBaseScreen {
 
 	public class JarRecipeButton extends Panel {
 		public final JarRecipe recipe;
-		public final String filterText;
 
 		public JarRecipeButton(Panel panel, JarRecipe r) {
 			super(panel);
 			setSize(154, 22);
 			recipe = r;
-
-			StringBuilder stringBuilder = new StringBuilder();
-
-			for (FluidStack stack : recipe.outputFluids) {
-				stringBuilder.append(stack.getDisplayName().getString());
-				stringBuilder.append(' ');
-			}
-
-			for (ItemStack stack : recipe.outputItems) {
-				stringBuilder.append(stack.getHoverName().getString());
-				stringBuilder.append(' ');
-			}
-
-			filterText = stringBuilder.toString().trim().toLowerCase();
 		}
 
 		@Override
@@ -132,7 +118,7 @@ public class SelectJarRecipeScreen extends ButtonListBaseScreen {
 		Minecraft mc = Minecraft.getInstance();
 		panel.add(new Widget(panel).setPosAndSize(0, 0, 1, 5));
 
-		for (JarRecipe recipe : mc.level.getRecipeManager().getRecipesFor(FTBJarModRecipeSerializers.JAR_TYPE, NoInventory.INSTANCE, mc.level)) {
+		for (JarRecipe recipe : mc.level.getRecipeManager().getRecipesFor(FTBJarModRecipeSerializers.JAR_TYPE, NoInventory.INSTANCE, mc.level).stream().sorted(JarRecipe.COMPARATOR).collect(Collectors.toList())) {
 			if (recipe.isAvailableFor(mc.player)) {
 				panel.add(new JarRecipeButton(panel, recipe));
 				panel.add(new Widget(panel).setPosAndSize(0, 0, 1, 5));
@@ -142,6 +128,10 @@ public class SelectJarRecipeScreen extends ButtonListBaseScreen {
 
 	@Override
 	public String getFilterText(Widget widget) {
-		return ((JarRecipeButton) widget).filterText;
+		if (widget instanceof JarRecipeButton) {
+			return ((JarRecipeButton) widget).recipe.getFilterText();
+		}
+
+		return "";
 	}
 }

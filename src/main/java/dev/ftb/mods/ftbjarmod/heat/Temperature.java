@@ -2,7 +2,6 @@ package dev.ftb.mods.ftbjarmod.heat;
 
 import dev.ftb.mods.ftbjarmod.FTBJarMod;
 import dev.ftb.mods.ftbjarmod.block.CreativeTemperatureSourceBlock;
-import dev.ftb.mods.ftbjarmod.block.HeatSinkBlock;
 import dev.ftb.mods.ftbjarmod.recipe.FTBJarModRecipeSerializers;
 import dev.ftb.mods.ftbjarmod.recipe.NoInventory;
 import dev.ftb.mods.ftbjarmod.recipe.TemperatureSourceRecipe;
@@ -87,12 +86,6 @@ public enum Temperature implements StringRepresentable {
 
 		if (state.getBlock() instanceof CreativeTemperatureSourceBlock) {
 			return ((CreativeTemperatureSourceBlock) state.getBlock()).temperature;
-		} else if (state.getBlock() instanceof HeatSinkBlock) {
-			if (state.getValue(HeatSinkBlock.ACTIVE)) {
-				return ((HeatSinkBlock) state.getBlock()).temperature;
-			}
-
-			return NONE;
 		}
 
 		for (TemperatureSourceRecipe recipe : level.getRecipeManager().getRecipesFor(FTBJarModRecipeSerializers.TEMPERATURE_SOURCE_TYPE, NoInventory.INSTANCE, level)) {

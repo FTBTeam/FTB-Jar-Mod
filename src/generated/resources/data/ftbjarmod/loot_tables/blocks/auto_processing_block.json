@@ -6,7 +6,7 @@
 			"entries": [
 				{
 					"type": "minecraft:item",
-					"name": "ftbjarmod:low_temperature_heat_sink"
+					"name": "ftbjarmod:auto_processing_block"
 				}
 			],
 			"conditions": [
