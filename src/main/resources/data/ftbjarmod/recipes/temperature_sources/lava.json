@@ -1,8 +1,7 @@
 {
 	"type": "ftbjarmod:temperature_source",
-	"temperature": "high",
-	"burnTime": 72000,
+	"temperature": "low",
 	"block": "minecraft:lava",
 	"item": "minecraft:lava_bucket",
-	"resultBlock": "minecraft:magma_block"
+	"efficiency": 4.0
 }

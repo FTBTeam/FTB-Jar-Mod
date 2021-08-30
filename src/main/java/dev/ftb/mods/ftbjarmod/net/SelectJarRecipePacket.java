@@ -52,7 +52,6 @@ public class SelectJarRecipePacket extends BaseC2SPacket {
 					jar.setRecipe(player, (JarRecipe) r);
 					entity.setChanged();
 					new SelectJarRecipeResponsePacket(pos, id).sendTo(player);
-					new OpenJarScreenPacket(pos, jar.findIngredients(), true, jar.recipeTime).sendTo(player);
 				}
 			});
 		}

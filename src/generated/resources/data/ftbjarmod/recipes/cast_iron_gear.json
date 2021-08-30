@@ -11,7 +11,7 @@
 			"tag": "forge:ingots/cast_iron"
 		}
 	},
-  "result": {
+	"result": {
 		"item": "ftbjarmod:cast_iron_gear"
-  }
+	}
 }

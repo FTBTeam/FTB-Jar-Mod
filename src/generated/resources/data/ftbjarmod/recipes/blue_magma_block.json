@@ -1,0 +1,22 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"SMS",
+		"MLM",
+		"SMS"
+	],
+	"key": {
+		"S": {
+			"item": "minecraft:soul_sand"
+		},
+		"M": {
+			"item": "minecraft:magma_block"
+		},
+		"L": {
+			"item": "minecraft:lava_bucket"
+		}
+	},
+	"result": {
+		"item": "ftbjarmod:blue_magma_block"
+	}
+}

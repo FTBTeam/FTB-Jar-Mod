@@ -1,15 +1,27 @@
 {
 	"variants": {
-		"temperature=none": {
+		"active=false,temperature=none": {
 			"model": "ftbjarmod:block/tempered_jar_none"
 		},
-		"temperature=low": {
+		"active=true,temperature=none": {
+			"model": "ftbjarmod:block/tempered_jar_none"
+		},
+		"active=false,temperature=low": {
 			"model": "ftbjarmod:block/tempered_jar_low"
 		},
-		"temperature=high": {
+		"active=true,temperature=low": {
+			"model": "ftbjarmod:block/tempered_jar_low"
+		},
+		"active=false,temperature=high": {
 			"model": "ftbjarmod:block/tempered_jar_high"
 		},
-		"temperature=subzero": {
+		"active=true,temperature=high": {
+			"model": "ftbjarmod:block/tempered_jar_high"
+		},
+		"active=false,temperature=subzero": {
+			"model": "ftbjarmod:block/tempered_jar_subzero"
+		},
+		"active=true,temperature=subzero": {
 			"model": "ftbjarmod:block/tempered_jar_subzero"
 		}
 	}

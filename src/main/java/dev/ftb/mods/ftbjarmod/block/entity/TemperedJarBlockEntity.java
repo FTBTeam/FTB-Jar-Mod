@@ -1,333 +1,64 @@
 package dev.ftb.mods.ftbjarmod.block.entity;
 
-import dev.ftb.mods.ftbjarmod.block.AutoProcessingBlock;
 import dev.ftb.mods.ftbjarmod.block.FTBJarModBlocks;
 import dev.ftb.mods.ftbjarmod.block.TemperedJarBlock;
-import dev.ftb.mods.ftbjarmod.block.TubeBlock;
-import dev.ftb.mods.ftbjarmod.heat.Temperature;
+import dev.ftb.mods.ftbjarmod.item.FTBJarModItems;
 import dev.ftb.mods.ftbjarmod.item.FluidItem;
-import dev.ftb.mods.ftbjarmod.net.OpenJarScreenPacket;
-import dev.ftb.mods.ftbjarmod.net.OpenSelectJarRecipeScreenPacket;
-import dev.ftb.mods.ftbjarmod.recipe.ItemIngredientPair;
 import dev.ftb.mods.ftbjarmod.recipe.JarRecipe;
-import net.minecraft.core.BlockPos;
+import dev.ftb.mods.ftbjarmod.temperature.Temperature;
+import dev.ftb.mods.ftbjarmod.temperature.TemperaturePair;
+import dev.ftb.mods.ftbjarmod.util.ConnectedBlocks;
+import dev.ftb.mods.ftbjarmod.util.FluidKey;
+import dev.ftb.mods.ftbjarmod.util.ItemKey;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.TickableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.mutable.MutableLong;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Objects;
 
 /**
  * @author LatvianModder
  */
-public class TemperedJarBlockEntity extends BlockEntity implements TickableBlockEntity {
-	private static final Direction[] DIRECTIONS = Direction.values();
-
-	public int recipeTime;
-	public int temperatureTime;
+public class TemperedJarBlockEntity extends BlockEntity implements ContainerData {
+	private long finishTime;
 	public ResourceLocation recipe;
-	public boolean particles;
+	private final int[] availableResources;
+	private TemperaturePair temperature;
+	private int lastMaxTime;
 
 	public TemperedJarBlockEntity() {
 		super(FTBJarModBlockEntities.TEMPERED_JAR.get());
-		recipeTime = 0;
-		temperatureTime = 0;
+		finishTime = 0L;
 		recipe = null;
+		availableResources = new int[]{-1, -1, -1};
+		temperature = null;
 	}
 
-	public boolean isTemperature(Temperature t) {
-		return getBlockState().getValue(TemperedJarBlock.TEMPERATURE) == t;
-	}
-
-	@Override
-	public void tick() {
-		particles = false;
-
-		if (recipeTime <= 0) {
-			if (!level.isClientSide() && level.getGameTime() % 200L == 45L && level.getBlockState(worldPosition.above()).getBlock() instanceof AutoProcessingBlock) {
-				JarRecipe r = getRecipe();
-
-				if (r != null) {
-					startProgress(r, getConnectedBlocks(r));
-				}
-			}
-
-			return;
-		}
-
-		JarRecipe r = getRecipe();
-
-		if (r == null) {
-			return;
-		}
-
-		if (!isTemperature(r.temperature)) {
-			return;
-		}
-
-		recipeTime--;
-		particles = true;
-
-		if (recipeTime == 0 && !level.isClientSide()) {
-			Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks = getConnectedBlocks(r);
-
-			if (canStart(consumeResources(r, connectedBlocks, false))) {
-				consumeResources(r, connectedBlocks, true);
-				List<ItemStack> itemStacks = new ArrayList<>();
-
-				for (ItemStack is : r.outputItems) {
-					itemStacks.add(is.copy());
-				}
-
-				for (FluidStack fs : r.outputFluids) {
-					int amount = fs.getAmount();
-
-					for (IFluidHandler handler : connectedBlocks.getRight()) {
-						FluidStack fs1 = fs.copy();
-						fs1.setAmount(amount);
-						amount -= handler.fill(fs, IFluidHandler.FluidAction.EXECUTE);
-
-						if (amount <= 0) {
-							break;
-						}
-					}
-
-					if (amount > 0) {
-						FluidStack fs1 = fs.copy();
-						fs1.setAmount(amount);
-						itemStacks.add(FluidItem.of(fs1));
-					}
-				}
-
-				for (ItemStack is : itemStacks) {
-					ItemStack is1 = is;
-
-					for (IItemHandler handler : connectedBlocks.getLeft()) {
-						is1 = ItemHandlerHelper.insertItem(handler, is, false);
-
-						if (is1.isEmpty()) {
-							break;
-						}
-					}
-
-					if (!is1.isEmpty()) {
-						Block.popResource(level, worldPosition.above(), is1.copy());
-					}
-				}
-
-				if (level.getBlockState(worldPosition.above()).getBlock() instanceof AutoProcessingBlock) {
-					startProgress(r, connectedBlocks);
-				}
-
-				new OpenJarScreenPacket(getBlockPos(), consumeResources(r, connectedBlocks, false), false, recipeTime).sendToDimension((ServerLevel) level);
-			}
-		}
-	}
-
-	public void rightClick(Player player, InteractionHand hand, ItemStack item) {
-		if (level != null && !level.isClientSide()) {
-			if (getRecipe() == null) {
-				new OpenSelectJarRecipeScreenPacket(getBlockPos()).sendTo((ServerPlayer) player);
-			} else {
-				new OpenJarScreenPacket(getBlockPos(), findIngredients(), true, recipeTime).sendTo((ServerPlayer) player);
-			}
-		}
-	}
-
-	public void startProgress(Player player) {
-		if (level.isClientSide()) {
-			return;
-		}
-
-		if (recipeTime > 0) {
-			player.displayClientMessage(new TextComponent("Recipe already in progress!"), true);
-			return;
-		}
-
-		JarRecipe r = getRecipe();
-
-		if (r == null) {
-			player.displayClientMessage(new TextComponent("Invalid recipe!"), true);
-			return;
-		}
-
-		if (!r.isAvailableFor(player)) {
-			player.displayClientMessage(new TextComponent("Recipe isn't available for you!"), true);
-			return;
-		}
-
-		if (!isTemperature(r.temperature)) {
-			player.displayClientMessage(new TextComponent("Temperature isn't right!"), true);
-			return;
-		}
-
-		Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks = getConnectedBlocks(r);
-
-		if (!startProgress(r, connectedBlocks)) {
-			player.displayClientMessage(new TextComponent("Insufficient resources!"), true);
-		}
-	}
-
-	public boolean startProgress(JarRecipe r, Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks) {
-		if (canStart(consumeResources(r, connectedBlocks, false))) {
-			recipeTime = r.time;
-			setChangedAndSend();
-			return true;
-		}
-
-		return false;
-	}
-
-	public boolean[] consumeResources(@Nullable JarRecipe r, Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks, boolean execute) {
-		if (r == null) {
-			return new boolean[0];
-		}
-
-		boolean[] in = new boolean[r.inputFluids.size() + r.inputItems.size()];
-		int index = 0;
-
-		for (FluidStack fs : r.inputFluids) {
-			int amount = fs.getAmount();
-
-			for (IFluidHandler handler : connectedBlocks.getRight()) {
-				FluidStack toDrain = fs.copy();
-				toDrain.setAmount(amount);
-				amount -= handler.drain(toDrain, execute ? IFluidHandler.FluidAction.EXECUTE : IFluidHandler.FluidAction.SIMULATE).getAmount();
-
-				if (amount <= 0) {
-					in[index] = true;
-					break;
-				}
-			}
-
-			index++;
-		}
-
-		for (ItemIngredientPair is : r.inputItems) {
-			int amount = is.amount;
-
-			itemLabel:
-			for (IItemHandler handler : connectedBlocks.getLeft()) {
-				for (int i = 0; i < handler.getSlots(); i++) {
-					if (is.ingredient.test(handler.getStackInSlot(i))) {
-						amount -= handler.extractItem(i, amount, !execute).getCount();
-
-						if (amount <= 0) {
-							in[index] = true;
-							break itemLabel;
-						}
-					}
-				}
-			}
-
-			index++;
-		}
-
-		return in;
-	}
-
-	private boolean isValidBlock(BlockState state) {
-		return state.getBlock() instanceof TubeBlock || state.getBlock() instanceof AutoProcessingBlock;
-	}
-
-	public Pair<Set<IItemHandler>, Set<IFluidHandler>> getConnectedBlocks(JarRecipe r) {
-		boolean lookForItems = r.hasItems();
-		boolean lookForFluids = r.hasFluids();
-
-		if (!lookForItems && !lookForFluids) {
-			return Pair.of(Collections.emptySet(), Collections.emptySet());
-		}
-
-		LinkedHashMap<BlockPos, BlockState> known = new LinkedHashMap<>();
-		Set<BlockPos> traversed = new HashSet<>();
-		Deque<BlockPos> openSet = new ArrayDeque<>();
-		openSet.add(worldPosition);
-		traversed.add(worldPosition);
-
-		while (!openSet.isEmpty()) {
-			BlockPos ptr = openSet.pop();
-			BlockState state = Blocks.AIR.defaultBlockState();
-
-			if ((ptr == worldPosition || level.isLoaded(ptr) && isValidBlock(state = level.getBlockState(ptr))) && known.put(ptr, state) == null) {
-				if (known.size() >= 64) {
-					break;
-				}
-
-				for (Direction side : DIRECTIONS) {
-					BlockPos offset = ptr.relative(side);
-
-					if (traversed.add(offset)) {
-						openSet.add(offset);
-					}
-				}
-			}
-		}
-
-		known.remove(worldPosition);
-		Set<IItemHandler> itemHandlers = lookForItems ? new LinkedHashSet<>() : Collections.emptySet();
-		Set<IFluidHandler> fluidHandlers = lookForFluids ? new LinkedHashSet<>() : Collections.emptySet();
-
-		for (Map.Entry<BlockPos, BlockState> entry : known.entrySet()) {
-			if (entry.getValue().getBlock() instanceof TubeBlock) {
-				for (int i = 0; i < 6; i++) {
-					if (entry.getValue().getValue(TubeBlock.TUBE[i]).hasConnection()) {
-						BlockEntity blockEntity = level.getBlockEntity(entry.getKey().relative(DIRECTIONS[i]));
-
-						if (blockEntity != null) {
-							if (lookForItems) {
-								IItemHandler itemHandler = blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, DIRECTIONS[i].getOpposite()).orElse(null);
-
-								if (itemHandler != null) {
-									itemHandlers.add(itemHandler);
-								}
-							}
-
-							if (lookForFluids) {
-								IFluidHandler fluidHandler = blockEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, DIRECTIONS[i].getOpposite()).orElse(null);
-
-								if (fluidHandler != null) {
-									fluidHandlers.add(fluidHandler);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		return Pair.of(itemHandlers, fluidHandlers);
+	public ConnectedBlocks getConnectedBlocks(@Nullable JarRecipe r) {
+		return ConnectedBlocks.get(level, worldPosition, r);
 	}
 
 	public void setRecipe(Player player, @Nullable JarRecipe r) {
@@ -335,88 +66,328 @@ public class TemperedJarBlockEntity extends BlockEntity implements TickableBlock
 			return;
 		}
 
-		recipeTime = 0;
-
 		if (r == null) {
 			recipe = null;
+		} else if (Objects.equals(recipe, r.getId())) {
+			return;
 		} else {
 			recipe = r.getId();
 		}
 
-		setChangedAndSend();
-	}
-
-	public void setChangedAndSend() {
+		finishTime = 0L;
+		Arrays.fill(availableResources, -1);
 		setChanged();
-		level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.DEFAULT_AND_RERENDER);
 	}
 
 	@Nullable
-	public JarRecipe getRecipe() {
+	public static JarRecipe getRecipe(@Nullable Level level, @Nullable ResourceLocation recipe) {
+		if (level == null || recipe == null) {
+			return null;
+		}
+
 		Recipe<?> r = level.getRecipeManager().byKey(recipe).orElse(null);
 		return r instanceof JarRecipe ? (JarRecipe) r : null;
 	}
 
 	@Override
 	public CompoundTag save(CompoundTag tag) {
-		tag.putInt("RecipeTime", recipeTime);
-		tag.putInt("TemperatureTime", temperatureTime);
+		tag.putLong("FinishTime", finishTime);
 		tag.putString("Recipe", recipe == null ? "" : recipe.toString());
+		tag.putIntArray("AvailableResources", availableResources);
 		return super.save(tag);
 	}
 
 	@Override
 	public void load(BlockState state, CompoundTag tag) {
 		super.load(state, tag);
-		recipeTime = tag.getInt("RecipeTime");
-		temperatureTime = tag.getInt("TemperatureTime");
+		finishTime = tag.getLong("FinishTime");
 		String r = tag.getString("Recipe");
 		recipe = r.isEmpty() ? null : new ResourceLocation(r);
-	}
+		int[] ar = tag.getIntArray("AvailableResources");
 
-	@Override
-	public CompoundTag getUpdateTag() {
-		return save(new CompoundTag());
-	}
-
-	@Override
-	public void handleUpdateTag(BlockState state, CompoundTag tag) {
-		load(state, tag);
-	}
-
-	@Nullable
-	@Override
-	public ClientboundBlockEntityDataPacket getUpdatePacket() {
-		return new ClientboundBlockEntityDataPacket(worldPosition, 0, getUpdateTag());
-	}
-
-	@Override
-	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-		handleUpdateTag(FTBJarModBlocks.TEMPERED_JAR.get().defaultBlockState(), pkt.getTag());
-	}
-
-	public boolean[] findIngredients() {
-		JarRecipe r = getRecipe();
-
-		if (r == null) {
-			return new boolean[0];
+		if (ar.length >= availableResources.length) {
+			System.arraycopy(ar, 0, availableResources, 0, availableResources.length);
+		} else {
+			Arrays.fill(availableResources, -1);
 		}
 
-		Pair<Set<IItemHandler>, Set<IFluidHandler>> connectedBlocks = getConnectedBlocks(r);
-		return consumeResources(r, connectedBlocks, false);
+		temperature = null;
 	}
 
-	public static boolean canStart(boolean[] in) {
-		if (in.length == 0) {
-			return false;
-		}
-
-		for (boolean b : in) {
-			if (!b) {
-				return false;
+	public static boolean tryStart(int[] res, JarRecipe r, ConnectedBlocks connectedBlocks) {
+		for (int i = 0; i < res.length; i++) {
+			if (res[i] == -1) {
+				res[i] = 0;
 			}
 		}
 
-		return true;
+		boolean start = true;
+
+		for (int i = 0; i < r.inputObjects.length; i++) {
+			if (res[i] < r.inputAmounts[i]) {
+				res[i] += connectedBlocks.extract(r.inputObjects[i], r.inputAmounts[i] - res[i]);
+
+				if (res[i] < r.inputAmounts[i]) {
+					start = false;
+				}
+			}
+		}
+
+		return start;
+	}
+
+	public void writeMenu(Player player, FriendlyByteBuf buf) {
+		buf.writeBlockPos(worldPosition);
+		buf.writeUtf(recipe == null ? "" : recipe.toString(), Short.MAX_VALUE);
+		writeResources(player, buf);
+	}
+
+	public void writeResources(@Nullable Player player, FriendlyByteBuf buf) {
+		Map<ItemKey, MutableLong> items = new LinkedHashMap<>();
+		Map<FluidKey, MutableLong> fluids = new LinkedHashMap<>();
+
+		ConnectedBlocks connectedBlocks = getConnectedBlocks(null);
+
+		if (player != null) {
+			IItemHandler handler = player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
+
+			if (handler != null) {
+				if (connectedBlocks.itemHandlers.isEmpty()) {
+					connectedBlocks.itemHandlers = new LinkedHashSet<>();
+				}
+
+				connectedBlocks.itemHandlers.add(handler);
+			}
+		}
+
+		for (IItemHandler handler : connectedBlocks.itemHandlers) {
+			for (int i = 0; i < handler.getSlots(); i++) {
+				ItemStack stack = handler.extractItem(i, Integer.MAX_VALUE, true);
+
+				if (stack.getCount() > 0) {
+					if (stack.getItem() == FTBJarModItems.FLUID.get()) {
+						FluidStack fstack = FluidItem.getFluidStack(stack);
+
+						if (fstack.getAmount() > 0) {
+							fluids.computeIfAbsent(new FluidKey(fstack), k -> new MutableLong(0L)).add(fstack.getAmount());
+						}
+					} else {
+						items.computeIfAbsent(new ItemKey(stack), k -> new MutableLong(0L)).add(stack.getCount());
+					}
+				}
+			}
+		}
+
+		for (IFluidHandler handler : connectedBlocks.fluidHandlers) {
+			for (int i = 0; i < handler.getTanks(); i++) {
+				FluidStack stack = handler.getFluidInTank(i);
+
+				if (stack.getAmount() > 0) {
+					fluids.computeIfAbsent(new FluidKey(stack), k -> new MutableLong(0L)).add(stack.getAmount());
+				}
+			}
+		}
+
+		buf.writeVarInt(items.size());
+
+		for (Map.Entry<ItemKey, MutableLong> entry : items.entrySet()) {
+			ItemStack stack = entry.getKey().stack.copy();
+			stack.setCount(1);
+			buf.writeItem(stack);
+			buf.writeVarInt((int) Math.min(1000000001L, entry.getValue().longValue()));
+		}
+
+		buf.writeVarInt(fluids.size());
+
+		for (Map.Entry<FluidKey, MutableLong> entry : fluids.entrySet()) {
+			FluidStack stack = entry.getKey().stack.copy();
+			stack.setAmount((int) Math.min(1000000001L, entry.getValue().longValue()));
+			stack.writeToPacket(buf);
+		}
+	}
+
+	public boolean start(BlockState state, @Nullable Player player) {
+		if (player != null && state.getValue(TemperedJarBlock.ACTIVE)) {
+			player.displayClientMessage(new TextComponent("Recipe already in progress!"), true);
+			return false;
+		}
+
+		JarRecipe r = getRecipe(level, recipe);
+
+		if (r == null) {
+			if (player != null) {
+				player.displayClientMessage(new TextComponent("Invalid recipe!"), true);
+			}
+
+			return false;
+		}
+
+		if (player != null && !r.isAvailableFor(player)) {
+			player.displayClientMessage(new TextComponent("Recipe isn't available for you!"), true);
+			return false;
+		}
+
+		if (getTemperature().temperature != r.temperature) {
+			if (player != null) {
+				player.displayClientMessage(new TextComponent("Temperature isn't right!"), true);
+			}
+
+			return false;
+		}
+
+		ConnectedBlocks connectedBlocks = getConnectedBlocks(r);
+
+		if (player != null && r.hasItems()) {
+			IItemHandler handler = player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
+
+			if (handler != null) {
+				if (connectedBlocks.itemHandlers.isEmpty()) {
+					connectedBlocks.itemHandlers = new LinkedHashSet<>();
+				}
+
+				connectedBlocks.itemHandlers.add(handler);
+			}
+		}
+
+		if (tryStart(availableResources, r, connectedBlocks)) {
+			lastMaxTime = getTemperature().getRecipeTime(r);
+			finishTime = level.getGameTime() + lastMaxTime;
+
+			if (player != null) {
+				level.setBlock(worldPosition, state.setValue(TemperedJarBlock.ACTIVE, true), Constants.BlockFlags.DEFAULT);
+			}
+
+			setChanged();
+			level.getBlockTicks().scheduleTick(worldPosition, state.getBlock(), lastMaxTime);
+			return true;
+		} else if (player != null) {
+			player.displayClientMessage(new TextComponent("Insufficient resources!"), true);
+		}
+
+		return false;
+	}
+
+	public void stop() {
+		BlockState state = getBlockState();
+
+		if (state.getValue(TemperedJarBlock.ACTIVE)) {
+			finish(state);
+		}
+	}
+
+	public void tick(BlockState state) {
+		if (state.getValue(TemperedJarBlock.ACTIVE)) {
+			boolean repeat = true;
+			JarRecipe r = getRecipe(level, recipe);
+
+			if (r == null) {
+				finish(state);
+				return;
+			}
+
+			ConnectedBlocks connectedBlocks = getConnectedBlocks(r);
+
+			for (int i = 0; i < r.inputAmounts.length; i++) {
+				availableResources[i] -= r.inputAmounts[i];
+			}
+
+			List<ItemStack> itemStacks = new ArrayList<>();
+
+			for (ItemStack is : r.outputItems) {
+				itemStacks.add(is.copy());
+			}
+
+			for (FluidStack fs : r.outputFluids) {
+				int amount = fs.getAmount();
+
+				for (IFluidHandler handler : connectedBlocks.fluidHandlers) {
+					FluidStack fs1 = fs.copy();
+					fs1.setAmount(amount);
+					amount -= handler.fill(fs, IFluidHandler.FluidAction.EXECUTE);
+
+					if (amount <= 0) {
+						break;
+					}
+				}
+
+				if (amount > 0) {
+					FluidStack fs1 = fs.copy();
+					fs1.setAmount(amount);
+					itemStacks.add(FluidItem.of(fs1));
+				}
+			}
+
+			for (ItemStack is : itemStacks) {
+				ItemStack is1 = connectedBlocks.insertItem(is);
+
+				if (!is1.isEmpty()) {
+					dropItem(is1);
+					repeat = false;
+				}
+			}
+
+			repeat = repeat && !Level.isOutsideBuildHeight(worldPosition.above()) && level.getBlockState(worldPosition.above()).is(FTBJarModBlocks.AUTO_PROCESSING_BLOCK.get());
+
+			if (!repeat || !start(state, null)) {
+				finish(state);
+			}
+		}
+	}
+
+	private void dropItem(ItemStack stack) {
+		for (Direction dir : ConnectedBlocks.HDIRECTIONS) {
+			if (level.isEmptyBlock(worldPosition.relative(dir))) {
+				Block.popResource(level, worldPosition.relative(dir), stack);
+				return;
+			}
+		}
+
+		Block.popResource(level, worldPosition, stack);
+	}
+
+
+	public void finish(BlockState state) {
+		level.setBlock(worldPosition, state.setValue(TemperedJarBlock.ACTIVE, false), Constants.BlockFlags.DEFAULT);
+		finishTime = 0L;
+		setChanged();
+	}
+
+	@Override
+	public void clearCache() {
+		super.clearCache();
+		temperature = null;
+	}
+
+	public TemperaturePair getTemperature() {
+		if (temperature == null) {
+			temperature = Temperature.fromLevel(level, worldPosition.below());
+		}
+
+		return temperature;
+	}
+
+	@Override
+	public int get(int i) {
+		switch (i) {
+			case 0:
+			case 1:
+			case 2:
+				return availableResources[i];
+			case 3:
+				return finishTime == 0L ? -1 : (int) (finishTime - level.getGameTime());
+			case 4:
+				return lastMaxTime;
+			default:
+				return 0;
+		}
+	}
+
+	@Override
+	public void set(int i, int j) {
+	}
+
+	@Override
+	public int getCount() {
+		return 5;
 	}
 }

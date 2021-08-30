@@ -5,25 +5,22 @@ import dev.ftb.mods.ftbjarmod.FTBJarMod;
 import dev.ftb.mods.ftbjarmod.FTBJarModCommon;
 import dev.ftb.mods.ftbjarmod.block.FTBJarModBlocks;
 import dev.ftb.mods.ftbjarmod.block.entity.FTBJarModBlockEntities;
-import dev.ftb.mods.ftbjarmod.block.entity.TemperedJarBlockEntity;
 import dev.ftb.mods.ftbjarmod.block.entity.render.JarBlockEntityRenderer;
 import dev.ftb.mods.ftbjarmod.block.entity.render.TemperedJarBlockEntityRenderer;
-import dev.ftb.mods.ftbjarmod.client.gui.JarScreen;
-import dev.ftb.mods.ftbjarmod.client.gui.SelectJarRecipeScreen;
+import dev.ftb.mods.ftbjarmod.gui.FTBJarModMenus;
+import dev.ftb.mods.ftbjarmod.gui.JarScreen;
 import dev.ftb.mods.ftbjarmod.item.FTBJarModItems;
 import dev.ftb.mods.ftbjarmod.item.FluidItem;
-import dev.ftb.mods.ftbjarmod.net.OpenJarScreenPacket;
-import dev.ftb.mods.ftbjarmod.net.OpenSelectJarRecipeScreenPacket;
+import dev.ftb.mods.ftbjarmod.util.FluidKey;
 import dev.ftb.mods.ftblibrary.icon.Color4I;
-import dev.ftb.mods.ftblibrary.util.ClientUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -53,6 +50,8 @@ public class FTBJarModClient extends FTBJarModCommon {
 
 		ClientRegistry.bindTileEntityRenderer(FTBJarModBlockEntities.JAR.get(), JarBlockEntityRenderer::new);
 		ClientRegistry.bindTileEntityRenderer(FTBJarModBlockEntities.TEMPERED_JAR.get(), TemperedJarBlockEntityRenderer::new);
+
+		MenuScreens.register(FTBJarModMenus.JAR.get(), JarScreen::makeScreen);
 	}
 
 	@SubscribeEvent
@@ -60,12 +59,11 @@ public class FTBJarModClient extends FTBJarModCommon {
 		event.getItemColors().register((stack, i) -> {
 			if (i == 1) {
 				FluidStack fluidStack = FluidItem.getFluidStack(stack);
-				FluidKey key = new FluidKey(fluidStack);
-				Integer c = fluidColorCache.get(key);
+				Integer c = fluidColorCache.get(new FluidKey(fluidStack));
 
 				if (c == null) {
 					c = calculateFluidColor(fluidStack);
-					fluidColorCache.put(key, c);
+					fluidColorCache.put(new FluidKey(fluidStack.copy()), c);
 				}
 
 				return c;
@@ -116,33 +114,5 @@ public class FTBJarModClient extends FTBJarModCommon {
 		}
 
 		return Color4I.rgba((int) (rgba[0] * 255F / rgba[3]), (int) (rgba[1] * 255F / rgba[3]), (int) (rgba[2] * 255F / rgba[3]), 255).rgba();
-	}
-
-	@Override
-	public void openJarScreen(OpenJarScreenPacket packet) {
-		if (packet.force) {
-			BlockEntity entity = Minecraft.getInstance().level.getBlockEntity(packet.pos);
-
-			if (entity instanceof TemperedJarBlockEntity) {
-				((TemperedJarBlockEntity) entity).recipeTime = packet.recipeTime;
-				new JarScreen((TemperedJarBlockEntity) entity, packet.ingredients).openGui();
-			}
-		} else {
-			JarScreen screen = ClientUtils.getCurrentGuiAs(JarScreen.class);
-
-			if (screen != null) {
-				screen.jar.recipeTime = packet.recipeTime;
-				screen.updateRecipe(packet.ingredients);
-			}
-		}
-	}
-
-	@Override
-	public void openJarRecipeScreen(OpenSelectJarRecipeScreenPacket packet) {
-		BlockEntity entity = Minecraft.getInstance().level.getBlockEntity(packet.pos);
-
-		if (entity instanceof TemperedJarBlockEntity) {
-			new SelectJarRecipeScreen((TemperedJarBlockEntity) entity).openGui();
-		}
 	}
 }

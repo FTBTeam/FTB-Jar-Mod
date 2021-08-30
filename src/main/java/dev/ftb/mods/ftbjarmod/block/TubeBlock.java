@@ -3,6 +3,9 @@ package dev.ftb.mods.ftbjarmod.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -19,6 +22,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -134,6 +138,12 @@ public class TubeBlock extends Block implements SimpleWaterloggedBlock, TubeConn
 
 		BlockEntity t = world.getBlockEntity(pos);
 		return t != null && (t.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, face).isPresent() || t.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, face).isPresent());
+	}
+
+	@Override
+	@Deprecated
+	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+		return InteractionResult.PASS;
 	}
 
 	@Override

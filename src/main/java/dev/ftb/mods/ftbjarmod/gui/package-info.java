@@ -1,3 +1,3 @@
 @mcp.MethodsReturnNonnullByDefault
 @javax.annotation.ParametersAreNonnullByDefault
-package dev.ftb.mods.ftbjarmod.client.gui;
+package dev.ftb.mods.ftbjarmod.gui;

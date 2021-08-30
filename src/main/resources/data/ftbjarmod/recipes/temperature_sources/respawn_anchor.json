@@ -1,0 +1,6 @@
+{
+	"type": "ftbjarmod:temperature_source",
+	"temperature": "none",
+	"block": "minecraft:respawn_anchor",
+	"efficiency": 8.0
+}

@@ -1,7 +1,8 @@
 package dev.ftb.mods.ftbjarmod.recipe;
 
 import com.google.gson.JsonObject;
-import dev.ftb.mods.ftbjarmod.heat.Temperature;
+import dev.ftb.mods.ftbjarmod.temperature.Temperature;
+import dev.ftb.mods.ftbjarmod.temperature.TemperaturePair;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -22,16 +23,11 @@ public class TemperatureSourceRecipeSerializer extends ForgeRegistryEntry<Recipe
 			r.setBlockString(json.get("block").getAsString());
 		}
 
-		if (json.has("resultBlock")) {
-			r.setResultBlockString(json.get("resultBlock").getAsString());
-		}
+		Temperature temperature = Temperature.NONE;
+		double efficiency = 1D;
 
 		if (json.has("temperature")) {
-			r.temperature = Temperature.byName(json.get("temperature").getAsString());
-		}
-
-		if (json.has("burnTime")) {
-			r.burnTime = json.get("burnTime").getAsInt();
+			temperature = Temperature.byName(json.get("temperature").getAsString());
 		}
 
 		if (json.has("item")) {
@@ -42,13 +38,15 @@ public class TemperatureSourceRecipeSerializer extends ForgeRegistryEntry<Recipe
 			}
 		}
 
-		if (json.has("resultItem")) {
-			if (json.get("resultItem").isJsonObject()) {
-				r.resultItem = ShapedRecipe.itemFromJson(json.get("resultItem").getAsJsonObject());
-			} else {
-				r.resultItem = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(json.get("resultItem").getAsString())));
-			}
+		if (json.has("hideFromJEI")) {
+			r.hideFromJEI = json.get("hideFromJEI").getAsBoolean();
 		}
+
+		if (json.has("efficiency")) {
+			efficiency = json.get("efficiency").getAsDouble();
+		}
+
+		r.temperaturePair = new TemperaturePair(temperature, efficiency);
 
 		return r;
 	}
@@ -57,11 +55,9 @@ public class TemperatureSourceRecipeSerializer extends ForgeRegistryEntry<Recipe
 	public TemperatureSourceRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
 		TemperatureSourceRecipe r = new TemperatureSourceRecipe(recipeId, buffer.readUtf(Short.MAX_VALUE));
 		r.setBlockString(buffer.readUtf(Short.MAX_VALUE));
-		r.setResultBlockString(buffer.readUtf(Short.MAX_VALUE));
-		r.temperature = Temperature.VALUES[buffer.readVarInt()];
-		r.burnTime = buffer.readVarInt();
+		r.temperaturePair = new TemperaturePair(Temperature.VALUES[buffer.readVarInt()], buffer.readDouble());
 		r.item = buffer.readItem();
-		r.resultItem = buffer.readItem();
+		r.hideFromJEI = buffer.readBoolean();
 		return r;
 	}
 
@@ -69,10 +65,9 @@ public class TemperatureSourceRecipeSerializer extends ForgeRegistryEntry<Recipe
 	public void toNetwork(FriendlyByteBuf buffer, TemperatureSourceRecipe r) {
 		buffer.writeUtf(r.getGroup(), Short.MAX_VALUE);
 		buffer.writeUtf(r.getBlockString(), Short.MAX_VALUE);
-		buffer.writeUtf(r.getResultBlockString(), Short.MAX_VALUE);
-		buffer.writeVarInt(r.temperature.ordinal());
-		buffer.writeVarInt(r.burnTime);
+		buffer.writeVarInt(r.temperaturePair.temperature.ordinal());
+		buffer.writeDouble(r.temperaturePair.efficiency);
 		buffer.writeItem(r.item);
-		buffer.writeItem(r.resultItem);
+		buffer.writeBoolean(r.hideFromJEI);
 	}
 }

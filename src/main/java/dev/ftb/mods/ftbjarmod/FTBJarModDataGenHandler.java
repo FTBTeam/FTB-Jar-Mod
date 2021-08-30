@@ -5,8 +5,8 @@ import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
 import dev.ftb.mods.ftbjarmod.block.FTBJarModBlocks;
 import dev.ftb.mods.ftbjarmod.block.TemperedJarBlock;
-import dev.ftb.mods.ftbjarmod.heat.Temperature;
 import dev.ftb.mods.ftbjarmod.item.FTBJarModItems;
+import dev.ftb.mods.ftbjarmod.temperature.Temperature;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.BlockLoot;
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -98,6 +98,7 @@ public class FTBJarModDataGenHandler {
 			addBlock(FTBJarModBlocks.CREATIVE_LOW_TEMPERATURE_SOURCE, "Creative Low Temperature Source");
 			addBlock(FTBJarModBlocks.CREATIVE_HIGH_TEMPERATURE_SOURCE, "Creative High Temperature Source");
 			addBlock(FTBJarModBlocks.CREATIVE_SUBZERO_TEMPERATURE_SOURCE, "Creative Sub-Zero Temperature Source");
+			addBlock(FTBJarModBlocks.BLUE_MAGMA_BLOCK, "Blue Magma Block");
 			add("ftbjarmod.temperature", "Temperature");
 			add("ftbjarmod.temperature.none", "No Temperature");
 			add("ftbjarmod.temperature.low", "Low Temperature");
@@ -105,6 +106,7 @@ public class FTBJarModDataGenHandler {
 			add("ftbjarmod.temperature.subzero", "Sub-Zero Temperature");
 			add("ftbjarmod.processing_time", "Processing Time: %d s");
 			add("ftbjarmod.burn_time", "Burn Time: %d min");
+			add("item.ftbjarmod.fluid.use", "Right-click on a Jar or other fluid handler to empty the container");
 		}
 	}
 
@@ -116,6 +118,7 @@ public class FTBJarModDataGenHandler {
 		@Override
 		protected void registerStatesAndModels() {
 			simpleBlock(FTBJarModBlocks.CAST_IRON_BLOCK.get());
+			simpleBlock(FTBJarModBlocks.BLUE_MAGMA_BLOCK.get());
 			//simpleBlock(FTBJarModBlocks.AUTO_PROCESSING_BLOCK.get());
 			simpleBlock(FTBJarModBlocks.CREATIVE_LOW_TEMPERATURE_SOURCE.get());
 			simpleBlock(FTBJarModBlocks.CREATIVE_HIGH_TEMPERATURE_SOURCE.get());
@@ -193,6 +196,7 @@ public class FTBJarModDataGenHandler {
 			withExistingParent("creative_low_temperature_source", modLoc("block/creative_low_temperature_source"));
 			withExistingParent("creative_high_temperature_source", modLoc("block/creative_high_temperature_source"));
 			withExistingParent("creative_subzero_temperature_source", modLoc("block/creative_subzero_temperature_source"));
+			withExistingParent("blue_magma_block", modLoc("block/blue_magma_block"));
 		}
 	}
 
@@ -232,27 +236,81 @@ public class FTBJarModDataGenHandler {
 		protected void buildShapelessRecipes(Consumer<FinishedRecipe> consumer) {
 			// Cast Iron
 
-			ShapedRecipeBuilder.shaped(FTBJarModItems.CAST_IRON_BLOCK.get()).unlockedBy("has_item", has(CAST_IRON_INGOT)).group(MODID + ":cast_iron").pattern("III").pattern("III").pattern("III").define('I', CAST_IRON_INGOT).save(consumer);
+			ShapedRecipeBuilder.shaped(FTBJarModItems.CAST_IRON_BLOCK.get())
+					.unlockedBy("has_item", has(CAST_IRON_INGOT))
+					.group(MODID + ":cast_iron")
+					.pattern("III").pattern("III")
+					.pattern("III")
+					.define('I', CAST_IRON_INGOT)
+					.save(consumer);
 
-			ShapedRecipeBuilder.shaped(FTBJarModItems.CAST_IRON_INGOT.get()).unlockedBy("has_item", has(CAST_IRON_NUGGET)).group(MODID + ":cast_iron").pattern("III").pattern("III").pattern("III").define('I', CAST_IRON_NUGGET).save(consumer);
+			ShapedRecipeBuilder.shaped(FTBJarModItems.CAST_IRON_INGOT.get())
+					.unlockedBy("has_item", has(CAST_IRON_NUGGET))
+					.group(MODID + ":cast_iron")
+					.pattern("III")
+					.pattern("III")
+					.pattern("III")
+					.define('I', CAST_IRON_NUGGET)
+					.save(consumer);
 
-			ShapelessRecipeBuilder.shapeless(FTBJarModItems.CAST_IRON_INGOT.get(), 9).unlockedBy("has_item", has(CAST_IRON_BLOCK)).group(MODID + ":cast_iron").requires(CAST_IRON_BLOCK).save(consumer, new ResourceLocation(MODID, "cast_iron_ingot_from_block"));
+			ShapelessRecipeBuilder.shapeless(FTBJarModItems.CAST_IRON_INGOT.get(), 9)
+					.unlockedBy("has_item", has(CAST_IRON_BLOCK))
+					.group(MODID + ":cast_iron")
+					.requires(CAST_IRON_BLOCK)
+					.save(consumer, new ResourceLocation(MODID, "cast_iron_ingot_from_block"));
 
-			ShapelessRecipeBuilder.shapeless(FTBJarModItems.CAST_IRON_NUGGET.get(), 9).unlockedBy("has_item", has(CAST_IRON_INGOT)).group(MODID + ":cast_iron").requires(CAST_IRON_INGOT).save(consumer, new ResourceLocation(MODID, "cast_iron_nugget_from_ingot"));
+			ShapelessRecipeBuilder.shapeless(FTBJarModItems.CAST_IRON_NUGGET.get(), 9)
+					.unlockedBy("has_item", has(CAST_IRON_INGOT))
+					.group(MODID + ":cast_iron")
+					.requires(CAST_IRON_INGOT)
+					.save(consumer, new ResourceLocation(MODID, "cast_iron_nugget_from_ingot"));
 
-			ShapedRecipeBuilder.shaped(FTBJarModItems.CAST_IRON_GEAR.get()).unlockedBy("has_item", has(CAST_IRON_INGOT)).group(MODID + ":cast_iron").pattern(" I ").pattern("I I").pattern(" I ").define('I', CAST_IRON_INGOT).save(consumer);
+			ShapedRecipeBuilder.shaped(FTBJarModItems.CAST_IRON_GEAR.get())
+					.unlockedBy("has_item", has(CAST_IRON_INGOT))
+					.group(MODID + ":cast_iron")
+					.pattern(" I ")
+					.pattern("I I")
+					.pattern(" I ").define('I', CAST_IRON_INGOT)
+					.save(consumer);
 
-			SimpleCookingRecipeBuilder.cooking(Ingredient.of(IRON_INGOT), FTBJarModItems.CAST_IRON_INGOT.get(), 0.1F, 600, RecipeSerializer.CAMPFIRE_COOKING_RECIPE).unlockedBy("has_item", has(IRON_INGOT)).save(consumer, new ResourceLocation(MODID, "cast_iron_ingot_from_smelting"));
+			SimpleCookingRecipeBuilder.cooking(Ingredient.of(IRON_INGOT), FTBJarModItems.CAST_IRON_INGOT.get(), 0.1F, 600, RecipeSerializer.CAMPFIRE_COOKING_RECIPE)
+					.unlockedBy("has_item", has(IRON_INGOT))
+					.save(consumer, new ResourceLocation(MODID, "cast_iron_ingot_from_smelting"));
 
 			// Glass
 
-			SimpleCookingRecipeBuilder.cooking(Ingredient.of(ItemTags.SAND), Items.GLASS_PANE, 0.1F, 600, RecipeSerializer.CAMPFIRE_COOKING_RECIPE).unlockedBy("has_item", has(ItemTags.SAND)).save(consumer, new ResourceLocation(MODID, "glass_pane"));
-			SimpleCookingRecipeBuilder.cooking(Ingredient.of(GLASS_PANES), FTBJarModItems.TEMPERED_GLASS.get(), 0.1F, 600, RecipeSerializer.CAMPFIRE_COOKING_RECIPE).unlockedBy("has_item", has(GLASS_PANES)).save(consumer, new ResourceLocation(MODID, "tempered_glass_from_campfire"));
-			SimpleCookingRecipeBuilder.smelting(Ingredient.of(GLASS_PANES), FTBJarModItems.TEMPERED_GLASS.get(), 0.1F, 200).unlockedBy("has_item", has(GLASS_PANES)).save(consumer, new ResourceLocation(MODID, "tempered_glass_from_smelting"));
+			SimpleCookingRecipeBuilder.cooking(Ingredient.of(ItemTags.SAND), Items.GLASS_PANE, 0.1F, 600, RecipeSerializer.CAMPFIRE_COOKING_RECIPE)
+					.unlockedBy("has_item", has(ItemTags.SAND))
+					.save(consumer, new ResourceLocation(MODID, "glass_pane"));
+			SimpleCookingRecipeBuilder.cooking(Ingredient.of(GLASS_PANES), FTBJarModItems.TEMPERED_GLASS.get(), 0.1F, 600, RecipeSerializer.CAMPFIRE_COOKING_RECIPE)
+					.unlockedBy("has_item", has(GLASS_PANES))
+					.save(consumer, new ResourceLocation(MODID, "tempered_glass_from_campfire"));
+			SimpleCookingRecipeBuilder.smelting(Ingredient.of(GLASS_PANES), FTBJarModItems.TEMPERED_GLASS.get(), 0.1F, 200)
+					.unlockedBy("has_item", has(GLASS_PANES))
+					.save(consumer, new ResourceLocation(MODID, "tempered_glass_from_smelting"));
 
 			// Misc
 
-			ShapedRecipeBuilder.shaped(FTBJarModItems.AUTO_PROCESSING_BLOCK.get()).unlockedBy("has_item", has(CAST_IRON_INGOT)).pattern("CDC").pattern("CPC").pattern("CHC").define('C', CAST_IRON_INGOT).define('D', Items.DROPPER).define('P', Items.PISTON).define('H', Items.HOPPER).save(consumer);
+			ShapedRecipeBuilder.shaped(FTBJarModItems.AUTO_PROCESSING_BLOCK.get())
+					.unlockedBy("has_item", has(CAST_IRON_INGOT))
+					.pattern("CDC")
+					.pattern("CPC")
+					.pattern("CHC")
+					.define('C', CAST_IRON_INGOT)
+					.define('D', Items.DROPPER)
+					.define('P', Items.PISTON)
+					.define('H', Items.HOPPER)
+					.save(consumer);
+
+			ShapedRecipeBuilder.shaped(FTBJarModItems.BLUE_MAGMA_BLOCK.get())
+					.unlockedBy("has_item", has(Items.MAGMA_BLOCK))
+					.pattern("SMS")
+					.pattern("MLM")
+					.pattern("SMS")
+					.define('S', Items.SOUL_SAND)
+					.define('M', Items.MAGMA_BLOCK)
+					.define('L', Items.LAVA_BUCKET)
+					.save(consumer);
 
 			// Jar
 
@@ -283,6 +341,7 @@ public class FTBJarModDataGenHandler {
 		@Override
 		protected void addTables() {
 			dropSelf(FTBJarModBlocks.CAST_IRON_BLOCK.get());
+			dropSelf(FTBJarModBlocks.BLUE_MAGMA_BLOCK.get());
 			dropSelf(FTBJarModBlocks.JAR.get());
 			dropSelf(FTBJarModBlocks.TEMPERED_JAR.get());
 			dropSelf(FTBJarModBlocks.TUBE.get());

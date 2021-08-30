@@ -1,7 +1,6 @@
 package dev.ftb.mods.ftbjarmod.block;
 
 import dev.ftb.mods.ftbjarmod.block.entity.JarBlockEntity;
-import dev.ftb.mods.ftbjarmod.block.entity.TemperedJarBlockEntity;
 import dev.ftb.mods.ftbjarmod.item.FTBJarModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -90,19 +89,19 @@ public class JarBlock extends Block implements TubeConnection {
 
 	@Override
 	@Deprecated
-	public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
 		ItemStack item = player.getItemInHand(hand);
 
-		if (hit.getDirection() == Direction.UP && (item.getItem() == FTBJarModItems.JAR.get() || item.getItem() == FTBJarModItems.TEMPERED_JAR.get() || item.getItem() == FTBJarModItems.TUBE.get())) {
+		if (hit.getDirection() == Direction.UP && item.getItem() == FTBJarModItems.TUBE.get()) {
 			return InteractionResult.PASS;
 		}
 
-		BlockEntity tileEntity = worldIn.getBlockEntity(pos);
+		if (!level.isClientSide()) {
+			BlockEntity tileEntity = level.getBlockEntity(pos);
 
-		if (tileEntity instanceof JarBlockEntity) {
-			((JarBlockEntity) tileEntity).rightClick(player, hand, item);
-		} else if (tileEntity instanceof TemperedJarBlockEntity) {
-			((TemperedJarBlockEntity) tileEntity).rightClick(player, hand, item);
+			if (tileEntity instanceof JarBlockEntity) {
+				((JarBlockEntity) tileEntity).rightClick(player, hand, item);
+			}
 		}
 
 		return InteractionResult.SUCCESS;

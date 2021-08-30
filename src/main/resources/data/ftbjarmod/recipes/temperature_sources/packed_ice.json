@@ -1,7 +1,6 @@
 {
 	"type": "ftbjarmod:temperature_source",
 	"temperature": "subzero",
-	"burnTime": 16000,
 	"block": "minecraft:packed_ice",
-	"resultBlock": "minecraft:ice"
+	"efficiency": 1.0
 }

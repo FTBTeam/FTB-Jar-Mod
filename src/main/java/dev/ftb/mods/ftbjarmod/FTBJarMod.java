@@ -3,6 +3,7 @@ package dev.ftb.mods.ftbjarmod;
 import dev.ftb.mods.ftbjarmod.block.FTBJarModBlocks;
 import dev.ftb.mods.ftbjarmod.block.entity.FTBJarModBlockEntities;
 import dev.ftb.mods.ftbjarmod.client.FTBJarModClient;
+import dev.ftb.mods.ftbjarmod.gui.FTBJarModMenus;
 import dev.ftb.mods.ftbjarmod.item.FTBJarModItems;
 import dev.ftb.mods.ftbjarmod.net.FTBJarModNet;
 import dev.ftb.mods.ftbjarmod.recipe.FTBJarModRecipeSerializers;
@@ -43,6 +44,7 @@ public class FTBJarMod {
 		FTBJarModItems.REGISTRY.register(FMLJavaModLoadingContext.get().getModEventBus());
 		FTBJarModBlockEntities.REGISTRY.register(FMLJavaModLoadingContext.get().getModEventBus());
 		FTBJarModRecipeSerializers.REGISTRY.register(FMLJavaModLoadingContext.get().getModEventBus());
+		FTBJarModMenus.REGISTRY.register(FMLJavaModLoadingContext.get().getModEventBus());
 
 		FTBJarModNet.init();
 		PROXY.init();

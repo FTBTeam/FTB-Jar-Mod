@@ -2,8 +2,8 @@ package dev.ftb.mods.ftbjarmod.recipe;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.ftb.mods.ftbjarmod.heat.Temperature;
 import dev.ftb.mods.ftbjarmod.item.FluidItem;
+import dev.ftb.mods.ftbjarmod.temperature.Temperature;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -76,6 +76,7 @@ public class JarRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>>
 			throw new IllegalStateException("Can't have no output items and fluids!");
 		}
 
+		r.updateInputs();
 		return r;
 	}
 
@@ -107,6 +108,7 @@ public class JarRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>>
 			r.outputFluids.add(FluidStack.readFromPacket(buffer));
 		}
 
+		r.updateInputs();
 		return r;
 	}
 

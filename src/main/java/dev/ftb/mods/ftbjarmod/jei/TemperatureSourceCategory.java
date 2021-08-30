@@ -2,8 +2,8 @@ package dev.ftb.mods.ftbjarmod.jei;
 
 
 import dev.ftb.mods.ftbjarmod.FTBJarMod;
-import dev.ftb.mods.ftbjarmod.heat.Temperature;
 import dev.ftb.mods.ftbjarmod.recipe.TemperatureSourceRecipe;
+import dev.ftb.mods.ftbjarmod.temperature.Temperature;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -12,7 +12,10 @@ import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 
 /**
@@ -25,7 +28,7 @@ public class TemperatureSourceCategory implements IRecipeCategory<TemperatureSou
 	private final IDrawable icon;
 
 	public TemperatureSourceCategory(IGuiHelper guiHelper) {
-		background = guiHelper.drawableBuilder(new ResourceLocation(FTBJarMod.MOD_ID + ":textures/gui/temperature_source_jei.png"), 0, 0, 112, 30).setTextureSize(128, 64).build();
+		background = guiHelper.drawableBuilder(new ResourceLocation(FTBJarMod.MOD_ID + ":textures/gui/temperature_source_jei.png"), 0, 0, 71, 30).setTextureSize(128, 64).build();
 		icon = guiHelper.createDrawableIngredient(Temperature.LOW);
 	}
 
@@ -56,14 +59,10 @@ public class TemperatureSourceCategory implements IRecipeCategory<TemperatureSou
 
 	@Override
 	public void setIngredients(TemperatureSourceRecipe recipe, IIngredients ingredients) {
-		ingredients.setOutput(FTBJarModIngredients.TEMPERATURE, recipe.temperature);//.setBurnTime(recipe.burnTime));
+		ingredients.setOutput(FTBJarModIngredients.TEMPERATURE, recipe.temperaturePair.temperature);//.setBurnTime(recipe.burnTime));
 
 		if (!recipe.item.isEmpty()) {
 			ingredients.setInput(VanillaTypes.ITEM, recipe.item);
-		}
-
-		if (!recipe.resultItem.isEmpty()) {
-			ingredients.setOutput(VanillaTypes.ITEM, recipe.resultItem);
 		}
 	}
 
@@ -78,11 +77,10 @@ public class TemperatureSourceCategory implements IRecipeCategory<TemperatureSou
 			itemStacks.init(0, true, 2, 6);
 		}
 
-		if (!recipe.resultItem.isEmpty()) {
-			itemStacks.init(1, false, 92, 6);
-		}
-
 		tStacks.set(ingredients);
 		itemStacks.set(ingredients);
+
+		Component component = new TextComponent("Efficiency: " + recipe.temperaturePair.efficiency + "x").withStyle(recipe.temperaturePair.efficiency == 1D ? ChatFormatting.YELLOW : recipe.temperaturePair.efficiency > 1D ? ChatFormatting.GREEN : ChatFormatting.RED);
+		tStacks.addTooltipCallback((idx, input, stack, tooltip) -> tooltip.add(component));
 	}
 }

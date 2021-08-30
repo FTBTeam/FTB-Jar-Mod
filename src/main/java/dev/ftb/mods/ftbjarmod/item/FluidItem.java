@@ -1,5 +1,6 @@
 package dev.ftb.mods.ftbjarmod.item;
 
+import dev.ftb.mods.ftbjarmod.FTBJarMod;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -27,8 +28,8 @@ import java.util.Objects;
 public class FluidItem extends Item {
 	public static final IForgeRegistry<Fluid> FLUID_REGISTRY = ForgeRegistries.FLUIDS; // Registries.get(FTBJarMod.MOD_ID).get(net.minecraft.core.Registry.FLUID_REGISTRY);
 
-	public FluidItem(Properties properties) {
-		super(properties);
+	public FluidItem() {
+		super(new Item.Properties().stacksTo(1).tab(FTBJarMod.group));
 	}
 
 	public static FluidStack getFluidStack(ItemStack item) {
@@ -59,6 +60,11 @@ public class FluidItem extends Item {
 	}
 
 	@Override
+	public ItemStack getDefaultInstance() {
+		return of(new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME));
+	}
+
+	@Override
 	@OnlyIn(Dist.CLIENT)
 	public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
 		FluidStack fluidStack = getFluidStack(stack);
@@ -66,6 +72,8 @@ public class FluidItem extends Item {
 		if (!fluidStack.isEmpty()) {
 			tooltip.add(new TextComponent("< ").append(new TranslatableComponent("block.ftbjarmod.jar.mb", fluidStack.getAmount(), fluidStack.getDisplayName())).append(" >").withStyle(ChatFormatting.GRAY));
 		}
+
+		tooltip.add(new TranslatableComponent("item.ftbjarmod.fluid.use").withStyle(ChatFormatting.DARK_GRAY));
 	}
 
 	@Override

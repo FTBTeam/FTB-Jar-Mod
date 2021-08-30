@@ -1,0 +1,6 @@
+{
+	"type": "ftbjarmod:temperature_source",
+	"temperature": "none",
+	"block": "minecraft:crying_obsidian",
+	"efficiency": 3.0
+}

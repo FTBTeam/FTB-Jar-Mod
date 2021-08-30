@@ -1,6 +1,6 @@
 {
 	"type": "ftbjarmod:temperature_source",
-	"temperature": "high",
+	"temperature": "low",
 	"block": "minecraft:magma_block",
-	"resultBlock": "minecraft:netherrack"
+	"efficiency": 1.0
 }

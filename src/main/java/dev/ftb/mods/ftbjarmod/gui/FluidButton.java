@@ -1,4 +1,4 @@
-package dev.ftb.mods.ftbjarmod.client.gui;
+package dev.ftb.mods.ftbjarmod.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.ftb.mods.ftblibrary.icon.Color4I;
@@ -14,11 +14,13 @@ import net.minecraftforge.fluids.FluidStack;
 public class FluidButton extends Widget {
 	public final FluidStack fluid;
 	public final Icon icon;
+	public final String amountString;
 
 	public FluidButton(Panel p, FluidStack fs) {
 		super(p);
 		fluid = fs;
 		icon = Icon.getIcon(fluid.getFluid().getAttributes().getStillTexture(fluid)).withTint(Color4I.rgba(fluid.getFluid().getAttributes().getColor(fluid)));
+		amountString = fluid.getAmount() >= 1000000001 ? "\u221E" : (fluid.getAmount() % 1000 == 0 ? ((fluid.getAmount() / 1000) + " B") : ((fluid.getAmount() / 1000D) + " B"));
 	}
 
 	@Override
@@ -30,12 +32,13 @@ public class FluidButton extends Widget {
 	public void draw(PoseStack matrixStack, Theme theme, int x, int y, int w, int h) {
 		GuiHelper.setupDrawing();
 		icon.draw(matrixStack, x, y, w, h);
+		float sw = theme.getStringWidth(amountString);
+		float scale = Math.min(0.5F, w / sw);
 
-		String s = Integer.toString(fluid.getAmount());
 		matrixStack.pushPose();
-		matrixStack.translate(x + w - theme.getStringWidth(s) / 2F, y + h - 4, 250);
-		matrixStack.scale(0.5F, 0.5F, 1F);
-		theme.drawString(matrixStack, s, 0, 0);
+		matrixStack.translate(x + w - sw * scale, y + h - 8F * scale, 250);
+		matrixStack.scale(scale, scale, 1F);
+		theme.drawString(matrixStack, amountString, 0, 0);
 		matrixStack.popPose();
 	}
 

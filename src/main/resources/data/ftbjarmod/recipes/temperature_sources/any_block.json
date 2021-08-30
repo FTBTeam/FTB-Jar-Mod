@@ -1,0 +1,14 @@
+{
+	"type": "ftbjarmod:temperature_source",
+	"temperature": "none",
+	"block": "minecraft:stone",
+	"item": {
+		"item": "minecraft:stone",
+		"nbt": {
+			"display": {
+				"Name": "{\"text\": \"Any Block\"}"
+			}
+		}
+	},
+	"efficiency": 1.0
+}

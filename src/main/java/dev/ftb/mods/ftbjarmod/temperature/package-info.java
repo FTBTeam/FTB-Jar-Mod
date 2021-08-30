@@ -1,3 +1,3 @@
 @mcp.MethodsReturnNonnullByDefault
 @javax.annotation.ParametersAreNonnullByDefault
-package dev.ftb.mods.ftbjarmod.heat;
+package dev.ftb.mods.ftbjarmod.temperature;

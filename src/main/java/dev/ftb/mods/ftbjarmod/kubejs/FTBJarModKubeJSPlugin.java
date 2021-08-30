@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class FTBJarModKubeJSPlugin extends KubeJSPlugin {
 	@Override
-	public void init() {
-		RegisterRecipeHandlersEvent.EVENT.register(event -> event.register(new ResourceLocation(FTBJarMod.MOD_ID, "jar"), JarRecipeJS::new));
+	public void addRecipes(RegisterRecipeHandlersEvent event) {
+		event.register(new ResourceLocation(FTBJarMod.MOD_ID, "jar"), JarRecipeJS::new);
 	}
 }

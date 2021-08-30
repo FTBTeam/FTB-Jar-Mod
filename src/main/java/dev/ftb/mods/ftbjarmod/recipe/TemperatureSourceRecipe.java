@@ -1,8 +1,8 @@
 package dev.ftb.mods.ftbjarmod.recipe;
 
 import com.mojang.brigadier.StringReader;
-import dev.ftb.mods.ftbjarmod.FTBJarMod;
-import dev.ftb.mods.ftbjarmod.heat.Temperature;
+import dev.ftb.mods.ftbjarmod.temperature.Temperature;
+import dev.ftb.mods.ftbjarmod.temperature.TemperaturePair;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -23,30 +23,22 @@ import java.util.Objects;
  * @author LatvianModder
  */
 public class TemperatureSourceRecipe implements Recipe<NoInventory> {
-	public static final TemperatureSourceRecipe NONE = new TemperatureSourceRecipe(new ResourceLocation(FTBJarMod.MOD_ID + ":temperature_sources/none"), "");
-
 	private final ResourceLocation id;
 	private final String group;
 	private String blockString;
 	private Block block;
 	private Map<Property<?>, Comparable<?>> blockProperties;
-	public String resultBlockString;
-	public BlockState resultBlock;
-	public Temperature temperature;
-	public int burnTime;
+	public TemperaturePair temperaturePair;
 	public ItemStack item;
-	public ItemStack resultItem;
+	public boolean hideFromJEI;
 
 	public TemperatureSourceRecipe(ResourceLocation i, String g) {
 		id = i;
 		group = g;
 		blockString = "";
-		temperature = Temperature.LOW;
-		burnTime = 24000;
-		resultBlockString = "minecraft:air";
-		resultBlock = Blocks.AIR.defaultBlockState();
+		temperaturePair = new TemperaturePair(Temperature.LOW, 1D);
 		item = ItemStack.EMPTY;
-		resultItem = ItemStack.EMPTY;
+		hideFromJEI = false;
 	}
 
 	public void setBlockString(String s) {
@@ -67,28 +59,8 @@ public class TemperatureSourceRecipe implements Recipe<NoInventory> {
 		}
 	}
 
-	public void setResultBlockString(String s) {
-		resultBlockString = s;
-
-		try {
-			BlockStateParser input = new BlockStateParser(new StringReader(resultBlockString), false).parse(false);
-			resultBlock = Objects.requireNonNull(input.getState());
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			resultBlock = Blocks.AIR.defaultBlockState();
-		}
-
-		if (resultItem.isEmpty()) {
-			resultItem = new ItemStack(resultBlock.getBlock());
-		}
-	}
-
 	public String getBlockString() {
 		return blockString;
-	}
-
-	public String getResultBlockString() {
-		return resultBlockString;
 	}
 
 	public boolean test(BlockState state) {

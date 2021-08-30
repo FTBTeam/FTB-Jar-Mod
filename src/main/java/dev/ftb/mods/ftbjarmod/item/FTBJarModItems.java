@@ -25,7 +25,7 @@ public class FTBJarModItems {
 		return REGISTRY.register(id, () -> new BlockItem(sup.get(), new Item.Properties().tab(FTBJarMod.group)));
 	}
 
-	public static final RegistryObject<Item> FLUID = REGISTRY.register("fluid", () -> new FluidItem(new Item.Properties().stacksTo(16).tab(FTBJarMod.group)));
+	public static final RegistryObject<Item> FLUID = REGISTRY.register("fluid", FluidItem::new);
 	public static final RegistryObject<Item> CAST_IRON_INGOT = basicItem("cast_iron_ingot");
 	public static final RegistryObject<Item> CAST_IRON_NUGGET = basicItem("cast_iron_nugget");
 	public static final RegistryObject<Item> CAST_IRON_GEAR = basicItem("cast_iron_gear");
@@ -39,4 +39,5 @@ public class FTBJarModItems {
 	public static final RegistryObject<BlockItem> CREATIVE_LOW_TEMPERATURE_SOURCE = blockItem("creative_low_temperature_source", FTBJarModBlocks.CREATIVE_LOW_TEMPERATURE_SOURCE);
 	public static final RegistryObject<BlockItem> CREATIVE_HIGH_TEMPERATURE_SOURCE = blockItem("creative_high_temperature_source", FTBJarModBlocks.CREATIVE_HIGH_TEMPERATURE_SOURCE);
 	public static final RegistryObject<BlockItem> CREATIVE_SUBZERO_TEMPERATURE_SOURCE = blockItem("creative_subzero_temperature_source", FTBJarModBlocks.CREATIVE_SUBZERO_TEMPERATURE_SOURCE);
+	public static final RegistryObject<BlockItem> BLUE_MAGMA_BLOCK = blockItem("blue_magma_block", FTBJarModBlocks.BLUE_MAGMA_BLOCK);
 }

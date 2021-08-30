@@ -2,5 +2,5 @@
 	"type": "ftbjarmod:temperature_source",
 	"temperature": "high",
 	"block": "minecraft:soul_campfire[lit=true]",
-	"resultBlock": "minecraft:soul_campfire[lit=false]"
+	"efficiency": 0.5
 }

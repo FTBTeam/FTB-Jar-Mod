@@ -2,10 +2,10 @@ package dev.ftb.mods.ftbjarmod.jei;
 
 
 import dev.ftb.mods.ftbjarmod.FTBJarMod;
-import dev.ftb.mods.ftbjarmod.heat.Temperature;
 import dev.ftb.mods.ftbjarmod.item.FTBJarModItems;
 import dev.ftb.mods.ftbjarmod.recipe.ItemIngredientPair;
 import dev.ftb.mods.ftbjarmod.recipe.JarRecipe;
+import dev.ftb.mods.ftbjarmod.temperature.Temperature;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -115,9 +115,7 @@ public class TemperedJarCategory implements IRecipeCategory<JarRecipe> {
 		itemStacks.set(ingredients);
 		fluidStacks.set(ingredients);
 
-		fluidStacks.addTooltipCallback((idx, input, stack, tooltip) -> {
-			tooltip.set(0, new TranslatableComponent("block.ftbjarmod.jar.mb", stack.getAmount(), stack.getDisplayName()));
-		});
+		fluidStacks.addTooltipCallback((idx, input, stack, tooltip) -> tooltip.set(0, new TranslatableComponent("block.ftbjarmod.jar.mb", stack.getAmount(), stack.getDisplayName())));
 	}
 
 	@Override

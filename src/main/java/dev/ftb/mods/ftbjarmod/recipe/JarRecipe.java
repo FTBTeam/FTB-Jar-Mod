@@ -1,7 +1,7 @@
 package dev.ftb.mods.ftbjarmod.recipe;
 
-import dev.ftb.mods.ftbjarmod.heat.Temperature;
-import dev.latvian.kubejs.integration.gamestages.GameStageKJSHelper;
+import dev.ftb.mods.ftbjarmod.temperature.Temperature;
+import dev.latvian.kubejs.stages.Stages;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -33,6 +33,8 @@ public class JarRecipe implements Recipe<NoInventory> {
 	public boolean canRepeat;
 	public String stage;
 	private String filterText;
+	public Object[] inputObjects;
+	public int[] inputAmounts;
 
 	public JarRecipe(ResourceLocation i, String g) {
 		id = i;
@@ -88,7 +90,8 @@ public class JarRecipe implements Recipe<NoInventory> {
 	}
 
 	public boolean isAvailableFor(Player player) {
-		return stage.isEmpty() || GameStageKJSHelper.hasStage(player, stage);
+		//FIXME: lazyload the class so it doesnt crash when KJS isnt present
+		return stage.isEmpty() || Stages.get(player).has(stage);
 	}
 
 	public boolean hasItems() {
@@ -129,5 +132,20 @@ public class JarRecipe implements Recipe<NoInventory> {
 		}
 
 		return filterText;
+	}
+
+	public void updateInputs() {
+		inputObjects = new Object[inputFluids.size() + inputItems.size()];
+		inputAmounts = new int[inputObjects.length];
+
+		for (int i = 0; i < inputFluids.size(); i++) {
+			inputObjects[i] = inputFluids.get(i);
+			inputAmounts[i] = inputFluids.get(i).getAmount();
+		}
+
+		for (int i = 0; i < inputItems.size(); i++) {
+			inputObjects[i + inputFluids.size()] = inputItems.get(i).ingredient;
+			inputAmounts[i + inputFluids.size()] = inputItems.get(i).amount;
+		}
 	}
 }

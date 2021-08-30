@@ -1,0 +1,14 @@
+{
+	"type": "ftbjarmod:temperature_source",
+	"temperature": "high",
+	"block": "minecraft:soul_fire",
+	"item": {
+		"item": "minecraft:flint_and_steel",
+		"nbt": {
+			"display": {
+				"Name": "{\"translate\": \"block.minecraft.soul_fire\"}"
+			}
+		}
+	},
+	"efficiency": 0.75
+}

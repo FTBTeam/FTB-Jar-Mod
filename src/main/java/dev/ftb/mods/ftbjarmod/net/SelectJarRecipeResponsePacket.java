@@ -44,7 +44,6 @@ public class SelectJarRecipeResponsePacket extends BaseS2CPacket {
 
 		if (entity instanceof TemperedJarBlockEntity) {
 			TemperedJarBlockEntity jar = (TemperedJarBlockEntity) entity;
-			jar.recipeTime = 0;
 			jar.recipe = id;
 		}
 	}

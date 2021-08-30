@@ -1,6 +1,6 @@
 package dev.ftb.mods.ftbjarmod.jei;
 
-import dev.ftb.mods.ftbjarmod.heat.Temperature;
+import dev.ftb.mods.ftbjarmod.temperature.Temperature;
 import mezz.jei.api.ingredients.IIngredientType;
 
 /**

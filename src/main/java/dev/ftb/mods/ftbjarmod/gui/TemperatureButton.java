@@ -1,7 +1,7 @@
-package dev.ftb.mods.ftbjarmod.client.gui;
+package dev.ftb.mods.ftbjarmod.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.ftb.mods.ftbjarmod.heat.Temperature;
+import dev.ftb.mods.ftbjarmod.temperature.Temperature;
 import dev.ftb.mods.ftblibrary.ui.GuiHelper;
 import dev.ftb.mods.ftblibrary.ui.Panel;
 import dev.ftb.mods.ftblibrary.ui.Theme;

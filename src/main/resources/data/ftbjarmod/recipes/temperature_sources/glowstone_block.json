@@ -1,0 +1,6 @@
+{
+	"type": "ftbjarmod:temperature_source",
+	"temperature": "none",
+	"block": "minecraft:glowstone",
+	"efficiency": 1.25
+}

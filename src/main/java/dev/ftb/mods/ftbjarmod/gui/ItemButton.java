@@ -1,4 +1,4 @@
-package dev.ftb.mods.ftbjarmod.client.gui;
+package dev.ftb.mods.ftbjarmod.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.ftb.mods.ftblibrary.icon.Icon;
@@ -12,11 +12,13 @@ import dev.ftb.mods.ftblibrary.util.WrappedIngredient;
 import net.minecraft.world.item.ItemStack;
 
 public class ItemButton extends Widget {
+	public final String countString;
 	public final ItemStack[] items;
 	public final Icon[] icons;
 
 	public ItemButton(Panel p, ItemStack[] is, int a) {
 		super(p);
+		countString = a >= 1000000001 ? "\u221E" : Integer.toString(a);
 		items = is.length == 0 ? new ItemStack[]{ItemStack.EMPTY} : is;
 		icons = new Icon[items.length];
 
@@ -44,11 +46,13 @@ public class ItemButton extends Widget {
 		GuiHelper.setupDrawing();
 		icons[getIndex()].draw(matrixStack, x, y, w, h);
 
-		String s = Integer.toString(items[getIndex()].getCount());
+		float sw = theme.getStringWidth(countString);
+		float scale = Math.min(0.5F, w / sw);
+
 		matrixStack.pushPose();
-		matrixStack.translate(x + w - theme.getStringWidth(s) / 2F, y + h - 4, 250);
-		matrixStack.scale(0.5F, 0.5F, 1F);
-		theme.drawString(matrixStack, s, 0, 0);
+		matrixStack.translate(x + w - sw * scale, y + h - 8F * scale, 250);
+		matrixStack.scale(scale, scale, 1F);
+		theme.drawString(matrixStack, countString, 0, 0);
 		matrixStack.popPose();
 	}
 

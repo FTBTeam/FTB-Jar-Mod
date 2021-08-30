@@ -1,0 +1,6 @@
+{
+	"type": "ftbjarmod:temperature_source",
+	"temperature": "high",
+	"block": "minecraft:beacon",
+	"efficiency": 4.0
+}

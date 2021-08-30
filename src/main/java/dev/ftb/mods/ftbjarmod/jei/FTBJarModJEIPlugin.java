@@ -1,11 +1,11 @@
 package dev.ftb.mods.ftbjarmod.jei;
 
 import dev.ftb.mods.ftbjarmod.FTBJarMod;
-import dev.ftb.mods.ftbjarmod.heat.Temperature;
 import dev.ftb.mods.ftbjarmod.item.FTBJarModItems;
 import dev.ftb.mods.ftbjarmod.item.FluidItem;
 import dev.ftb.mods.ftbjarmod.recipe.FTBJarModRecipeSerializers;
 import dev.ftb.mods.ftbjarmod.recipe.NoInventory;
+import dev.ftb.mods.ftbjarmod.temperature.Temperature;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IModIngredientRegistration;
@@ -20,6 +20,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * @author LatvianModder
@@ -58,7 +59,7 @@ public class FTBJarModJEIPlugin implements IModPlugin {
 	public void registerRecipes(IRecipeRegistration r) {
 		Level level = Minecraft.getInstance().level;
 		r.addRecipes(level.getRecipeManager().getRecipesFor(FTBJarModRecipeSerializers.JAR_TYPE, NoInventory.INSTANCE, level), TemperedJarCategory.UID);
-		r.addRecipes(level.getRecipeManager().getRecipesFor(FTBJarModRecipeSerializers.TEMPERATURE_SOURCE_TYPE, NoInventory.INSTANCE, level), TemperatureSourceCategory.UID);
+		r.addRecipes(level.getRecipeManager().getRecipesFor(FTBJarModRecipeSerializers.TEMPERATURE_SOURCE_TYPE, NoInventory.INSTANCE, level).stream().filter(re -> !re.hideFromJEI).collect(Collectors.toList()), TemperatureSourceCategory.UID);
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 {
 	"block.ftbjarmod.auto_processing_block": "Jar Auto-Processing Block",
+	"block.ftbjarmod.blue_magma_block": "Blue Magma Block",
 	"block.ftbjarmod.cast_iron_block": "Cast Iron Block",
 	"block.ftbjarmod.creative_high_temperature_source": "Creative High Temperature Source",
 	"block.ftbjarmod.creative_low_temperature_source": "Creative Low Temperature Source",
@@ -21,6 +22,7 @@
 	"item.ftbjarmod.cast_iron_ingot": "Cast Iron Ingot",
 	"item.ftbjarmod.cast_iron_nugget": "Cast Iron Nugget",
 	"item.ftbjarmod.fluid": "Fluid Container",
+	"item.ftbjarmod.fluid.use": "Right-click on a Jar or other fluid handler to empty the container",
 	"item.ftbjarmod.tempered_glass": "Tempered Glass",
 	"itemGroup.ftbjarmod": "FTB Jar Mod"
 }
