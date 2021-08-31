@@ -12,6 +12,7 @@ public interface FTBJarModNet {
 
 	PacketID SELECT_JAR_RECIPE = NET.registerC2S("select_jar_recipe", SelectJarRecipePacket::new);
 	PacketID SELECT_JAR_RECIPE_RESPONSE = NET.registerS2C("select_jar_recipe_response", SelectJarRecipeResponsePacket::new);
+	PacketID DISPLAY_ERROR = NET.registerS2C("display_error", DisplayErrorPacket::new);
 
 	static void init() {
 	}

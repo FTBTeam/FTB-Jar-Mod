@@ -4,6 +4,7 @@ import dev.ftb.mods.ftbjarmod.block.FTBJarModBlocks;
 import dev.ftb.mods.ftbjarmod.block.TemperedJarBlock;
 import dev.ftb.mods.ftbjarmod.item.FTBJarModItems;
 import dev.ftb.mods.ftbjarmod.item.FluidItem;
+import dev.ftb.mods.ftbjarmod.net.DisplayErrorPacket;
 import dev.ftb.mods.ftbjarmod.recipe.JarRecipe;
 import dev.ftb.mods.ftbjarmod.temperature.Temperature;
 import dev.ftb.mods.ftbjarmod.temperature.TemperaturePair;
@@ -15,6 +16,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
@@ -206,9 +208,9 @@ public class TemperedJarBlockEntity extends BlockEntity implements ContainerData
 		}
 	}
 
-	public boolean start(BlockState state, @Nullable Player player) {
+	public boolean start(BlockState state, @Nullable ServerPlayer player) {
 		if (player != null && state.getValue(TemperedJarBlock.ACTIVE)) {
-			player.displayClientMessage(new TextComponent("Recipe already in progress!"), true);
+			new DisplayErrorPacket(new TextComponent("Recipe already in progress!")).sendTo(player);
 			return false;
 		}
 
@@ -216,20 +218,20 @@ public class TemperedJarBlockEntity extends BlockEntity implements ContainerData
 
 		if (r == null) {
 			if (player != null) {
-				player.displayClientMessage(new TextComponent("Invalid recipe!"), true);
+				new DisplayErrorPacket(new TextComponent("Invalid recipe!")).sendTo(player);
 			}
 
 			return false;
 		}
 
 		if (player != null && !r.isAvailableFor(player)) {
-			player.displayClientMessage(new TextComponent("Recipe isn't available for you!"), true);
+			new DisplayErrorPacket(new TextComponent("Recipe isn't available for you!")).sendTo(player);
 			return false;
 		}
 
 		if (getTemperature().temperature != r.temperature) {
 			if (player != null) {
-				player.displayClientMessage(new TextComponent("Temperature isn't right!"), true);
+				new DisplayErrorPacket(new TextComponent("Temperature isn't right!")).sendTo(player);
 			}
 
 			return false;
@@ -261,7 +263,7 @@ public class TemperedJarBlockEntity extends BlockEntity implements ContainerData
 			level.getBlockTicks().scheduleTick(worldPosition, state.getBlock(), lastMaxTime);
 			return true;
 		} else if (player != null) {
-			player.displayClientMessage(new TextComponent("Insufficient resources!"), true);
+			new DisplayErrorPacket(new TextComponent("Insufficient resources!")).sendTo(player);
 		}
 
 		return false;

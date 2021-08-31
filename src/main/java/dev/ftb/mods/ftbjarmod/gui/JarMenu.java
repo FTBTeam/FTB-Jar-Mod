@@ -5,6 +5,7 @@ import dev.ftb.mods.ftbjarmod.block.entity.TemperedJarBlockEntity;
 import dev.ftb.mods.ftbjarmod.recipe.JarRecipe;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -79,7 +80,7 @@ public class JarMenu extends AbstractContainerMenu {
 			if (jar.getBlockState().getValue(TemperedJarBlock.ACTIVE)) {
 				jar.stop();
 			} else {
-				jar.start(jar.getBlockState(), player);
+				jar.start(jar.getBlockState(), (ServerPlayer) player);
 			}
 		}
 
@@ -88,6 +89,10 @@ public class JarMenu extends AbstractContainerMenu {
 
 	public int getAvailableResource(int index) {
 		return index < 0 || index >= 3 ? 0 : containerData.get(index);
+	}
+
+	public boolean hasAnyResources() {
+		return getAvailableResource(0) > 0 || getAvailableResource(1) > 0 || getAvailableResource(2) > 0;
 	}
 
 	public boolean isRightTemperature() {

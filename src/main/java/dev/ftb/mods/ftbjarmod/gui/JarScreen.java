@@ -16,6 +16,7 @@ import dev.ftb.mods.ftblibrary.ui.Button;
 import dev.ftb.mods.ftblibrary.ui.GuiHelper;
 import dev.ftb.mods.ftblibrary.ui.MenuScreenWrapper;
 import dev.ftb.mods.ftblibrary.ui.Panel;
+import dev.ftb.mods.ftblibrary.ui.TextBox;
 import dev.ftb.mods.ftblibrary.ui.Theme;
 import dev.ftb.mods.ftblibrary.ui.Widget;
 import dev.ftb.mods.ftblibrary.ui.WidgetLayout;
@@ -23,14 +24,20 @@ import dev.ftb.mods.ftblibrary.ui.input.MouseButton;
 import dev.ftb.mods.ftblibrary.util.TimeUtils;
 import dev.ftb.mods.ftblibrary.util.TooltipList;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.fluids.FluidStack;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author LatvianModder
@@ -61,7 +68,7 @@ public class JarScreen extends BaseScreen {
 		return new MenuScreenWrapper<>(new JarScreen(m), m, inventory, component);
 	}
 
-	private static boolean viewAll = false;
+	public static boolean viewAll = true;
 
 	private class ProgressWidget extends Widget {
 		private double prevProgress = 0D;
@@ -110,7 +117,7 @@ public class JarScreen extends BaseScreen {
 			matrixStack.translate(0, 0, 300);
 
 			if (menu.getAvailableResource(index) == -1) {
-				IN_UNKNOWN.draw(matrixStack, x, y, w, h);
+				// IN_UNKNOWN.draw(matrixStack, x, y, w, h);
 			} else if (menu.getAvailableResource(index) > 0) {
 				IN_FOUND.draw(matrixStack, x, y, w, h);
 			} else {
@@ -155,7 +162,7 @@ public class JarScreen extends BaseScreen {
 			matrixStack.translate(0, 0, 300);
 
 			if (menu.recipe == null) {
-				IN_UNKNOWN.draw(matrixStack, x, y, w, h);
+				// IN_UNKNOWN.draw(matrixStack, x, y, w, h);
 			} else if (menu.isRightTemperature()) {
 				IN_FOUND.draw(matrixStack, x, y, w, h);
 			} else {
@@ -261,12 +268,26 @@ public class JarScreen extends BaseScreen {
 		@Override
 		public boolean mousePressed(MouseButton button) {
 			if (isMouseOver()) {
-				if (available && button.isLeft()) {
+				if (available && button.isLeft() && menu.recipe != recipe) {
 					playClickSound();
-					menu.jar.recipe = recipe.getId();
-					menu.recipe = recipe;
-					JarScreen.this.refreshWidgets();
-					new SelectJarRecipePacket(menu.jar.getBlockPos(), recipe.getId()).sendToServer();
+
+					if (menu.hasAnyResources()) {
+						Minecraft.getInstance().setScreen(new ConfirmScreen(t -> {
+							if (t) {
+								menu.jar.recipe = recipe.getId();
+								menu.recipe = recipe;
+								JarScreen.this.refreshWidgets();
+								new SelectJarRecipePacket(menu.jar.getBlockPos(), recipe.getId()).sendToServer();
+							}
+
+							openGui();
+						}, new TextComponent("Change recipe?"), new TextComponent("You may lose stored resources")));
+					} else {
+						menu.jar.recipe = recipe.getId();
+						menu.recipe = recipe;
+						JarScreen.this.refreshWidgets();
+						new SelectJarRecipePacket(menu.jar.getBlockPos(), recipe.getId()).sendToServer();
+					}
 				}
 
 				return true;
@@ -279,6 +300,7 @@ public class JarScreen extends BaseScreen {
 	public final JarMenu menu;
 	public final Panel recipePanel;
 	public final Panel resourcePanel;
+	public final TextBox searchBox;
 
 	public JarScreen(JarMenu m) {
 		menu = m;
@@ -288,18 +310,27 @@ public class JarScreen extends BaseScreen {
 			@Override
 			public void addWidgets() {
 				Temperature t = menu.jar.getTemperature().temperature;
+				String search = searchBox.getText().trim().toLowerCase();
+
+				List<ChangeRecipeButton> availableList = new ArrayList<>();
+				List<ChangeRecipeButton> unavailableList = new ArrayList<>();
 
 				Minecraft.getInstance().level.getRecipeManager()
 						.getRecipesFor(FTBJarModRecipeSerializers.JAR_TYPE, NoInventory.INSTANCE, Minecraft.getInstance().level)
 						.stream()
 						.sorted(JarRecipe.COMPARATOR)
 						.forEach(recipe -> {
-							boolean available = recipe.temperature == t && recipe.isAvailableFor(Minecraft.getInstance().player);
+							if (search.isEmpty() || recipe.getFilterText().contains(search)) {
+								boolean available = recipe.temperature == t && recipe.isAvailableFor(Minecraft.getInstance().player);
 
-							if (viewAll || available) {
-								add(new ChangeRecipeButton(this, recipe, available));
+								if (viewAll || available) {
+									(available ? availableList : unavailableList).add(new ChangeRecipeButton(this, recipe, available));
+								}
 							}
 						});
+
+				addAll(availableList);
+				addAll(unavailableList);
 			}
 
 			@Override
@@ -329,6 +360,17 @@ public class JarScreen extends BaseScreen {
 		};
 
 		resourcePanel.setPosAndSize(6, 14, 16, 168);
+
+		searchBox = new TextBox(this) {
+			@Override
+			public void onTextChanged() {
+				recipePanel.refreshWidgets();
+			}
+		};
+
+		searchBox.ghostText = I18n.get("gui.search_box");
+		searchBox.setPosAndSize(36, 70, 149, 13);
+
 	}
 
 	@Override
@@ -368,6 +410,7 @@ public class JarScreen extends BaseScreen {
 		add(new ToggleViewButton(this).setPosAndSize(188, 70, 9, 13));
 		add(recipePanel);
 		add(resourcePanel);
+		add(searchBox);
 	}
 
 	@Override
