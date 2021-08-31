@@ -364,6 +364,7 @@ public class JarScreen extends BaseScreen {
 		searchBox = new TextBox(this) {
 			@Override
 			public void onTextChanged() {
+				recipePanel.setScrollY(0);
 				recipePanel.refreshWidgets();
 			}
 		};
