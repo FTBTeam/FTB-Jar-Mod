@@ -96,6 +96,7 @@ public class TemperedJarBlockEntity extends BlockEntity implements ContainerData
 		tag.putLong("FinishTime", finishTime);
 		tag.putString("Recipe", recipe == null ? "" : recipe.toString());
 		tag.putIntArray("AvailableResources", availableResources);
+		tag.putInt("LastMaxTime", lastMaxTime);
 		return super.save(tag);
 	}
 
@@ -112,6 +113,8 @@ public class TemperedJarBlockEntity extends BlockEntity implements ContainerData
 		} else {
 			Arrays.fill(availableResources, -1);
 		}
+
+		lastMaxTime = tag.getInt("LastMaxTime");
 
 		temperature = null;
 	}
