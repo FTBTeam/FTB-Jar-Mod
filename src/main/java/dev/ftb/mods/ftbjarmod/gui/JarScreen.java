@@ -368,6 +368,32 @@ public class JarScreen extends BaseScreen {
 	}
 
 	private boolean notAvailable(JarRecipe recipe) {
+		for (int i = 0; i < recipe.inputObjects.length; i++) {
+			int found = 0;
+
+			if (recipe.inputObjects[i] instanceof FluidStack) {
+				FluidStack in = (FluidStack) recipe.inputObjects[i];
+
+				for (FluidStack fs : menu.availableFluids) {
+					if (fs.isFluidEqual(in)) {
+						found += fs.getAmount();
+					}
+				}
+			} else if (recipe.inputObjects[i] instanceof Ingredient) {
+				Ingredient in = (Ingredient) recipe.inputObjects[i];
+
+				for (ItemStack is : menu.availableItems) {
+					if (in.test(is)) {
+						found += is.getCount();
+					}
+				}
+			}
+
+			if (found < recipe.inputAmounts[i]) {
+				return true;
+			}
+		}
+
 		return false;
 	}
 
