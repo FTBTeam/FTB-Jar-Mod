@@ -2,15 +2,15 @@ package dev.ftb.mods.ftbjarmod.block.entity;
 
 import dev.ftb.mods.ftbjarmod.block.FTBJarModBlocks;
 import dev.ftb.mods.ftbjarmod.block.TemperedJarBlock;
-import dev.ftb.mods.ftbjarmod.item.FTBJarModItems;
-import dev.ftb.mods.ftbjarmod.item.FluidItem;
 import dev.ftb.mods.ftbjarmod.net.DisplayErrorPacket;
 import dev.ftb.mods.ftbjarmod.recipe.JarRecipe;
 import dev.ftb.mods.ftbjarmod.temperature.Temperature;
 import dev.ftb.mods.ftbjarmod.temperature.TemperaturePair;
 import dev.ftb.mods.ftbjarmod.util.ConnectedBlocks;
-import dev.ftb.mods.ftbjarmod.util.FluidKey;
-import dev.ftb.mods.ftbjarmod.util.ItemKey;
+import dev.ftb.mods.ftblibrary.item.FTBLibraryItems;
+import dev.ftb.mods.ftblibrary.item.forge.FluidContainerItem;
+import dev.ftb.mods.ftblibrary.util.forge.FluidKey;
+import dev.ftb.mods.ftblibrary.util.forge.ItemKey;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -170,8 +170,8 @@ public class TemperedJarBlockEntity extends BlockEntity implements ContainerData
 				ItemStack stack = handler.extractItem(i, Integer.MAX_VALUE, true);
 
 				if (stack.getCount() > 0) {
-					if (stack.getItem() == FTBJarModItems.FLUID.get()) {
-						FluidStack fstack = FluidItem.getFluidStack(stack);
+					if (stack.getItem() == FTBLibraryItems.FLUID_CONTAINER.get()) {
+						FluidStack fstack = FluidContainerItem.getFluidStack(stack);
 
 						if (fstack.getAmount() > 0) {
 							fluids.computeIfAbsent(new FluidKey(fstack), k -> new MutableLong(0L)).add(fstack.getAmount());
@@ -318,7 +318,7 @@ public class TemperedJarBlockEntity extends BlockEntity implements ContainerData
 				if (amount > 0) {
 					FluidStack fs1 = fs.copy();
 					fs1.setAmount(amount);
-					itemStacks.add(FluidItem.of(fs1));
+					itemStacks.add(FluidContainerItem.of(fs1));
 				}
 			}
 

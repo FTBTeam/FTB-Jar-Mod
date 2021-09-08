@@ -2,9 +2,10 @@ package dev.ftb.mods.ftbjarmod.util;
 
 import dev.ftb.mods.ftbjarmod.block.AutoProcessingBlock;
 import dev.ftb.mods.ftbjarmod.block.TubeBlock;
-import dev.ftb.mods.ftbjarmod.item.FTBJarModItems;
-import dev.ftb.mods.ftbjarmod.item.FluidItem;
 import dev.ftb.mods.ftbjarmod.recipe.JarRecipe;
+import dev.ftb.mods.ftblibrary.item.FTBLibraryItems;
+import dev.ftb.mods.ftblibrary.item.forge.FluidContainerItem;
+import dev.ftb.mods.ftblibrary.util.ContainerKey;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
@@ -157,8 +158,8 @@ public class ConnectedBlocks {
 			if (handler instanceof IItemHandlerModifiable) {
 				for (int i = 0; i < handler.getSlots(); i++) {
 					ItemStack itemStack = handler.getStackInSlot(i);
-					if (itemStack.getItem() == FTBJarModItems.FLUID.get()) {
-						FluidStack fs = FluidItem.getFluidStack(itemStack);
+					if (itemStack.getItem() == FTBLibraryItems.FLUID_CONTAINER.get()) {
+						FluidStack fs = FluidContainerItem.getFluidStack(itemStack);
 
 						if (fs.isFluidEqual(fluid)) {
 							int a = Math.min(left, fs.getAmount());
@@ -168,7 +169,7 @@ public class ConnectedBlocks {
 							if (fs.isEmpty()) {
 								((IItemHandlerModifiable) handler).setStackInSlot(i, ItemStack.EMPTY);
 							} else {
-								((IItemHandlerModifiable) handler).setStackInSlot(i, FluidItem.of(fs));
+								((IItemHandlerModifiable) handler).setStackInSlot(i, FluidContainerItem.of(fs));
 							}
 						}
 

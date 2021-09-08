@@ -82,7 +82,6 @@ public class FTBJarModDataGenHandler {
 		@Override
 		protected void addTranslations() {
 			add("itemGroup.ftbjarmod", "FTB Jar Mod");
-			addItem(FTBJarModItems.FLUID, "Fluid Container");
 			addItem(FTBJarModItems.CAST_IRON_INGOT, "Cast Iron Ingot");
 			addItem(FTBJarModItems.CAST_IRON_NUGGET, "Cast Iron Nugget");
 			addItem(FTBJarModItems.CAST_IRON_GEAR, "Cast Iron Gear");
@@ -90,8 +89,6 @@ public class FTBJarModDataGenHandler {
 			addBlock(FTBJarModBlocks.CAST_IRON_BLOCK, "Cast Iron Block");
 			addBlock(FTBJarModBlocks.AUTO_PROCESSING_BLOCK, "Jar Auto-Processing Block");
 			addBlock(FTBJarModBlocks.JAR, "Glass Jar");
-			add("block.ftbjarmod.jar.empty", "Empty");
-			add("block.ftbjarmod.jar.mb", "%d mB of %s");
 			addBlock(FTBJarModBlocks.TEMPERED_JAR, "Tempered Glass Jar");
 			add("block.ftbjarmod.tempered_jar.recipe_changed", "Recipe changed to %s");
 			addBlock(FTBJarModBlocks.TUBE, "Cast Iron Tube");
@@ -106,7 +103,6 @@ public class FTBJarModDataGenHandler {
 			add("ftbjarmod.temperature.subzero", "Sub-Zero Temperature");
 			add("ftbjarmod.processing_time", "Processing Time: %d s");
 			add("ftbjarmod.burn_time", "Burn Time: %d min");
-			add("item.ftbjarmod.fluid.use", "Right-click on a Jar or other fluid handler to empty the container");
 		}
 	}
 

@@ -2,16 +2,16 @@ package dev.ftb.mods.ftbjarmod.net;
 
 
 import dev.ftb.mods.ftbjarmod.FTBJarMod;
-import dev.ftb.mods.ftblibrary.net.snm.BaseS2CPacket;
-import dev.ftb.mods.ftblibrary.net.snm.PacketID;
 import me.shedaniel.architectury.networking.NetworkManager;
+import me.shedaniel.architectury.networking.simple.BaseS2CMessage;
+import me.shedaniel.architectury.networking.simple.MessageType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 
 /**
  * @author LatvianModder
  */
-public class DisplayErrorPacket extends BaseS2CPacket {
+public class DisplayErrorPacket extends BaseS2CMessage {
 	private final Component message;
 
 	public DisplayErrorPacket(Component m) {
@@ -23,7 +23,7 @@ public class DisplayErrorPacket extends BaseS2CPacket {
 	}
 
 	@Override
-	public PacketID getId() {
+	public MessageType getType() {
 		return FTBJarModNet.DISPLAY_ERROR;
 	}
 

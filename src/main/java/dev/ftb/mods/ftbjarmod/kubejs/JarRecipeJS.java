@@ -3,7 +3,7 @@ package dev.ftb.mods.ftbjarmod.kubejs;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.ftb.mods.ftbjarmod.item.FluidItem;
+import dev.ftb.mods.ftblibrary.item.forge.FluidContainerItem;
 import dev.latvian.kubejs.fluid.FluidStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
@@ -18,7 +18,7 @@ public class JarRecipeJS extends RecipeJS {
 	private ItemStackJS fromFluid(FluidStackJS fluid) {
 		CompoundTag tag = new CompoundTag();
 		fluid.getFluidStack().write(tag);
-		return ItemStackJS.of(FluidItem.of(FluidStack.loadFluidStackFromNBT(tag)));
+		return ItemStackJS.of(FluidContainerItem.of(FluidStack.loadFluidStackFromNBT(tag)));
 	}
 
 	@Override

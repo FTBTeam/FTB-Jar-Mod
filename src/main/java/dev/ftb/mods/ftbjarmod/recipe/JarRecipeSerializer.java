@@ -2,8 +2,8 @@ package dev.ftb.mods.ftbjarmod.recipe;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.ftb.mods.ftbjarmod.item.FluidItem;
 import dev.ftb.mods.ftbjarmod.temperature.Temperature;
+import dev.ftb.mods.ftblibrary.item.forge.FluidContainerItem;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -47,8 +47,8 @@ public class JarRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>>
 				Ingredient ingredient = Ingredient.fromJson(o.get("ingredient"));
 				int count = o.has("count") ? o.get("count").getAsInt() : 1;
 
-				if (ingredient.getItems().length == 1 && ingredient.getItems()[0].getItem() instanceof FluidItem) {
-					r.inputFluids.add(FluidItem.getFluidStack(ingredient.getItems()[0]));
+				if (ingredient.getItems().length == 1 && ingredient.getItems()[0].getItem() instanceof FluidContainerItem) {
+					r.inputFluids.add(FluidContainerItem.getFluidStack(ingredient.getItems()[0]));
 				} else {
 					r.inputItems.add(new ItemIngredientPair(ingredient, count));
 				}
@@ -60,8 +60,8 @@ public class JarRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>>
 				JsonObject o = e.getAsJsonObject();
 				ItemStack stack = ShapedRecipe.itemFromJson(o);
 
-				if (stack.getItem() instanceof FluidItem) {
-					r.outputFluids.add(FluidItem.getFluidStack(stack));
+				if (stack.getItem() instanceof FluidContainerItem) {
+					r.outputFluids.add(FluidContainerItem.getFluidStack(stack));
 				} else {
 					r.outputItems.add(stack);
 				}

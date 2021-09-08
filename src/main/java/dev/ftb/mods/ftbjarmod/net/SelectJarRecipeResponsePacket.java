@@ -2,9 +2,9 @@ package dev.ftb.mods.ftbjarmod.net;
 
 
 import dev.ftb.mods.ftbjarmod.block.entity.TemperedJarBlockEntity;
-import dev.ftb.mods.ftblibrary.net.snm.BaseS2CPacket;
-import dev.ftb.mods.ftblibrary.net.snm.PacketID;
 import me.shedaniel.architectury.networking.NetworkManager;
+import me.shedaniel.architectury.networking.simple.BaseS2CMessage;
+import me.shedaniel.architectury.networking.simple.MessageType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 /**
  * @author LatvianModder
  */
-public class SelectJarRecipeResponsePacket extends BaseS2CPacket {
+public class SelectJarRecipeResponsePacket extends BaseS2CMessage {
 	private final BlockPos pos;
 	private final ResourceLocation id;
 
@@ -28,7 +28,7 @@ public class SelectJarRecipeResponsePacket extends BaseS2CPacket {
 	}
 
 	@Override
-	public PacketID getId() {
+	public MessageType getType() {
 		return FTBJarModNet.SELECT_JAR_RECIPE_RESPONSE;
 	}
 

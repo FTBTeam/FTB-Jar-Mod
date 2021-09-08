@@ -2,7 +2,6 @@ package dev.ftb.mods.ftbjarmod.jei;
 
 import dev.ftb.mods.ftbjarmod.FTBJarMod;
 import dev.ftb.mods.ftbjarmod.item.FTBJarModItems;
-import dev.ftb.mods.ftbjarmod.item.FluidItem;
 import dev.ftb.mods.ftbjarmod.recipe.FTBJarModRecipeSerializers;
 import dev.ftb.mods.ftbjarmod.recipe.NoInventory;
 import dev.ftb.mods.ftbjarmod.temperature.Temperature;
@@ -12,7 +11,6 @@ import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
-import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -37,11 +35,6 @@ public class FTBJarModJEIPlugin implements IModPlugin {
 	@Override
 	public void onRuntimeAvailable(IJeiRuntime r) {
 		RUNTIME = r;
-	}
-
-	@Override
-	public void registerItemSubtypes(ISubtypeRegistration registration) {
-		registration.registerSubtypeInterpreter(FTBJarModItems.FLUID.get(), FluidItem::getFluidStackHash);
 	}
 
 	@Override
