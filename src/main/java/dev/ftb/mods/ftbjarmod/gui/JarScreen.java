@@ -52,7 +52,7 @@ public class JarScreen extends BaseScreen {
 	private static final Icon BACKGROUND = sub(0, 0, 205, 198);
 	private static final Icon IN_FOUND = sub(249, 241, 7, 7);
 	private static final Icon IN_NOT_FOUND = sub(249, 249, 7, 7);
-	private static final Icon IN_UNKNOWN = sub(249, 233, 7, 7);
+	private static final Icon IN_PARTIAL = sub(249, 233, 7, 7);
 	private static final Icon SLOT = sub(230, 238, 18, 18);
 	private static final Icon START_RECIPE = sub(222, 0, 34, 18);
 	private static final Icon START_RECIPE_OVER = sub(222, 19, 34, 18);
@@ -67,8 +67,6 @@ public class JarScreen extends BaseScreen {
 	public static AbstractContainerScreen<JarMenu> makeScreen(JarMenu m, Inventory inventory, Component component) {
 		return new MenuScreenWrapper<>(new JarScreen(m), m, inventory, component);
 	}
-
-	public static boolean viewAll = true;
 
 	private class ProgressWidget extends Widget {
 		private double prevProgress = 0D;
@@ -113,18 +111,34 @@ public class JarScreen extends BaseScreen {
 
 		@Override
 		public void draw(PoseStack matrixStack, Theme theme, int x, int y, int w, int h) {
+			if (menu.recipe == null) {
+				return;
+			}
+
 			matrixStack.pushPose();
 			matrixStack.translate(0, 0, 300);
 
-			if (menu.getAvailableResource(index) == -1) {
-				// IN_UNKNOWN.draw(matrixStack, x, y, w, h);
-			} else if (menu.getAvailableResource(index) > 0) {
-				IN_FOUND.draw(matrixStack, x, y, w, h);
-			} else {
+			int a = menu.getAvailableResource(index);
+
+			if (a == 0) {
 				IN_NOT_FOUND.draw(matrixStack, x, y, w, h);
+			} else if (a != -1 && a < menu.recipe.inputAmounts[index]) {
+				IN_PARTIAL.draw(matrixStack, x, y, w, h);
+			} else if (a != -1) {
+				IN_FOUND.draw(matrixStack, x, y, w, h);
 			}
 
 			matrixStack.popPose();
+		}
+
+		@Override
+		public void addMouseOverText(TooltipList list) {
+			int a = menu.getAvailableResource(index);
+			int m = menu.recipe.inputAmounts[index];
+
+			if (a != -1 && a < m) {
+				list.string(a + " / " + m);
+			}
 		}
 	}
 
@@ -170,29 +184,6 @@ public class JarScreen extends BaseScreen {
 			}
 
 			matrixStack.popPose();
-		}
-	}
-
-	private class ToggleViewButton extends Button {
-		public ToggleViewButton(Panel p) {
-			super(p);
-		}
-
-		@Override
-		public void draw(PoseStack matrixStack, Theme theme, int x, int y, int w, int h) {
-			if (isMouseOver()) {
-				(viewAll ? VIEW_AVAILABLE_RECIPES_OVER : VIEW_ALL_RECIPES_OVER).draw(matrixStack, x, y, w, h);
-			} else {
-				(viewAll ? VIEW_AVAILABLE_RECIPES : VIEW_ALL_RECIPES).draw(matrixStack, x, y, w, h);
-			}
-		}
-
-		@Override
-		public void onClicked(MouseButton mouseButton) {
-			playClickSound();
-			viewAll = !viewAll;
-			recipePanel.refreshWidgets();
-			recipePanel.setScrollY(0D);
 		}
 	}
 
@@ -323,9 +314,11 @@ public class JarScreen extends BaseScreen {
 							if (search.isEmpty() || recipe.getFilterText().contains(search)) {
 								boolean available = recipe.temperature == t && recipe.isAvailableFor(Minecraft.getInstance().player);
 
-								if (viewAll || available) {
-									(available ? availableList : unavailableList).add(new ChangeRecipeButton(this, recipe, available));
+								if (available && recipe != menu.recipe && notAvailable(recipe)) {
+									available = false;
 								}
+
+								(available ? availableList : unavailableList).add(new ChangeRecipeButton(this, recipe, available));
 							}
 						});
 
@@ -370,8 +363,12 @@ public class JarScreen extends BaseScreen {
 		};
 
 		searchBox.ghostText = I18n.get("gui.search_box");
-		searchBox.setPosAndSize(36, 70, 149, 13);
+		searchBox.setPosAndSize(36, 70, 161, 13);
 
+	}
+
+	private boolean notAvailable(JarRecipe recipe) {
+		return false;
 	}
 
 	@Override
@@ -408,7 +405,6 @@ public class JarScreen extends BaseScreen {
 			add(new StartButton(this).setPosAndSize(163, 35, 34, 18));
 		}
 
-		add(new ToggleViewButton(this).setPosAndSize(188, 70, 9, 13));
 		add(recipePanel);
 		add(resourcePanel);
 		add(searchBox);
