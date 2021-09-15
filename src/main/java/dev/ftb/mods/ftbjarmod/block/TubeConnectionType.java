@@ -8,8 +8,7 @@ import net.minecraft.util.StringRepresentable;
 public enum TubeConnectionType implements StringRepresentable {
 	NOT_CONNECTED("not_connected"),
 	CONNECTED("connected"),
-
-	;
+	IGNORED("ignored");
 
 	private final String name;
 
@@ -23,6 +22,6 @@ public enum TubeConnectionType implements StringRepresentable {
 	}
 
 	public boolean hasConnection() {
-		return this != NOT_CONNECTED;
+		return this == CONNECTED;
 	}
 }

@@ -1,6 +1,7 @@
 package dev.ftb.mods.ftbjarmod.block;
 
 
+import dev.ftb.mods.ftbjarmod.util.ConnectedBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -26,6 +27,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 
@@ -128,7 +130,11 @@ public class TubeBlock extends Block implements SimpleWaterloggedBlock, TubeConn
 			world.getLiquidTicks().scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
 		}
 
-		return state.setValue(TUBE[facing.ordinal()], canTubeConnectFrom(facingState, world, facingPos, facing.getOpposite()) ? TubeConnectionType.CONNECTED : TubeConnectionType.NOT_CONNECTED);
+		if (state.getValue(TUBE[facing.ordinal()]) != TubeConnectionType.IGNORED) {
+			return state.setValue(TUBE[facing.ordinal()], canTubeConnectFrom(facingState, world, facingPos, facing.getOpposite()) ? TubeConnectionType.CONNECTED : TubeConnectionType.NOT_CONNECTED);
+		}
+
+		return state;
 	}
 
 	private boolean canTubeConnectFrom(BlockState state, BlockGetter world, BlockPos pos, Direction face) {
@@ -140,9 +146,58 @@ public class TubeBlock extends Block implements SimpleWaterloggedBlock, TubeConn
 		return t != null && (t.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, face).isPresent() || t.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, face).isPresent());
 	}
 
+	private static int coord(double v) {
+		return v < 0.375D ? -1 : v > 0.625D ? 1 : 0;
+	}
+
+	private static Direction coordDir(int x, int y, int z, Direction def) {
+		for (Direction d : ConnectedBlocks.DIRECTIONS) {
+			if (d.getStepX() == x && d.getStepY() == y && d.getStepZ() == z) {
+				return d;
+			}
+		}
+
+		return def;
+	}
+
 	@Override
 	@Deprecated
 	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+		if (player.isCrouching() && player.getItemInHand(hand).isEmpty()) {
+			int x = coord(hit.getLocation().x - pos.getX());
+			int y = coord(hit.getLocation().y - pos.getY());
+			int z = coord(hit.getLocation().z - pos.getZ());
+			Direction dir = coordDir(x, y, z, hit.getDirection());
+			switch (state.getValue(TUBE[dir.ordinal()])) {
+				case IGNORED: {
+					BlockPos pos1 = pos.relative(dir);
+					BlockState state1 = level.getBlockState(pos1);
+
+					if (state1.getBlock() == this) {
+						level.setBlock(pos, state.setValue(TUBE[dir.ordinal()], canTubeConnectFrom(level.getBlockState(pos1), level, pos1, dir.getOpposite()) ? TubeConnectionType.CONNECTED : TubeConnectionType.NOT_CONNECTED), Constants.BlockFlags.DEFAULT);
+					}
+
+					break;
+				}
+				case CONNECTED: {
+					level.setBlock(pos, state.setValue(TUBE[dir.ordinal()], TubeConnectionType.IGNORED), Constants.BlockFlags.DEFAULT);
+					break;
+				}
+				case NOT_CONNECTED: {
+					BlockPos pos1 = pos.relative(dir);
+					BlockState state1 = level.getBlockState(pos1);
+
+					if (state1.getBlock() == this && state1.getValue(TUBE[dir.getOpposite().ordinal()]) == TubeConnectionType.IGNORED) {
+						level.setBlock(pos1, state1.setValue(TUBE[dir.getOpposite().ordinal()], TubeConnectionType.CONNECTED), Constants.BlockFlags.DEFAULT);
+					}
+
+					break;
+				}
+			}
+
+			return InteractionResult.SUCCESS;
+		}
+
 		return InteractionResult.PASS;
 	}
 
@@ -173,5 +228,10 @@ public class TubeBlock extends Block implements SimpleWaterloggedBlock, TubeConn
 	@Deprecated
 	public boolean isPathfindable(BlockState arg, BlockGetter arg2, BlockPos arg3, PathComputationType arg4) {
 		return false;
+	}
+
+	@Override
+	public boolean canTubeConnect(BlockState state, BlockGetter world, BlockPos pos, Direction face) {
+		return state.getValue(TUBE[face.ordinal()]) != TubeConnectionType.IGNORED;
 	}
 }
