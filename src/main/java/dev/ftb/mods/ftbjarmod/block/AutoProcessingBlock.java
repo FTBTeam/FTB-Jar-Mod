@@ -2,6 +2,9 @@ package dev.ftb.mods.ftbjarmod.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -16,6 +19,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -100,5 +104,17 @@ public class AutoProcessingBlock extends Block implements TubeConnection {
 	@Deprecated
 	public boolean isPathfindable(BlockState arg, BlockGetter arg2, BlockPos arg3, PathComputationType arg4) {
 		return false;
+	}
+
+	@Override
+	@Deprecated
+	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+		BlockPos pos1 = pos.below();
+
+		if (level.getBlockState(pos1).is(FTBJarModBlocks.TEMPERED_JAR.get())) {
+			return level.getBlockState(pos1).use(level, player, hand, hit.withPosition(pos1));
+		}
+
+		return InteractionResult.PASS;
 	}
 }
