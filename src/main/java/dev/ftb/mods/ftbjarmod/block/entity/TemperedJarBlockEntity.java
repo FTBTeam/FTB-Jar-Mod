@@ -24,6 +24,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.TickableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fluids.FluidStack;
@@ -44,19 +45,23 @@ import java.util.Objects;
 /**
  * @author LatvianModder
  */
-public class TemperedJarBlockEntity extends BlockEntity implements ContainerData {
-	private long finishTime;
+public class TemperedJarBlockEntity extends BlockEntity implements ContainerData, TickableBlockEntity {
+	public int remainingTime;
+	private Boolean autoProcessing;
 	public ResourceLocation recipe;
 	private final int[] availableResources;
 	private TemperaturePair temperature;
 	private int lastMaxTime;
+	private boolean hasResources;
 
 	public TemperedJarBlockEntity() {
 		super(FTBJarModBlockEntities.TEMPERED_JAR.get());
-		finishTime = 0L;
+		remainingTime = 0;
+		autoProcessing = null;
 		recipe = null;
 		availableResources = new int[]{-1, -1, -1};
 		temperature = null;
+		hasResources = true;
 	}
 
 	public ConnectedBlocks getConnectedBlocks(@Nullable JarRecipe r) {
@@ -76,7 +81,7 @@ public class TemperedJarBlockEntity extends BlockEntity implements ContainerData
 			recipe = r.getId();
 		}
 
-		finishTime = 0L;
+		remainingTime = 0;
 		Arrays.fill(availableResources, -1);
 		setChanged();
 	}
@@ -93,17 +98,18 @@ public class TemperedJarBlockEntity extends BlockEntity implements ContainerData
 
 	@Override
 	public CompoundTag save(CompoundTag tag) {
-		tag.putLong("FinishTime", finishTime);
+		tag.putInt("RemainingTime", remainingTime);
 		tag.putString("Recipe", recipe == null ? "" : recipe.toString());
 		tag.putIntArray("AvailableResources", availableResources);
 		tag.putInt("LastMaxTime", lastMaxTime);
+		tag.putBoolean("HasResources", hasResources);
 		return super.save(tag);
 	}
 
 	@Override
 	public void load(BlockState state, CompoundTag tag) {
 		super.load(state, tag);
-		finishTime = tag.getLong("FinishTime");
+		remainingTime = tag.getInt("RemainingTime");
 		String r = tag.getString("Recipe");
 		recipe = r.isEmpty() ? null : new ResourceLocation(r);
 		int[] ar = tag.getIntArray("AvailableResources");
@@ -115,7 +121,7 @@ public class TemperedJarBlockEntity extends BlockEntity implements ContainerData
 		}
 
 		lastMaxTime = tag.getInt("LastMaxTime");
-
+		hasResources = tag.getBoolean("HasResources");
 		temperature = null;
 	}
 
@@ -256,14 +262,27 @@ public class TemperedJarBlockEntity extends BlockEntity implements ContainerData
 
 		if (tryStart(availableResources, r, connectedBlocks)) {
 			lastMaxTime = getTemperature().getRecipeTime(r);
-			finishTime = level.getGameTime() + lastMaxTime;
+			remainingTime = lastMaxTime;
+			hasResources = true;
 
-			if (player != null) {
+			if (!state.getValue(TemperedJarBlock.ACTIVE)) {
 				level.setBlock(worldPosition, state.setValue(TemperedJarBlock.ACTIVE, true), Constants.BlockFlags.DEFAULT);
 			}
 
 			setChanged();
-			level.getBlockTicks().scheduleTick(worldPosition, state.getBlock(), lastMaxTime);
+			return true;
+		}
+
+		hasResources = false;
+
+		if (level != null && state.getValue(TemperedJarBlock.ACTIVE)) {
+			level.setBlock(worldPosition, state.setValue(TemperedJarBlock.ACTIVE, false), Constants.BlockFlags.DEFAULT);
+		}
+
+		if (hasAutoProcessing()) {
+			lastMaxTime = getTemperature().getRecipeTime(r);
+			remainingTime = lastMaxTime;
+			setChanged();
 			return true;
 		} else if (player != null) {
 			new DisplayErrorPacket(new TextComponent("Insufficient resources!")).sendTo(player);
@@ -272,28 +291,31 @@ public class TemperedJarBlockEntity extends BlockEntity implements ContainerData
 		return false;
 	}
 
-	public void stop() {
-		BlockState state = getBlockState();
+	public void stop(BlockState state) {
+		lastMaxTime = 0;
+		remainingTime = 0;
 
-		if (state.getValue(TemperedJarBlock.ACTIVE)) {
-			finish(state);
+		if (level != null && state.getValue(TemperedJarBlock.ACTIVE)) {
+			level.setBlock(worldPosition, state.setValue(TemperedJarBlock.ACTIVE, false), Constants.BlockFlags.DEFAULT);
 		}
+
+		setChanged();
 	}
 
-	public void tick(BlockState state) {
-		if (state.getValue(TemperedJarBlock.ACTIVE)) {
-			boolean repeat = true;
-			JarRecipe r = getRecipe(level, recipe);
+	public void end(BlockState state) {
+		boolean repeat = true;
+		JarRecipe r = getRecipe(level, recipe);
 
-			if (r == null) {
-				finish(state);
-				return;
-			}
+		if (r == null) {
+			stop(state);
+			return;
+		}
 
+		if (hasResources) {
 			ConnectedBlocks connectedBlocks = getConnectedBlocks(r);
 
 			for (int i = 0; i < r.inputAmounts.length; i++) {
-				availableResources[i] -= r.inputAmounts[i];
+				availableResources[i] -= Math.min(r.inputAmounts[i], availableResources[i]);
 			}
 
 			List<ItemStack> itemStacks = new ArrayList<>();
@@ -330,13 +352,21 @@ public class TemperedJarBlockEntity extends BlockEntity implements ContainerData
 					repeat = false;
 				}
 			}
-
-			repeat = repeat && !Level.isOutsideBuildHeight(worldPosition.above()) && level.getBlockState(worldPosition.above()).is(FTBJarModBlocks.AUTO_PROCESSING_BLOCK.get());
-
-			if (!repeat || !start(state, null)) {
-				finish(state);
-			}
 		}
+
+		repeat = repeat && hasAutoProcessing();
+
+		if (!repeat || !start(state, null)) {
+			stop(state);
+		}
+	}
+
+	public boolean hasAutoProcessing() {
+		if (autoProcessing == null) {
+			autoProcessing = !Level.isOutsideBuildHeight(worldPosition.above()) && level.getBlockState(worldPosition.above()).is(FTBJarModBlocks.AUTO_PROCESSING_BLOCK.get());
+		}
+
+		return autoProcessing;
 	}
 
 	private void dropItem(ItemStack stack) {
@@ -350,17 +380,11 @@ public class TemperedJarBlockEntity extends BlockEntity implements ContainerData
 		Block.popResource(level, worldPosition, stack);
 	}
 
-
-	public void finish(BlockState state) {
-		level.setBlock(worldPosition, state.setValue(TemperedJarBlock.ACTIVE, false), Constants.BlockFlags.DEFAULT);
-		finishTime = 0L;
-		setChanged();
-	}
-
 	@Override
 	public void clearCache() {
 		super.clearCache();
 		temperature = null;
+		autoProcessing = null;
 	}
 
 	public TemperaturePair getTemperature() {
@@ -379,7 +403,7 @@ public class TemperedJarBlockEntity extends BlockEntity implements ContainerData
 			case 2:
 				return availableResources[i];
 			case 3:
-				return finishTime == 0L ? -1 : (int) (finishTime - level.getGameTime());
+				return remainingTime;
 			case 4:
 				return lastMaxTime;
 			default:
@@ -394,5 +418,27 @@ public class TemperedJarBlockEntity extends BlockEntity implements ContainerData
 	@Override
 	public int getCount() {
 		return 5;
+	}
+
+	@Override
+	public void onLoad() {
+		super.onLoad();
+
+		if (level != null && level.isClientSide()) {
+			level.tickableBlockEntities.remove(this);
+		}
+	}
+
+	@Override
+	public void tick() {
+		if (remainingTime <= 0) {
+			return;
+		}
+
+		remainingTime--;
+
+		if (remainingTime <= 0) {
+			end(getBlockState());
+		}
 	}
 }

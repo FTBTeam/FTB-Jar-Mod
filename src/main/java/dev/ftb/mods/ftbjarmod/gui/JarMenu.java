@@ -1,6 +1,5 @@
 package dev.ftb.mods.ftbjarmod.gui;
 
-import dev.ftb.mods.ftbjarmod.block.TemperedJarBlock;
 import dev.ftb.mods.ftbjarmod.block.entity.TemperedJarBlockEntity;
 import dev.ftb.mods.ftbjarmod.recipe.JarRecipe;
 import net.minecraft.network.FriendlyByteBuf;
@@ -77,8 +76,8 @@ public class JarMenu extends AbstractContainerMenu {
 	@Override
 	public boolean clickMenuButton(Player player, int button) {
 		if (button == 0) {
-			if (jar.getBlockState().getValue(TemperedJarBlock.ACTIVE)) {
-				jar.stop();
+			if (getRecipeTime() > 0) {
+				jar.stop(jar.getBlockState());
 			} else {
 				jar.start(jar.getBlockState(), (ServerPlayer) player);
 			}

@@ -9,7 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -118,16 +117,6 @@ public class TemperedJarBlock extends JarBlock {
 				double z = pos.getZ() + 0.5D + Math.sin(angle) * 0.4D;
 				level.addParticle(temperature.particleOptions, x, y, z, 0D, 0D, 0D);
 			}
-		}
-	}
-
-	@Override
-	@Deprecated
-	public void tick(BlockState state, ServerLevel level, BlockPos pos, Random rand) {
-		BlockEntity entity = level.getBlockEntity(pos);
-
-		if (entity instanceof TemperedJarBlockEntity) {
-			((TemperedJarBlockEntity) entity).tick(state);
 		}
 	}
 }
