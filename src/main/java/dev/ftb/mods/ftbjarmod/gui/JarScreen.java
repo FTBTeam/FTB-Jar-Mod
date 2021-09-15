@@ -78,8 +78,9 @@ public class JarScreen extends BaseScreen {
 		@Override
 		public void draw(PoseStack matrixStack, Theme theme, int x, int y, int w, int h) {
 			if (menu.recipe != null && menu.getRecipeTime() > 0) {
-				int rtime = menu.getMaxRecipeTime();
-				double progress = Mth.clamp((rtime - menu.getRecipeTime()) / (double) rtime, 0D, 1D);
+				double rtime = menu.getRecipeTime();
+				double mtime = menu.getMaxRecipeTime();
+				double progress = Mth.clamp((mtime - rtime) / mtime, 0D, 1D);
 				int w1 = (int) (w * Mth.lerp(getPartialTicks(), prevProgress, progress));
 				sub(0, 240, w1, h).draw(matrixStack, x, y, w1, h);
 				prevProgress = progress;

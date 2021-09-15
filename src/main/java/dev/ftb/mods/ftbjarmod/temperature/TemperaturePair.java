@@ -1,6 +1,7 @@
 package dev.ftb.mods.ftbjarmod.temperature;
 
 import dev.ftb.mods.ftbjarmod.recipe.JarRecipe;
+import net.minecraft.util.Mth;
 
 public class TemperaturePair {
 	public static final TemperaturePair DEFAULT = new TemperaturePair(Temperature.NONE, 1D);
@@ -14,6 +15,6 @@ public class TemperaturePair {
 	}
 
 	public int getRecipeTime(JarRecipe r) {
-		return (int) (r.time / efficiency);
+		return Mth.clamp((int) (r.time / efficiency), 1, Short.MAX_VALUE);
 	}
 }
