@@ -7,10 +7,7 @@ import dev.ftb.mods.ftbjarmod.recipe.JarRecipe;
 import dev.ftb.mods.ftbjarmod.temperature.Temperature;
 import dev.ftb.mods.ftbjarmod.temperature.TemperaturePair;
 import dev.ftb.mods.ftbjarmod.util.ConnectedBlocks;
-import dev.ftb.mods.ftblibrary.item.FTBLibraryItems;
 import dev.ftb.mods.ftblibrary.item.forge.FluidContainerItem;
-import dev.ftb.mods.ftblibrary.util.forge.FluidKey;
-import dev.ftb.mods.ftblibrary.util.forge.ItemKey;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -31,15 +28,12 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import org.apache.commons.lang3.mutable.MutableLong;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -150,71 +144,6 @@ public class TemperedJarBlockEntity extends BlockEntity implements ContainerData
 	public void writeMenu(Player player, FriendlyByteBuf buf) {
 		buf.writeBlockPos(worldPosition);
 		buf.writeUtf(recipe == null ? "" : recipe.toString(), Short.MAX_VALUE);
-		writeResources(player, buf);
-	}
-
-	public void writeResources(@Nullable Player player, FriendlyByteBuf buf) {
-		Map<ItemKey, MutableLong> items = new LinkedHashMap<>();
-		Map<FluidKey, MutableLong> fluids = new LinkedHashMap<>();
-
-		ConnectedBlocks connectedBlocks = getConnectedBlocks(null);
-
-		if (player != null) {
-			IItemHandler handler = player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
-
-			if (handler != null) {
-				if (connectedBlocks.itemHandlers.isEmpty()) {
-					connectedBlocks.itemHandlers = new LinkedHashSet<>();
-				}
-
-				connectedBlocks.itemHandlers.add(handler);
-			}
-		}
-
-		for (IItemHandler handler : connectedBlocks.itemHandlers) {
-			for (int i = 0; i < handler.getSlots(); i++) {
-				ItemStack stack = handler.extractItem(i, Integer.MAX_VALUE, true);
-
-				if (stack.getCount() > 0) {
-					if (stack.getItem() == FTBLibraryItems.FLUID_CONTAINER.get()) {
-						FluidStack fstack = FluidContainerItem.getFluidStack(stack);
-
-						if (fstack.getAmount() > 0) {
-							fluids.computeIfAbsent(new FluidKey(fstack), k -> new MutableLong(0L)).add(fstack.getAmount());
-						}
-					} else {
-						items.computeIfAbsent(new ItemKey(stack), k -> new MutableLong(0L)).add(stack.getCount());
-					}
-				}
-			}
-		}
-
-		for (IFluidHandler handler : connectedBlocks.fluidHandlers) {
-			for (int i = 0; i < handler.getTanks(); i++) {
-				FluidStack stack = handler.getFluidInTank(i);
-
-				if (stack.getAmount() > 0) {
-					fluids.computeIfAbsent(new FluidKey(stack), k -> new MutableLong(0L)).add(stack.getAmount());
-				}
-			}
-		}
-
-		buf.writeVarInt(items.size());
-
-		for (Map.Entry<ItemKey, MutableLong> entry : items.entrySet()) {
-			ItemStack stack = entry.getKey().stack.copy();
-			stack.setCount(1);
-			buf.writeItem(stack);
-			buf.writeVarInt((int) Math.min(1000000001L, entry.getValue().longValue()));
-		}
-
-		buf.writeVarInt(fluids.size());
-
-		for (Map.Entry<FluidKey, MutableLong> entry : fluids.entrySet()) {
-			FluidStack stack = entry.getKey().stack.copy();
-			stack.setAmount((int) Math.min(1000000001L, entry.getValue().longValue()));
-			stack.writeToPacket(buf);
-		}
 	}
 
 	public boolean start(BlockState state, @Nullable ServerPlayer player) {

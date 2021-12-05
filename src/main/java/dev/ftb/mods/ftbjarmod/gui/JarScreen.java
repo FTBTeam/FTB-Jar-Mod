@@ -49,7 +49,7 @@ public class JarScreen extends BaseScreen {
 		return TEXTURE.withUV(x, y, w, h, 256, 256);
 	}
 
-	private static final Icon BACKGROUND = sub(0, 0, 205, 198);
+	private static final Icon BACKGROUND = sub(0, 0, 176, 198);
 	private static final Icon IN_FOUND = sub(249, 241, 7, 7);
 	private static final Icon IN_NOT_FOUND = sub(249, 249, 7, 7);
 	private static final Icon IN_PARTIAL = sub(249, 233, 7, 7);
@@ -94,11 +94,6 @@ public class JarScreen extends BaseScreen {
 			if (menu.recipe != null && menu.getRecipeTime() > 0) {
 				list.string(TimeUtils.prettyTimeString(Mth.ceil(menu.getRecipeTime() / 20D)));
 			}
-		}
-
-		@Override
-		public void tick() {
-			super.tick();
 		}
 	}
 
@@ -289,14 +284,15 @@ public class JarScreen extends BaseScreen {
 		}
 	}
 
+	public static final int OFF = 29;
+
 	public final JarMenu menu;
 	public final Panel recipePanel;
-	public final Panel resourcePanel;
 	public final TextBox searchBox;
 
 	public JarScreen(JarMenu m) {
 		menu = m;
-		setSize(205, 198);
+		setSize(176, 198);
 
 		recipePanel = new Panel(this) {
 			@Override
@@ -314,11 +310,6 @@ public class JarScreen extends BaseScreen {
 						.forEach(recipe -> {
 							if (search.isEmpty() || recipe.getFilterText().contains(search)) {
 								boolean available = recipe.temperature == t && recipe.isAvailableFor(Minecraft.getInstance().player);
-
-								if (available && recipe != menu.recipe && notAvailable(recipe)) {
-									available = false;
-								}
-
 								(available ? availableList : unavailableList).add(new ChangeRecipeButton(this, recipe, available));
 							}
 						});
@@ -333,27 +324,7 @@ public class JarScreen extends BaseScreen {
 			}
 		};
 
-		recipePanel.setPosAndSize(37, 88, 159, 102);
-
-		resourcePanel = new Panel(this) {
-			@Override
-			public void addWidgets() {
-				for (FluidStack stack : menu.availableFluids) {
-					add(new FluidButton(this, stack).setPosAndSize(0, 0, 16, 16));
-				}
-
-				for (ItemStack stack : menu.availableItems) {
-					add(new ItemButton(this, new ItemStack[]{stack}, stack.getCount()).setPosAndSize(0, 0, 16, 16));
-				}
-			}
-
-			@Override
-			public void alignWidgets() {
-				align(new WidgetLayout.Vertical(0, 1, 0));
-			}
-		};
-
-		resourcePanel.setPosAndSize(6, 14, 16, 168);
+		recipePanel.setPosAndSize(37 - OFF, 88, 159, 102);
 
 		searchBox = new TextBox(this) {
 			@Override
@@ -364,76 +335,44 @@ public class JarScreen extends BaseScreen {
 		};
 
 		searchBox.ghostText = I18n.get("gui.search_box");
-		searchBox.setPosAndSize(36, 70, 161, 13);
-
-	}
-
-	private boolean notAvailable(JarRecipe recipe) {
-		for (int i = 0; i < recipe.inputObjects.length; i++) {
-			int found = 0;
-
-			if (recipe.inputObjects[i] instanceof FluidStack) {
-				FluidStack in = (FluidStack) recipe.inputObjects[i];
-
-				for (FluidStack fs : menu.availableFluids) {
-					if (fs.isFluidEqual(in)) {
-						found += fs.getAmount();
-					}
-				}
-			} else if (recipe.inputObjects[i] instanceof Ingredient) {
-				Ingredient in = (Ingredient) recipe.inputObjects[i];
-
-				for (ItemStack is : menu.availableItems) {
-					if (in.test(is)) {
-						found += is.getCount();
-					}
-				}
-			}
-
-			if (found < recipe.inputAmounts[i]) {
-				return true;
-			}
-		}
-
-		return false;
+		searchBox.setPosAndSize(36 - OFF, 70, 161, 13);
 	}
 
 	@Override
 	public void addWidgets() {
-		add(new ProgressWidget(this).setPosAndSize(37, 36, 121, 16));
+		add(new ProgressWidget(this).setPosAndSize(37 - OFF, 36, 121, 16));
 
 		// new SelectJarRecipePacket(menu.jar.getBlockPos(), recipe.getId()).sendToServer();
 
 		if (menu.recipe != null) {
 			for (int i = 0; i < menu.recipe.inputFluids.size(); i++) {
-				add(new FluidButton(this, menu.recipe.inputFluids.get(i)).setPosAndSize(37 + i * 22, 14, 16, 16));
+				add(new FluidButton(this, menu.recipe.inputFluids.get(i)).setPosAndSize(37 - OFF + i * 22, 14, 16, 16));
 			}
 
 			for (int i = 0; i < menu.recipe.inputItems.size(); i++) {
-				add(new ItemButton(this, menu.recipe.inputItems.get(i).ingredient.getItems(), menu.recipe.inputItems.get(i).amount).setPosAndSize(37 + (i + menu.recipe.inputFluids.size()) * 22, 14, 16, 16));
+				add(new ItemButton(this, menu.recipe.inputItems.get(i).ingredient.getItems(), menu.recipe.inputItems.get(i).amount).setPosAndSize(37 - OFF + (i + menu.recipe.inputFluids.size()) * 22, 14, 16, 16));
 			}
 
-			add(new TemperatureButton(this, menu.recipe.temperature, menu.jar.getTemperature().getRecipeTime(menu.recipe) / 20).setPosAndSize(109, 14, 16, 16));
+			add(new TemperatureButton(this, menu.recipe.temperature, menu.jar.getTemperature().getRecipeTime(menu.recipe) / 20).setPosAndSize(109 - OFF, 14, 16, 16));
 
 			for (int i = 0; i < menu.recipe.outputFluids.size(); i++) {
-				add(new FluidButton(this, menu.recipe.outputFluids.get(i)).setPosAndSize(136 + i * 22, 14, 16, 16));
+				add(new FluidButton(this, menu.recipe.outputFluids.get(i)).setPosAndSize(136 - OFF + i * 22, 14, 16, 16));
 			}
 
 			for (int i = 0; i < menu.recipe.outputItems.size(); i++) {
-				add(new ItemButton(this, new ItemStack[]{menu.recipe.outputItems.get(i)}, menu.recipe.outputItems.get(i).getCount()).setPosAndSize(136 + (i + menu.recipe.outputFluids.size()) * 22, 14, 16, 16));
+				add(new ItemButton(this, new ItemStack[]{menu.recipe.outputItems.get(i)}, menu.recipe.outputItems.get(i).getCount()).setPosAndSize(136 - OFF + (i + menu.recipe.outputFluids.size()) * 22, 14, 16, 16));
 			}
 
 			for (int i = 0; i < menu.recipe.inputItems.size() + menu.recipe.inputFluids.size(); i++) {
-				add(new IngredientWidget(this, i).setPosAndSize(50 + i * 22, 10, 7, 7));
+				add(new IngredientWidget(this, i).setPosAndSize(50 - OFF + i * 22, 10, 7, 7));
 			}
 
-			add(new RightTempWidget(this).setPosAndSize(122, 10, 7, 7));
+			add(new RightTempWidget(this).setPosAndSize(122 - OFF, 10, 7, 7));
 
-			add(new StartButton(this).setPosAndSize(163, 35, 34, 18));
+			add(new StartButton(this).setPosAndSize(163 - OFF, 35, 34, 18));
 		}
 
 		add(recipePanel);
-		add(resourcePanel);
 		add(searchBox);
 	}
 

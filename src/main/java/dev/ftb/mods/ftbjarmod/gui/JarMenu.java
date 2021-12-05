@@ -11,16 +11,10 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class JarMenu extends AbstractContainerMenu {
 	public final TemperedJarBlockEntity jar;
 	public final Player player;
-	public final List<ItemStack> availableItems;
-	public final List<FluidStack> availableFluids;
 	public final ContainerData containerData;
 	public JarRecipe recipe;
 
@@ -30,8 +24,6 @@ public class JarMenu extends AbstractContainerMenu {
 		containerData = d;
 		player = playerInv.player;
 		addDataSlots(containerData);
-		availableItems = new ArrayList<>();
-		availableFluids = new ArrayList<>();
 		recipe = TemperedJarBlockEntity.getRecipe(playerInv.player.level, r.recipe);
 	}
 
@@ -39,23 +31,6 @@ public class JarMenu extends AbstractContainerMenu {
 		this(id, playerInv, (TemperedJarBlockEntity) playerInv.player.level.getBlockEntity(buf.readBlockPos()), new SimpleContainerData(5));
 		String r = buf.readUtf(Short.MAX_VALUE);
 		recipe = TemperedJarBlockEntity.getRecipe(playerInv.player.level, r.isEmpty() ? null : new ResourceLocation(r));
-
-		int si = buf.readVarInt();
-
-		for (int i = 0; i < si; i++) {
-			ItemStack stack = buf.readItem();
-			stack.setCount(buf.readVarInt());
-			availableItems.add(stack);
-		}
-
-		int sf = buf.readVarInt();
-
-		for (int i = 0; i < sf; i++) {
-			availableFluids.add(FluidStack.readFromPacket(buf));
-		}
-
-		availableFluids.sort((o1, o2) -> Integer.compare(o2.getAmount(), o1.getAmount()));
-		availableItems.sort((o1, o2) -> Integer.compare(o2.getCount(), o1.getCount()));
 	}
 
 	@Override
